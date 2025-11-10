@@ -3,12 +3,15 @@
   // Formula: HP = 60 + (level * 15), Attack = 8 + (level * 2), Defense = 3 + (level * 1), Speed = 5 + (level * 1)
   // Gold = 30 + (level * 10), Exp = 50 + (level * 20)
   // Enemies now have thematic abilities based on their type
+  // MinLevel determines when players start encountering these enemies
 
+  // Tier 1: Beginner enemies (Level 1+) - Simple, basic abilities
   "goblin": {
     "Id": "goblin",
     "Name": "Goblin",
     "Level": 0,
     "Type": "Humanoid",
+    "MinLevel": 1,
     "MaxHP": 60,
     "Attack": 8,
     "Defense": 3,
@@ -18,155 +21,6 @@
     "Abilities": [
       {
         "AbilityId": "enemy_quick_strike",
-        "UseThreshold": 100
-      }
-    ],
-    "PossibleDrops": []
-  },
-  "orc": {
-    "Id": "orc",
-    "Name": "Orc",
-    "Level": 0,
-    "Type": "Humanoid",
-    "MaxHP": 60,
-    "Attack": 8,
-    "Defense": 3,
-    "Speed": 5,
-    "GoldReward": 30,
-    "ExpReward": 50,
-    "Abilities": [
-      {
-        "AbilityId": "enemy_fierce_strike",
-        "UseThreshold": 100
-      },
-      {
-        "AbilityId": "enemy_enrage",
-        "UseThreshold": 50
-      }
-    ],
-    "PossibleDrops": []
-  },
-  "dark_knight": {
-    "Id": "dark_knight",
-    "Name": "Dark Knight",
-    "Level": 0,
-    "Type": "Undead",
-    "MaxHP": 60,
-    "Attack": 8,
-    "Defense": 3,
-    "Speed": 5,
-    "GoldReward": 30,
-    "ExpReward": 50,
-    "Abilities": [
-      {
-        "AbilityId": "enemy_crushing_blow",
-        "UseThreshold": 100
-      },
-      {
-        "AbilityId": "enemy_dark_bolt",
-        "UseThreshold": 70
-      }
-    ],
-    "PossibleDrops": []
-  },
-  "dragon_whelp": {
-    "Id": "dragon_whelp",
-    "Name": "Dragon Whelp",
-    "Level": 0,
-    "Type": "Dragon",
-    "MaxHP": 60,
-    "Attack": 8,
-    "Defense": 3,
-    "Speed": 5,
-    "GoldReward": 30,
-    "ExpReward": 50,
-    "Abilities": [
-      {
-        "AbilityId": "enemy_flame_breath",
-        "UseThreshold": 100
-      }
-    ],
-    "PossibleDrops": []
-  },
-  "shadow_assassin": {
-    "Id": "shadow_assassin",
-    "Name": "Shadow Assassin",
-    "Level": 0,
-    "Type": "Humanoid",
-    "MaxHP": 60,
-    "Attack": 8,
-    "Defense": 3,
-    "Speed": 5,
-    "GoldReward": 30,
-    "ExpReward": 50,
-    "Abilities": [
-      {
-        "AbilityId": "enemy_quick_strike",
-        "UseThreshold": 100
-      },
-      {
-        "AbilityId": "enemy_venom_strike",
-        "UseThreshold": 80
-      }
-    ],
-    "PossibleDrops": []
-  },
-  "ice_troll": {
-    "Id": "ice_troll",
-    "Name": "Ice Troll",
-    "Level": 0,
-    "Type": "Beast",
-    "MaxHP": 60,
-    "Attack": 8,
-    "Defense": 3,
-    "Speed": 5,
-    "GoldReward": 30,
-    "ExpReward": 50,
-    "Abilities": [
-      {
-        "AbilityId": "enemy_reckless_charge",
-        "UseThreshold": 100
-      },
-      {
-        "AbilityId": "enemy_harden_skin",
-        "UseThreshold": 40
-      }
-    ],
-    "PossibleDrops": []
-  },
-  "fire_elemental": {
-    "Id": "fire_elemental",
-    "Name": "Fire Elemental",
-    "Level": 0,
-    "Type": "Elemental",
-    "MaxHP": 60,
-    "Attack": 8,
-    "Defense": 3,
-    "Speed": 5,
-    "GoldReward": 30,
-    "ExpReward": 50,
-    "Abilities": [
-      {
-        "AbilityId": "enemy_flame_breath",
-        "UseThreshold": 100
-      }
-    ],
-    "PossibleDrops": []
-  },
-  "skeleton_warrior": {
-    "Id": "skeleton_warrior",
-    "Name": "Skeleton Warrior",
-    "Level": 0,
-    "Type": "Undead",
-    "MaxHP": 60,
-    "Attack": 8,
-    "Defense": 3,
-    "Speed": 5,
-    "GoldReward": 30,
-    "ExpReward": 50,
-    "Abilities": [
-      {
-        "AbilityId": "enemy_fierce_strike",
         "UseThreshold": 100
       }
     ],
@@ -177,6 +31,7 @@
     "Name": "Bandit",
     "Level": 0,
     "Type": "Humanoid",
+    "MinLevel": 1,
     "MaxHP": 60,
     "Attack": 8,
     "Defense": 3,
@@ -191,11 +46,32 @@
     ],
     "PossibleDrops": []
   },
+  "skeleton_warrior": {
+    "Id": "skeleton_warrior",
+    "Name": "Skeleton Warrior",
+    "Level": 0,
+    "Type": "Undead",
+    "MinLevel": 1,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 100
+      }
+    ],
+    "PossibleDrops": []
+  },
   "wild_beast": {
     "Id": "wild_beast",
     "Name": "Wild Beast",
     "Level": 0,
     "Type": "Beast",
+    "MinLevel": 1,
     "MaxHP": 60,
     "Attack": 8,
     "Defense": 3,
@@ -214,11 +90,14 @@
     ],
     "PossibleDrops": []
   },
-  "demon_spawn": {
-    "Id": "demon_spawn",
-    "Name": "Demon Spawn",
+
+  // Tier 2: Intermediate enemies (Level 3+) - More abilities and tactics
+  "orc": {
+    "Id": "orc",
+    "Name": "Orc",
     "Level": 0,
-    "Type": "Demon",
+    "Type": "Humanoid",
+    "MinLevel": 3,
     "MaxHP": 60,
     "Attack": 8,
     "Defense": 3,
@@ -227,12 +106,60 @@
     "ExpReward": 50,
     "Abilities": [
       {
-        "AbilityId": "enemy_dark_bolt",
+        "AbilityId": "enemy_fierce_strike",
         "UseThreshold": 100
       },
       {
-        "AbilityId": "enemy_life_drain",
+        "AbilityId": "enemy_enrage",
         "UseThreshold": 50
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "dire_wolf": {
+    "Id": "dire_wolf",
+    "Name": "Dire Wolf",
+    "Level": 0,
+    "Type": "Beast",
+    "MinLevel": 3,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 70
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "ice_troll": {
+    "Id": "ice_troll",
+    "Name": "Ice Troll",
+    "Level": 0,
+    "Type": "Beast",
+    "MinLevel": 3,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_reckless_charge",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_harden_skin",
+        "UseThreshold": 40
       }
     ],
     "PossibleDrops": []
@@ -242,6 +169,7 @@
     "Name": "Stone Golem",
     "Level": 0,
     "Type": "Construct",
+    "MinLevel": 3,
     "MaxHP": 60,
     "Attack": 8,
     "Defense": 3,
@@ -260,11 +188,62 @@
     ],
     "PossibleDrops": []
   },
+
+  // Tier 3: Advanced enemies (Level 5+) - Complex abilities, magic, debuffs
+  "shadow_assassin": {
+    "Id": "shadow_assassin",
+    "Name": "Shadow Assassin",
+    "Level": 0,
+    "Type": "Humanoid",
+    "MinLevel": 5,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_venom_strike",
+        "UseThreshold": 80
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "dark_knight": {
+    "Id": "dark_knight",
+    "Name": "Dark Knight",
+    "Level": 0,
+    "Type": "Undead",
+    "MinLevel": 5,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_crushing_blow",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 70
+      }
+    ],
+    "PossibleDrops": []
+  },
   "wraith": {
     "Id": "wraith",
     "Name": "Wraith",
     "Level": 0,
     "Type": "Undead",
+    "MinLevel": 5,
     "MaxHP": 60,
     "Attack": 8,
     "Defense": 3,
@@ -283,11 +262,12 @@
     ],
     "PossibleDrops": []
   },
-  "dire_wolf": {
-    "Id": "dire_wolf",
-    "Name": "Dire Wolf",
+  "demon_spawn": {
+    "Id": "demon_spawn",
+    "Name": "Demon Spawn",
     "Level": 0,
-    "Type": "Beast",
+    "Type": "Demon",
+    "MinLevel": 5,
     "MaxHP": 60,
     "Attack": 8,
     "Defense": 3,
@@ -296,12 +276,54 @@
     "ExpReward": 50,
     "Abilities": [
       {
-        "AbilityId": "enemy_quick_strike",
+        "AbilityId": "enemy_dark_bolt",
         "UseThreshold": 100
       },
       {
-        "AbilityId": "enemy_fierce_strike",
-        "UseThreshold": 70
+        "AbilityId": "enemy_life_drain",
+        "UseThreshold": 50
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // Tier 4: Elite enemies (Level 7+) - Elemental and special types
+  "fire_elemental": {
+    "Id": "fire_elemental",
+    "Name": "Fire Elemental",
+    "Level": 0,
+    "Type": "Elemental",
+    "MinLevel": 7,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_flame_breath",
+        "UseThreshold": 100
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "dragon_whelp": {
+    "Id": "dragon_whelp",
+    "Name": "Dragon Whelp",
+    "Level": 0,
+    "Type": "Dragon",
+    "MinLevel": 7,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_flame_breath",
+        "UseThreshold": 100
       }
     ],
     "PossibleDrops": []

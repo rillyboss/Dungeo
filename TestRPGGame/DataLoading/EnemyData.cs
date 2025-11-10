@@ -14,6 +14,8 @@ namespace TestRPGGame.DataLoading
         public int Speed { get; set; }
         public int GoldReward { get; set; }
         public int ExpReward { get; set; }
+        public int MinLevel { get; set; } = 1; // Minimum player level to encounter this enemy
+        public bool IsBoss { get; set; } = false; // True for dungeon bosses, false for random encounters
         public List<EnemyAbilityData> Abilities { get; set; } = new();
         public List<string> PossibleDrops { get; set; } = new();
 

@@ -14,10 +14,13 @@ namespace TestRPGGame.Entities.Enemy
 
         public static Enemy CreateEnemy(int playerLevel)
         {
-            // Load enemy pool from data (cached)
+            // Load enemy pool from data (cached), excluding bosses
             if (_enemyPool == null)
             {
-                _enemyPool = DataLoader.GetEnemiesByLevel(0, 100).ToList();
+                // Get all enemies but exclude bosses (IsBoss = true)
+                _enemyPool = DataLoader.GetEnemiesByLevel(0, 100)
+                    .Where(e => !e.IsBoss)
+                    .ToList();
             }
 
             if (_enemyPool.Count == 0)
@@ -25,8 +28,16 @@ namespace TestRPGGame.Entities.Enemy
                 throw new InvalidOperationException("No enemies defined in data!");
             }
 
-            // Select random enemy template from data
-            var enemyData = _enemyPool[random.Next(_enemyPool.Count)];
+            // Filter enemies by MinLevel requirement
+            var availableEnemies = _enemyPool.Where(e => playerLevel >= e.MinLevel).ToList();
+
+            if (availableEnemies.Count == 0)
+            {
+                throw new InvalidOperationException($"No enemies available for player level {playerLevel}!");
+            }
+
+            // Select random enemy template from available enemies
+            var enemyData = availableEnemies[random.Next(availableEnemies.Count)];
 
             // Create enemy using EntityFactory (handles scaling and variance)
             Enemy enemy = EntityFactory.CreateEnemy(enemyData, playerLevel);
@@ -72,8 +83,7 @@ namespace TestRPGGame.Entities.Enemy
             int maxModifiers = Math.Min(3, 1 + (level / 3)); // Level 1-2: max 1, Level 3-5: max 2, Level 6+: max 3
 
             // Roll for behavior modifier (only for non-boss enemies)
-            // Bosses are identified by having Phases defined in their data
-            bool isBoss = (enemyData.Phases != null && enemyData.Phases.Count > 0);
+            bool isBoss = enemyData.IsBoss;
             if (!isBoss && level >= 2) // Behaviors only appear at level 2+
             {
                 var availableBehaviors = DataLoader.GetBehaviorsWithSpawnChance().ToList();
@@ -212,11 +222,8 @@ namespace TestRPGGame.Entities.Enemy
             EnemyBehaviorData? behavior = null;
             List<EnemyPhaseData>? phases = null;
 
-            // Bosses are identified by having Phases defined in their data
-            bool isBoss = (enemyData.Phases != null && enemyData.Phases.Count > 0);
-
             // Bosses use phases (if defined) and their default behavior
-            if (isBoss)
+            if (enemyData.IsBoss)
             {
                 // Load phases if defined in data
                 if (enemyData.Phases != null && enemyData.Phases.Count > 0)
