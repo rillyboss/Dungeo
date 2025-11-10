@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using TestRPGGame.Combat;
-using TestRPGGame.Entities.Boss;
 
 namespace TestRPGGame.Entities.Enemy
 {
@@ -20,9 +19,7 @@ namespace TestRPGGame.Entities.Enemy
         public int GoldReward { get; set; }
         public int ExpReward { get; set; }
         public List<EnemyAbility> Abilities { get; set; }
-        public List<BossAbility>? BossAbilities { get; set; }
-        public BossStatusEffects? StatusEffects { get; set; }
-        public bool IsBoss { get; set; }
+        public CombatStatusEffects? StatusEffects { get; set; }
 
         public Enemy(string name, EnemyType type, int hp, int attack, int defense, int speed, int gold, int exp)
         {
@@ -39,30 +36,7 @@ namespace TestRPGGame.Entities.Enemy
             GoldReward = gold;
             ExpReward = exp;
             Abilities = new List<EnemyAbility>();
-            BossAbilities = null;
-            StatusEffects = null;
-            IsBoss = false;
-        }
-
-        // Constructor for boss enemies
-        public Enemy(string name, int level, EnemyType type)
-        {
-            BaseName = name;
-            Name = name;
-            Prefix = "";
-            Suffix = "";
-            Type = type;
-            MaxHP = 100;
-            CurrentHP = 100;
-            Attack = 10;
-            Defense = 5;
-            Speed = 10;
-            GoldReward = 0;
-            ExpReward = 0;
-            Abilities = new List<EnemyAbility>();
-            BossAbilities = new List<BossAbility>();
-            StatusEffects = new BossStatusEffects();
-            IsBoss = true;
+            StatusEffects = null; // Created on-demand when needed
         }
 
         public void TakeDamage(int damage)
@@ -74,6 +48,17 @@ namespace TestRPGGame.Entities.Enemy
         public bool IsAlive()
         {
             return CurrentHP > 0;
+        }
+
+        /// <summary>
+        /// Ensures StatusEffects is initialized. Call this before applying status effects.
+        /// </summary>
+        public void EnsureStatusEffects()
+        {
+            if (StatusEffects == null)
+            {
+                StatusEffects = new CombatStatusEffects();
+            }
         }
     }
 }

@@ -4,7 +4,6 @@ using System.Linq;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Entities.Dungeon;
-using TestRPGGame.Entities.Boss;
 using TestRPGGame.Abilities;
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Combat;
@@ -77,29 +76,27 @@ namespace TestRPGGame.Factories
                 throw new ArgumentException($"Invalid enemy type: {data.Type}");
             }
 
-            var enemy = new Enemy(data.Name, data.Level > 0 ? data.Level : playerLevel, enemyType);
-
             // Apply stats - if base stats are provided, use them, otherwise scale with level
             int level = data.Level > 0 ? data.Level : playerLevel;
-            enemy.MaxHP = data.MaxHP > 0 ? data.MaxHP : 60 + (level * 15);
-            enemy.CurrentHP = enemy.MaxHP;
-            enemy.Attack = data.Attack > 0 ? data.Attack : 8 + (level * 2);
-            enemy.Defense = data.Defense > 0 ? data.Defense : 3 + level;
-            enemy.Speed = data.Speed > 0 ? data.Speed : 5 + level;
-            enemy.GoldReward = data.GoldReward > 0 ? data.GoldReward : 30 + (level * 10);
-            enemy.ExpReward = data.ExpReward > 0 ? data.ExpReward : 50 + (level * 20);
+            int maxHP = data.MaxHP > 0 ? data.MaxHP : 60 + (level * 15);
+            int attack = data.Attack > 0 ? data.Attack : 8 + (level * 2);
+            int defense = data.Defense > 0 ? data.Defense : 3 + level;
+            int speed = data.Speed > 0 ? data.Speed : 5 + level;
+            int goldReward = data.GoldReward > 0 ? data.GoldReward : 30 + (level * 10);
+            int expReward = data.ExpReward > 0 ? data.ExpReward : 50 + (level * 20);
 
-            // Add random variance for regular enemies (non-boss)
+            // Add random variance for regular enemies (scaling enemies)
             if (data.Level == 0) // Level 0 indicates scaling enemy
             {
                 var random = new Random();
-                enemy.MaxHP += random.Next(-10, 11);
-                enemy.CurrentHP = enemy.MaxHP;
-                enemy.Attack += random.Next(-2, 4);
-                enemy.Defense += random.Next(-1, 3);
-                enemy.Speed += random.Next(-2, 4);
-                enemy.GoldReward += random.Next(-5, 16);
+                maxHP += random.Next(-10, 11);
+                attack += random.Next(-2, 4);
+                defense += random.Next(-1, 3);
+                speed += random.Next(-2, 4);
+                goldReward += random.Next(-5, 16);
             }
+
+            var enemy = new Enemy(data.Name, enemyType, maxHP, attack, defense, speed, goldReward, expReward);
 
             return enemy;
         }
@@ -111,31 +108,33 @@ namespace TestRPGGame.Factories
                 throw new ArgumentException($"Invalid enemy type: {data.Type}");
             }
 
-            var boss = new Enemy(data.Name, data.Level, enemyType);
-            boss.MaxHP = data.MaxHP;
-            boss.CurrentHP = data.MaxHP;
-            boss.Attack = data.Attack;
-            boss.Defense = data.Defense;
-            boss.Speed = data.Speed;
-            boss.GoldReward = data.GoldReward;
-            boss.ExpReward = data.ExpReward;
+            var boss = new Enemy(data.Name, enemyType, data.MaxHP, data.Attack, data.Defense, data.Speed, data.GoldReward, data.ExpReward);
 
-            // Create boss abilities
-            boss.BossAbilities = new List<BossAbility>();
-            boss.StatusEffects = new BossStatusEffects();
-
+            // Convert boss abilities to regular enemy abilities
             foreach (var abilityData in data.BossAbilities)
             {
-                var ability = CreateBossAbility(abilityData);
-                boss.BossAbilities.Add(ability);
+                var ability = ConvertBossAbilityToEnemyAbility(abilityData);
+                boss.Abilities.Add(ability);
             }
 
             return boss;
         }
 
-        private static BossAbility CreateBossAbility(BossAbilityData data)
+        /// <summary>
+        /// Converts boss ability data to regular enemy ability format.
+        /// Maps BossAbilityEffectType to unified IAbilityEffect system.
+        /// </summary>
+        private static EnemyAbility ConvertBossAbilityToEnemyAbility(BossAbilityData data)
         {
-            var effects = new List<BossAbilityEffect>();
+            var ability = new Ability(
+                data.Name,
+                manaCost: 0, // Enemies don't use mana
+                data.Cooldown,
+                data.Description,
+                AbilityType.Physical, // Default type for enemy abilities
+                unlockLevel: 1,
+                purchaseCost: 0
+            );
 
             // Support both single Effect and multiple Effects
             var effectDataList = data.Effects.Count > 0 ? data.Effects :
@@ -143,22 +142,36 @@ namespace TestRPGGame.Factories
 
             foreach (var effectData in effectDataList)
             {
-                if (!Enum.TryParse<BossAbilityEffectType>(effectData.Type, out var effectType))
+                var effect = ConvertBossEffectToAbilityEffect(effectData);
+                if (effect != null)
                 {
-                    throw new ArgumentException($"Invalid boss ability effect type: {effectData.Type}");
+                    ability.Effects.Add(effect);
                 }
-
-                var effect = new BossAbilityEffect(
-                    effectType,
-                    effectData.Value,
-                    effectData.Duration,
-                    effectData.Multiplier
-                );
-
-                effects.Add(effect);
             }
 
-            return new BossAbility(data.Name, data.Description, data.Cooldown, effects);
+            return new EnemyAbility(ability, useThreshold: 100); // Can use anytime by default
+        }
+
+        /// <summary>
+        /// Maps boss effect types to the unified ability effect system.
+        /// </summary>
+        private static IAbilityEffect? ConvertBossEffectToAbilityEffect(BossAbilityEffectData data)
+        {
+            return data.Type.ToLower() switch
+            {
+                "healovertime" => new HealOverTimeEffect(data.Value, data.Duration),
+                "damageovertime" => new PoisonEffect(data.Value, data.Duration, data.Value), // Reuse poison effect
+                "stun" => new StunEffect(data.Duration),
+                "thorns" => new ThornsEffect(data.Value, data.Duration),
+                "lifesteal" => new LifeStealEffect(data.Multiplier, data.Value),
+                "shield" => new ShieldEffect(data.Value, data.Duration),
+                "bleed" => new PoisonEffect(data.Value, data.Duration, data.Value), // Similar to DOT
+                "enrage" => new BuffEffect($"Enrage ({data.Multiplier}x damage)", data.Duration),
+                "statboost" => new BuffEffect($"Stat boost +{data.Value}", data.Duration),
+                "heavystrike" => new DamageEffect(data.Multiplier, usesMagic: false),
+                "damage" => new DamageEffect(data.Multiplier, usesMagic: false),
+                _ => null
+            };
         }
 
         #endregion

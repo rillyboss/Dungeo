@@ -22,6 +22,39 @@ namespace TestRPGGame.Combat
         private int bleedTurns = 0;
         private bool enemyStunNext = false;
 
+        public bool StartBossBattle(Player player, Enemy boss, bool isMiniboss = false)
+        {
+            Console.Clear();
+
+            // Initialize boss status effects
+            boss.EnsureStatusEffects();
+
+            string bossTitle = isMiniboss ? "MINIBOSS" : "FINAL BOSS";
+            UIHelper.PrintColoredLine($"\n╔══════════════════════════════════════════╗", ConsoleColor.Red);
+            UIHelper.PrintColoredLine($"║        {bossTitle} ENCOUNTER!        ║", ConsoleColor.Red);
+            UIHelper.PrintColoredLine($"╚══════════════════════════════════════════╝\n", ConsoleColor.Red);
+
+            Thread.Sleep(1000);
+
+            UIHelper.PrintColoredLine($"     💀  {boss.Name} appears!  💀", ConsoleColor.DarkRed);
+            UIHelper.PrintColoredLine($"\nType: {boss.Type}", ConsoleColor.Gray);
+            UIHelper.PrintColoredLine($"HP: {boss.MaxHP} | Attack: {boss.Attack} | Defense: {boss.Defense}", ConsoleColor.Gray);
+
+            if (boss.Abilities != null && boss.Abilities.Count > 0)
+            {
+                Console.WriteLine("\n⚡ Special Abilities:");
+                foreach (var ability in boss.Abilities)
+                {
+                    UIHelper.PrintColoredLine($"  • {ability.Ability.Name}: {ability.Ability.Description}", ConsoleColor.Yellow);
+                }
+            }
+
+            Thread.Sleep(2000);
+
+            // Use regular battle logic
+            return StartBattle(player, boss);
+        }
+
         public bool StartBattle(Player player, Enemy enemy)
         {
             Console.Clear();

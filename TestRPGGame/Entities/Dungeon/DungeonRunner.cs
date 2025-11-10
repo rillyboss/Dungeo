@@ -23,13 +23,13 @@ namespace TestRPGGame.Entities.Dungeon
 
     public class DungeonRunner
     {
-        private DungeonCombatSystem combatSystem;
+        private CombatSystem combatSystem;
         private Random random;
         private List<EquipmentItem> dungeonLoot;
 
         public DungeonRunner()
         {
-            combatSystem = new DungeonCombatSystem();
+            combatSystem = new CombatSystem();
             random = new Random();
             dungeonLoot = new List<EquipmentItem>();
         }

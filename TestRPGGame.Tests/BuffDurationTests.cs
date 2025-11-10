@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using Xunit;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.Entities.Enemy;
-using TestRPGGame.Entities.Boss;
 using TestRPGGame.Abilities;
 using TestRPGGame.Combat;
 
@@ -103,14 +102,12 @@ namespace TestRPGGame.Tests
         }
 
         [Fact]
-        public void BossStatusEffect_PoisonShouldTickOnPlayerTurn()
+        public void CombatStatusEffect_PoisonShouldTickOnPlayerTurn()
         {
             // Arrange
             int poisonDamage = 10;
             int poisonTurns = 3;
-            var enemy = new Enemy("Test Enemy", 1, EnemyType.Beast);
-            enemy.MaxHP = 100;
-            enemy.CurrentHP = 100;
+            var enemy = new Enemy("Test Enemy", EnemyType.Beast, 100, 10, 5, 5, 20, 30);
 
             // Act - Simulate poison tick
             if (poisonTurns > 0)
@@ -125,10 +122,10 @@ namespace TestRPGGame.Tests
         }
 
         [Fact]
-        public void BossStatusEffect_EnrageShouldIncreaseAttackMultiplier()
+        public void CombatStatusEffect_EnrageShouldIncreaseAttackMultiplier()
         {
             // Arrange
-            var statusEffects = new BossStatusEffects
+            var statusEffects = new CombatStatusEffects
             {
                 IsEnraged = true,
                 EnrageTurns = 3,
@@ -141,10 +138,10 @@ namespace TestRPGGame.Tests
         }
 
         [Fact]
-        public void BossStatusEffect_ShieldShouldAbsorbDamage()
+        public void CombatStatusEffect_ShieldShouldAbsorbDamage()
         {
             // Arrange
-            var statusEffects = new BossStatusEffects
+            var statusEffects = new CombatStatusEffects
             {
                 ShieldValue = 50,
                 ShieldTurns = 3
