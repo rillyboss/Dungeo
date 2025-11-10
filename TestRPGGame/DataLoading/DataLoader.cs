@@ -28,7 +28,16 @@ namespace TestRPGGame.DataLoading
         {
             try
             {
+                // Load player abilities
                 _abilities = LoadJsonFile<Dictionary<string, AbilityData>>("abilities.json");
+
+                // Load enemy abilities and merge with player abilities
+                var enemyAbilities = LoadJsonFile<Dictionary<string, AbilityData>>("enemy-abilities.json");
+                foreach (var ability in enemyAbilities)
+                {
+                    _abilities[ability.Key] = ability.Value;
+                }
+
                 _enemies = LoadJsonFile<Dictionary<string, EnemyData>>("enemies.json");
                 _bosses = LoadJsonFile<Dictionary<string, BossData>>("bosses.json");
                 _dungeons = LoadJsonFile<Dictionary<string, DungeonData>>("dungeons.json");
@@ -44,7 +53,7 @@ namespace TestRPGGame.DataLoading
                     rarity_multipliers = LoadJsonFile<Dictionary<string, double>>(Path.Combine("Items", "rarity-multipliers.json"))
                 };
 
-                Console.WriteLine($"✓ Loaded {_abilities.Count} abilities");
+                Console.WriteLine($"✓ Loaded {_abilities.Count} abilities ({enemyAbilities.Count} enemy abilities)");
                 Console.WriteLine($"✓ Loaded {_enemies.Count} enemies");
                 Console.WriteLine($"✓ Loaded {_bosses.Count} bosses");
                 Console.WriteLine($"✓ Loaded {_dungeons.Count} dungeons");
