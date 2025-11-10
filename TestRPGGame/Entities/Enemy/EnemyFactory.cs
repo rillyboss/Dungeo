@@ -18,7 +18,8 @@ namespace TestRPGGame.Entities.Enemy
             if (_enemyPool == null)
             {
                 // Get all enemies but exclude bosses (IsBoss = true)
-                _enemyPool = DataLoader.GetEnemiesByLevel(0, 100)
+                // Call ToList() immediately to materialize the query and avoid collection modification exceptions
+                _enemyPool = DataLoader.GetEnemiesByLevel(0, 100).ToList()
                     .Where(e => !e.IsBoss)
                     .ToList();
             }

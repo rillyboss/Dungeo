@@ -82,7 +82,7 @@ namespace TestRPGGame.Entities.Player
             Gold = classData.StartingGold;
             PotionCount = classData.StartingPotions;
 
-            // Set current stats
+            // Set current stats (will be updated after equipment is added)
             MaxHP = BaseMaxHP;
             MaxMana = BaseMaxMana;
             Attack = BaseAttack;
@@ -91,16 +91,15 @@ namespace TestRPGGame.Entities.Player
             Speed = BaseSpeed;
             CritChance = BaseCritChance;
 
-            CurrentHP = MaxHP;
-            CurrentMana = MaxMana;
+            // Don't set CurrentHP/CurrentMana yet - wait until after equipment is added
         }
 
         private void InitializeStartingEquipment()
         {
             // Give each class randomized low-tier starting equipment
-            // Force Common rarity by setting level to 1 and using the generator
-            var weapon = EquipmentGenerator.GenerateItem(1, EquipmentSlot.Weapon);
-            var armor = EquipmentGenerator.GenerateItem(1, EquipmentSlot.Armor);
+            // Force Common rarity for starting gear to ensure fair starts
+            var weapon = EquipmentGenerator.GenerateItem(1, EquipmentSlot.Weapon, ItemRarity.Common);
+            var armor = EquipmentGenerator.GenerateItem(1, EquipmentSlot.Armor, ItemRarity.Common);
 
             // Filter to appropriate weapon types for each class
             weapon = EnsureClassAppropriateWeapon(weapon);
@@ -198,6 +197,16 @@ namespace TestRPGGame.Entities.Player
             MagicPower = BaseMagicPower + equipStats.Magic;
             Speed = BaseSpeed + equipStats.Speed;
             CritChance = BaseCritChance + equipStats.Crit;
+
+            // Initialize CurrentHP and CurrentMana if they're not set yet (new character)
+            if (CurrentHP == 0)
+            {
+                CurrentHP = MaxHP;
+            }
+            if (CurrentMana == 0)
+            {
+                CurrentMana = MaxMana;
+            }
         }
 
         public AttackType GetWeaponAttackType()

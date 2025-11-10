@@ -32,7 +32,7 @@ namespace TestRPGGame.Equipment
             }
         }
 
-        public static EquipmentItem GenerateItem(int playerLevel, EquipmentSlot? forceSlot = null)
+        public static EquipmentItem GenerateItem(int playerLevel, EquipmentSlot? forceSlot = null, ItemRarity? forceRarity = null)
         {
             EnsureDataLoaded();
             var item = new EquipmentItem();
@@ -52,7 +52,7 @@ namespace TestRPGGame.Equipment
             item.Level = Math.Max(1, playerLevel + random.Next(-1, 2));
 
             // Determine rarity (higher level = better chance for rare items)
-            item.Rarity = DetermineRarity(item.Level);
+            item.Rarity = forceRarity ?? DetermineRarity(item.Level);
 
             // Generate name and get data for stats generation
             var (name, weaponPrefix, weaponType, weaponSuffix, armorPrefix, armorSuffix) = GenerateNameAndData(item.Slot, item.Rarity);
