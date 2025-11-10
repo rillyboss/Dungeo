@@ -30,11 +30,18 @@ namespace TestRPGGame.Abilities.Effects
                 damage = (int)(damage * 1.5);
             }
 
+            // Apply critical hit
+            bool isCrit = GuaranteedCrit || (context.Random.NextDouble() < context.Player.CritChance);
+            if (isCrit)
+            {
+                damage = (int)(damage * 2);
+            }
+
             int actualDamage = Math.Max(1, damage - context.Enemy.Defense);
 
             context.Enemy.CurrentHP -= actualDamage;
 
-            if (GuaranteedCrit || (context.Random.NextDouble() < context.Player.CritChance))
+            if (isCrit)
             {
                 UIHelper.PrintColoredLine($"💥 CRITICAL! {actualDamage} damage!", ConsoleColor.Yellow);
             }

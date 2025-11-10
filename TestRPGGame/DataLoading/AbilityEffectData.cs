@@ -8,5 +8,6 @@ namespace TestRPGGame.DataLoading
         public double Multiplier { get; set; } = 1.0;
         public string? BuffName { get; set; }
         public int DamagePerTurn { get; set; }
+        public bool GuaranteedCrit { get; set; } = false;
     }
 }

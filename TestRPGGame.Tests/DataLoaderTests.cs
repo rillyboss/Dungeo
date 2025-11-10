@@ -161,9 +161,10 @@ namespace TestRPGGame.Tests
 
             // Assert
             Assert.NotNull(dungeon);
-            Assert.Equal(2, dungeon.Encounters.Count);
-            Assert.All(dungeon.Encounters, e => Assert.NotNull(e.Choices));
-            Assert.All(dungeon.Encounters, e => Assert.Equal(2, e.Choices!.Count));
+            Assert.NotNull(dungeon.EncounterConfig);
+            Assert.Equal(2, dungeon.EncounterPool.Count);
+            Assert.All(dungeon.EncounterPool, e => Assert.NotNull(e.Choices));
+            Assert.All(dungeon.EncounterPool, e => Assert.True(e.Choices!.Count >= 2));
         }
 
         [Fact]

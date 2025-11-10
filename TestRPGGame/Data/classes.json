@@ -1,0 +1,71 @@
+{
+  "Warrior": {
+    "Name": "Warrior",
+    "Description": "A mighty fighter with high HP and defense, excels in close combat",
+    "BaseMaxHP": 140,
+    "BaseMaxMana": 80,
+    "BaseAttack": 14,
+    "BaseDefense": 12,
+    "BaseMagicPower": 5,
+    "BaseSpeed": 9,
+    "BaseCritChance": 0.15,
+    "HPPerLevel": 12,
+    "ManaPerLevel": 5,
+    "AttackPerLevel": 2,
+    "DefensePerLevel": 2,
+    "MagicPowerPerLevel": 0,
+    "SpeedPerLevel": 1,
+    "StartingGold": 100,
+    "StartingPotions": 3,
+    "StartingEquipment": [
+      "iron_sword",
+      "leather_armor"
+    ]
+  },
+  "Mage": {
+    "Name": "Mage",
+    "Description": "A powerful spellcaster with high magic power and mana",
+    "BaseMaxHP": 90,
+    "BaseMaxMana": 140,
+    "BaseAttack": 7,
+    "BaseDefense": 6,
+    "BaseMagicPower": 18,
+    "BaseSpeed": 10,
+    "BaseCritChance": 0.20,
+    "HPPerLevel": 7,
+    "ManaPerLevel": 12,
+    "AttackPerLevel": 1,
+    "DefensePerLevel": 1,
+    "MagicPowerPerLevel": 3,
+    "SpeedPerLevel": 1,
+    "StartingGold": 100,
+    "StartingPotions": 3,
+    "StartingEquipment": [
+      "wooden_staff",
+      "mage_robes"
+    ]
+  },
+  "Rogue": {
+    "Name": "Rogue",
+    "Description": "A swift and cunning fighter with high crit chance and speed",
+    "BaseMaxHP": 110,
+    "BaseMaxMana": 90,
+    "BaseAttack": 12,
+    "BaseDefense": 8,
+    "BaseMagicPower": 6,
+    "BaseSpeed": 14,
+    "BaseCritChance": 0.25,
+    "HPPerLevel": 9,
+    "ManaPerLevel": 7,
+    "AttackPerLevel": 2,
+    "DefensePerLevel": 1,
+    "MagicPowerPerLevel": 0,
+    "SpeedPerLevel": 2,
+    "StartingGold": 100,
+    "StartingPotions": 3,
+    "StartingEquipment": [
+      "steel_dagger",
+      "leather_vest"
+    ]
+  }
+}

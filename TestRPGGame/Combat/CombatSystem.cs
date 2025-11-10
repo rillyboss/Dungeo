@@ -51,11 +51,11 @@ namespace TestRPGGame.Combat
 
             Thread.Sleep(2000);
 
-            // Use regular battle logic
-            return StartBattle(player, boss);
+            // Use regular battle logic but disable fleeing
+            return StartBattle(player, boss, canFlee: false);
         }
 
-        public bool StartBattle(Player player, Enemy enemy)
+        public bool StartBattle(Player player, Enemy enemy, bool canFlee = true)
         {
             Console.Clear();
             activeBuffs.Clear();
@@ -120,7 +120,8 @@ namespace TestRPGGame.Combat
                         Thread.Sleep(500);
                     }
 
-                    PlayerTurn(player, enemy);
+                    bool playerFled = PlayerTurn(player, enemy, canFlee);
+                    if (playerFled) return false; // Player fled, return false to indicate defeat/flee
                     if (enemy.CurrentHP <= 0) break;
                     playerTurn = false;
                 }
@@ -183,12 +184,58 @@ namespace TestRPGGame.Combat
             Console.Write("   ");
             DrawManaBar(player.CurrentMana, player.MaxMana, ConsoleColor.Blue);
 
+            // Display player status effects
+            List<string> playerEffects = new List<string>();
+            // Check for burning from enemy status effects
+            if (enemy.StatusEffects != null && enemy.StatusEffects.DamageOverTimeTurns > 0)
+                playerEffects.Add($"🔥 Burning ({enemy.StatusEffects.DamageOverTimeAmount} dmg/turn, {enemy.StatusEffects.DamageOverTimeTurns} turns)");
+            if (poisonTurns > 0)
+                playerEffects.Add($"💚 Poisoned ({poisonDamage} dmg/turn, {poisonTurns} turns)");
+            if (bleedTurns > 0)
+                playerEffects.Add($"🩸 Bleeding ({bleedDamage} dmg/turn, {bleedTurns} turns)");
+            if (activeBuffs.ContainsKey("Battle Rage"))
+                playerEffects.Add($"⚡ Battle Rage ({activeBuffs["Battle Rage"]} turns)");
+            if (playerDodgeNext)
+                playerEffects.Add($"💨 Dodge Ready");
+
+            if (playerEffects.Count > 0)
+            {
+                Console.Write("   Effects: ");
+                UIHelper.PrintColoredLine(string.Join(", ", playerEffects), ConsoleColor.Gray);
+            }
+
             Console.WriteLine();
 
             // Enemy status
             UIHelper.PrintColoredLine($"👹 {enemy.Name}", ConsoleColor.Red);
             Console.Write("   ");
             DrawHealthBar(enemy.CurrentHP, enemy.MaxHP, ConsoleColor.Red);
+
+            // Display enemy status effects
+            List<string> enemyEffects = new List<string>();
+            if (enemy.StatusEffects != null)
+            {
+                if (enemy.StatusEffects.HealOverTimeTurns > 0)
+                    enemyEffects.Add($"💚 Regenerating ({enemy.StatusEffects.HealOverTimeAmount} HP/turn, {enemy.StatusEffects.HealOverTimeTurns} turns)");
+                if (enemy.StatusEffects.DamageOverTimeTurns > 0)
+                    enemyEffects.Add($"🔥 Burning ({enemy.StatusEffects.DamageOverTimeAmount} dmg/turn, {enemy.StatusEffects.DamageOverTimeTurns} turns)");
+                if (enemy.StatusEffects.BleedTurns > 0)
+                    enemyEffects.Add($"🩸 Bleeding ({enemy.StatusEffects.BleedAmount} dmg/turn, {enemy.StatusEffects.BleedTurns} turns)");
+                if (enemy.StatusEffects.ShieldValue > 0)
+                    enemyEffects.Add($"🛡️  Shield ({enemy.StatusEffects.ShieldValue} HP, {enemy.StatusEffects.ShieldTurns} turns)");
+                if (enemy.StatusEffects.ThornsValue > 0)
+                    enemyEffects.Add($"🌵 Thorns ({enemy.StatusEffects.ThornsValue} dmg reflect, {enemy.StatusEffects.ThornsTurns} turns)");
+                if (enemy.StatusEffects.IsEnraged)
+                    enemyEffects.Add($"😤 Enraged ({enemy.StatusEffects.EnrageDamageMultiplier}x dmg, {enemy.StatusEffects.EnrageTurns} turns)");
+                if (enemyStunNext)
+                    enemyEffects.Add($"⚡ Stunned (next turn)");
+            }
+
+            if (enemyEffects.Count > 0)
+            {
+                Console.Write("   Effects: ");
+                UIHelper.PrintColoredLine(string.Join(", ", enemyEffects), ConsoleColor.Gray);
+            }
 
             Console.WriteLine("\n" + new string('═', 60) + "\n");
         }
@@ -223,12 +270,16 @@ namespace TestRPGGame.Combat
             Console.WriteLine();
         }
 
-        private void PlayerTurn(Player player, Enemy enemy)
+        private bool PlayerTurn(Player player, Enemy enemy, bool canFlee)
         {
             UIHelper.PrintColoredLine("YOUR TURN:", ConsoleColor.Yellow);
             Console.WriteLine("1. ⚔️  Attack");
             Console.WriteLine("2. 🎯 Use Ability");
             Console.WriteLine("3. 🧪 Use Potion");
+            if (canFlee)
+            {
+                Console.WriteLine("4. 🏃 Flee");
+            }
 
             Console.Write("\nChoose action: ");
             string choice = Console.ReadLine();
@@ -239,7 +290,7 @@ namespace TestRPGGame.Combat
                     PerformBasicAttack(player, enemy);
                     break;
                 case "2":
-                    UseAbility(player, enemy);
+                    UseAbility(player, enemy, canFlee);
                     break;
                 case "3":
                     if (player.UsePotion())
@@ -250,16 +301,67 @@ namespace TestRPGGame.Combat
                     else
                     {
                         UIHelper.PrintColoredLine("\n❌ No potions left!", ConsoleColor.Red);
-                        PlayerTurn(player, enemy); // Try again
-                        return;
+                        return PlayerTurn(player, enemy, canFlee); // Try again
                     }
                     break;
+                case "4":
+                    if (canFlee)
+                    {
+                        return AttemptFlee(player, enemy);
+                    }
+                    else
+                    {
+                        UIHelper.PrintColoredLine("\n❌ You cannot flee from this battle!", ConsoleColor.Red);
+                        return PlayerTurn(player, enemy, canFlee);
+                    }
                 default:
-                    UIHelper.PrintColoredLine("\n❌ Invalid choice! Lost your turn!", ConsoleColor.Red);
-                    break;
+                    UIHelper.PrintColoredLine("\n❌ Invalid choice! Please try again.", ConsoleColor.Red);
+                    Thread.Sleep(1000);
+                    return PlayerTurn(player, enemy, canFlee); // Try again instead of losing turn
             }
 
             Thread.Sleep(1000);
+            return false; // Continue combat
+        }
+
+        private bool AttemptFlee(Player player, Enemy enemy)
+        {
+            // Calculate flee chance based on speed difference
+            double baseFleeChance = 0.5; // 50% base chance
+            double speedDifference = (player.Speed - enemy.Speed) / 100.0;
+            double fleeChance = Math.Clamp(baseFleeChance + speedDifference, 0.2, 0.9);
+
+            UIHelper.PrintColoredLine("\n🏃 Attempting to flee...", ConsoleColor.Yellow);
+            Thread.Sleep(1000);
+
+            if (random.NextDouble() < fleeChance)
+            {
+                // Successful flee - apply penalties
+                int goldLost = Math.Min(player.Gold, player.Gold / 4); // Lose 25% of gold
+                int hpLost = player.MaxHP / 5; // Lose 20% of max HP
+
+                player.Gold -= goldLost;
+                player.CurrentHP = Math.Max(1, player.CurrentHP - hpLost);
+
+                UIHelper.PrintColoredLine("✅ You successfully fled from combat!", ConsoleColor.Green);
+                UIHelper.PrintColoredLine($"💰 Lost {goldLost} gold in the escape", ConsoleColor.Red);
+                UIHelper.PrintColoredLine($"💔 Lost {hpLost} HP in the escape", ConsoleColor.Red);
+                Thread.Sleep(2000);
+                return true;
+            }
+            else
+            {
+                // Failed to flee - enemy gets a free attack
+                UIHelper.PrintColoredLine("❌ Failed to escape! The enemy attacks!", ConsoleColor.Red);
+                Thread.Sleep(1000);
+
+                // Enemy performs a basic attack
+                int actualDamage = ApplyDamageToPlayer(player, enemy, enemy.Attack);
+                UIHelper.PrintColoredLine($"⚔️  {enemy.Name} strikes! {actualDamage} damage!", ConsoleColor.Red);
+                Thread.Sleep(1000);
+
+                return false; // Continue combat
+            }
         }
 
         private void PerformBasicAttack(Player player, Enemy enemy)
@@ -399,7 +501,7 @@ namespace TestRPGGame.Combat
             }
         }
 
-        private void UseAbility(Player player, Enemy enemy)
+        private void UseAbility(Player player, Enemy enemy, bool canFlee)
         {
             var unlockedAbilities = player.Abilities.Where(a => a.IsUnlocked).ToList();
 
@@ -407,7 +509,7 @@ namespace TestRPGGame.Combat
             {
                 UIHelper.PrintColoredLine("\n❌ No abilities unlocked yet!", ConsoleColor.Red);
                 Thread.Sleep(1000);
-                PlayerTurn(player, enemy);
+                PlayerTurn(player, enemy, canFlee);
                 return;
             }
 
@@ -427,7 +529,7 @@ namespace TestRPGGame.Combat
 
             if (choice == "0")
             {
-                PlayerTurn(player, enemy);
+                PlayerTurn(player, enemy, canFlee);
                 return;
             }
 
@@ -439,7 +541,7 @@ namespace TestRPGGame.Combat
                 {
                     UIHelper.PrintColoredLine("\n❌ Cannot use this ability! (Not enough mana or on cooldown)", ConsoleColor.Red);
                     Thread.Sleep(1000);
-                    UseAbility(player, enemy);
+                    UseAbility(player, enemy, canFlee);
                     return;
                 }
 
@@ -454,13 +556,15 @@ namespace TestRPGGame.Combat
             {
                 UIHelper.PrintColoredLine("\n❌ Invalid choice!", ConsoleColor.Red);
                 Thread.Sleep(1000);
-                UseAbility(player, enemy);
+                UseAbility(player, enemy, canFlee);
             }
         }
 
         private void ExecuteAbility(Player player, Enemy enemy, Ability ability)
         {
             UIHelper.PrintColoredLine($"✨ {player.Name} uses {ability.Name}!", ConsoleColor.Magenta);
+            UIHelper.PrintColoredLine($"   {ability.Description}", ConsoleColor.Gray);
+            Thread.Sleep(600);
 
             // Create ability context
             var context = new AbilityContext(player, enemy)
@@ -495,6 +599,13 @@ namespace TestRPGGame.Combat
         {
             UIHelper.PrintColoredLine($"\n{enemy.Name}'s TURN:", ConsoleColor.Red);
             Thread.Sleep(800);
+
+            // Apply status effects at start of enemy turn
+            if (enemy.StatusEffects != null)
+            {
+                enemy.StatusEffects.ApplyEnemyTurnEffects(enemy, player);
+                Thread.Sleep(500);
+            }
 
             // Reduce cooldowns on all enemy abilities
             foreach (var enemyAbility in enemy.Abilities)
@@ -565,9 +676,13 @@ namespace TestRPGGame.Combat
                         }
                         else if (effect is PoisonEffect poisonEffect)
                         {
-                            poisonDamage = poisonEffect.DamagePerTurn;
-                            poisonTurns = poisonEffect.Duration;
-                            UIHelper.PrintColoredLine($"   💚 You are poisoned! ({poisonEffect.DamagePerTurn} damage/turn for {poisonEffect.Duration} turns)", ConsoleColor.Green);
+                            // Enemy applies burning/DOT to player via StatusEffects
+                            if (enemy.StatusEffects != null)
+                            {
+                                enemy.StatusEffects.DamageOverTimeAmount = poisonEffect.DamagePerTurn;
+                                enemy.StatusEffects.DamageOverTimeTurns = poisonEffect.Duration;
+                                UIHelper.PrintColoredLine($"   🔥 You are burning! ({poisonEffect.DamagePerTurn} damage/turn for {poisonEffect.Duration} turns)", ConsoleColor.Red);
+                            }
                         }
                         else if (effect is RestoreEffect restoreEffect)
                         {
@@ -580,6 +695,16 @@ namespace TestRPGGame.Combat
                             if (enemy.AI != null)
                             {
                                 enemy.AI.RecordHealUsed();
+                            }
+                        }
+                        else if (effect is HealOverTimeEffect hotEffect)
+                        {
+                            // Apply heal over time to enemy
+                            if (enemy.StatusEffects != null)
+                            {
+                                enemy.StatusEffects.HealOverTimeAmount = hotEffect.HealPerTurn;
+                                enemy.StatusEffects.HealOverTimeTurns = hotEffect.Duration;
+                                UIHelper.PrintColoredLine($"   💚 {enemy.Name} begins regenerating! ({hotEffect.HealPerTurn} HP/turn for {hotEffect.Duration} turns)", ConsoleColor.Green);
                             }
                         }
                         else if (effect is StatModEffect statModEffect)

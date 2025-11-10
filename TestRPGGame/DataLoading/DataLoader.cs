@@ -22,6 +22,7 @@ namespace TestRPGGame.DataLoading
         private static Dictionary<string, EnemyPrefixData>? _enemyPrefixes;
         private static Dictionary<string, EnemySuffixData>? _enemySuffixes;
         private static Dictionary<string, EnemyBehaviorData>? _behaviors;
+        private static Dictionary<string, ClassData>? _classes;
 
         /// <summary>
         /// Load all game data from JSON files.
@@ -74,8 +75,12 @@ namespace TestRPGGame.DataLoading
                 // Load enemy behaviors
                 _behaviors = LoadJsonFile<Dictionary<string, EnemyBehaviorData>>(Path.Combine("Enemies", "enemy-behaviors.json"));
 
+                // Load player classes
+                _classes = LoadJsonFile<Dictionary<string, ClassData>>("classes.json");
+
                 Console.WriteLine($"✓ Loaded {_abilities.Count} abilities ({enemyAbilities.Count} enemy abilities)");
                 Console.WriteLine($"✓ Loaded {_enemies.Count} enemies (including {bossEnemies.Count} bosses)");
+                Console.WriteLine($"✓ Loaded {_classes.Count} player classes");
                 Console.WriteLine($"✓ Loaded {_dungeons.Count} dungeons");
                 Console.WriteLine($"✓ Loaded item generation data ({_itemGeneration.WeaponPrefixes.Count} weapon prefixes, {_itemGeneration.WeaponTypes.Count} weapon types)");
                 Console.WriteLine($"✓ Loaded enemy modifiers ({_enemyPrefixes.Count} prefixes, {_enemySuffixes.Count} suffixes)");
@@ -247,6 +252,22 @@ namespace TestRPGGame.DataLoading
         {
             if (_behaviors == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
             return _behaviors.Values.Where(b => b.SpawnChance > 0);
+        }
+
+        public static ClassData GetClass(string className)
+        {
+            if (_classes == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
+            if (!_classes.TryGetValue(className, out var classData))
+            {
+                throw new KeyNotFoundException($"Class '{className}' not found in classes.json");
+            }
+            return classData;
+        }
+
+        public static IEnumerable<ClassData> GetAllClasses()
+        {
+            if (_classes == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
+            return _classes.Values;
         }
     }
 }

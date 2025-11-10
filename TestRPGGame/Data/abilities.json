@@ -64,7 +64,7 @@
   "warrior_whirlwind": {
     "Id": "warrior_whirlwind",
     "Name": "Whirlwind",
-    "Description": "Deal 3.5x AoE damage",
+    "Description": "Devastating spinning strike for 3.5x damage",
     "PlayerClass": "Warrior",
     "ManaCost": 40,
     "Cooldown": 6,
@@ -191,7 +191,8 @@
         "Type": "Damage",
         "Value": 0,
         "Duration": 0,
-        "Multiplier": 3.0
+        "Multiplier": 3.0,
+        "GuaranteedCrit": true
       }
     ]
   },
@@ -534,7 +535,7 @@
   "boss_earthshaker": {
     "Id": "boss_earthshaker",
     "Name": "Earthshaker",
-    "Description": "Stunning AoE attack",
+    "Description": "Powerful ground smash that stuns",
     "PlayerClass": "",
     "ManaCost": 0,
     "Cooldown": 5,

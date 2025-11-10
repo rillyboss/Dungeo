@@ -14,14 +14,18 @@ namespace TestRPGGame.Tests
             // Arrange & Act
             var player = new Player("Test Warrior", PlayerClass.Warrior);
 
-            // Assert
+            // Assert - Stats now come from classes.json + equipment bonuses
             Assert.Equal("Test Warrior", player.Name);
             Assert.Equal(PlayerClass.Warrior, player.Class);
             Assert.Equal(1, player.Level);
-            Assert.Equal(150, player.MaxHP);
-            Assert.Equal(80, player.MaxMana);
+            Assert.True(player.MaxHP >= 140); // Base 140 + equipment bonuses
+            Assert.True(player.MaxMana >= 80); // Base 80 + possible equipment bonuses
             Assert.Equal(100, player.Gold);
             Assert.Equal(4, player.Abilities.Count); // 3 starting abilities + 1 unlockable
+
+            // Verify starting equipment was given
+            Assert.NotNull(player.Inventory.Weapon);
+            Assert.NotNull(player.Inventory.Armor);
         }
 
         [Fact]

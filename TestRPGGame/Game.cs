@@ -81,13 +81,40 @@ namespace TestRPGGame
                 }
 
                 Console.WriteLine("\n0. Exit Game");
-                Console.Write("\nSelect slot (1-3) or 0 to exit: ");
+                Console.WriteLine("\nTo delete a save: Type 'D' + slot number (e.g., D1, D2, D3)");
+                Console.Write("Select slot (1-3), delete (D1-D3), or 0 to exit: ");
                 string input = Console.ReadLine() ?? "";
 
                 if (input == "0")
                 {
                     Environment.Exit(0);
                     return false;
+                }
+
+                // Check for delete command (D1, D2, D3)
+                if (input.Length == 2 && (input.ToUpper().StartsWith("D")))
+                {
+                    if (int.TryParse(input.Substring(1), out int delSlot) && delSlot >= 1 && delSlot <= 3)
+                    {
+                        var slotToDelete = slots.FirstOrDefault(s => s.SlotNumber == delSlot);
+                        if (slotToDelete != null && !slotToDelete.IsEmpty)
+                        {
+                            Console.Write($"\n⚠️  Delete {slotToDelete.Name} (Level {slotToDelete.Level} {slotToDelete.Class})? This cannot be undone! (y/n): ");
+                            string confirm = Console.ReadLine() ?? "";
+                            if (confirm.ToLower() == "y")
+                            {
+                                SaveSystem.DeleteSave(delSlot);
+                                UIHelper.PrintColoredLine($"\n🗑️  Slot {delSlot} deleted successfully!", ConsoleColor.Yellow);
+                                Thread.Sleep(1500);
+                            }
+                        }
+                        else
+                        {
+                            UIHelper.PrintColoredLine($"\n❌ Slot {delSlot} is already empty!", ConsoleColor.Red);
+                            Thread.Sleep(1000);
+                        }
+                        continue; // Redisplay menu
+                    }
                 }
 
                 if (int.TryParse(input, out int slot) && slot >= 1 && slot <= 3)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TestRPGGame.Abilities;
 using TestRPGGame.Combat;
 using TestRPGGame.DataLoading;
+using TestRPGGame.Equipment;
 using TestRPGGame.Factories;
 using TestRPGGame.Systems;
 using TestRPGGame.UI;
@@ -54,50 +55,32 @@ namespace TestRPGGame.Entities.Player
             Level = 1;
             Experience = 0;
             ExperienceToNextLevel = 100;
-            Gold = 100;
-            PotionCount = 3;
             Inventory = new PlayerInventory();
             Abilities = new List<Ability>();
 
-            InitializeStats();
+            InitializeFromClassData();
             InitializeAbilities();
+            InitializeStartingEquipment();
             UpdateStatsFromEquipment();
         }
 
-        private void InitializeStats()
+        private void InitializeFromClassData()
         {
-            switch (Class)
-            {
-                case PlayerClass.Warrior:
-                    BaseMaxHP = 150;
-                    BaseMaxMana = 80;
-                    BaseAttack = 15;
-                    BaseDefense = 12;
-                    BaseMagicPower = 5;
-                    BaseSpeed = 8;
-                    BaseCritChance = 0.15;
-                    break;
+            // Load class configuration from data
+            var classData = DataLoader.GetClass(Class.ToString());
 
-                case PlayerClass.Mage:
-                    BaseMaxHP = 80;
-                    BaseMaxMana = 120;
-                    BaseAttack = 8;
-                    BaseDefense = 6;
-                    BaseMagicPower = 20;
-                    BaseSpeed = 10;
-                    BaseCritChance = 0.20;
-                    break;
+            // Set base stats from class data
+            BaseMaxHP = classData.BaseMaxHP;
+            BaseMaxMana = classData.BaseMaxMana;
+            BaseAttack = classData.BaseAttack;
+            BaseDefense = classData.BaseDefense;
+            BaseMagicPower = classData.BaseMagicPower;
+            BaseSpeed = classData.BaseSpeed;
+            BaseCritChance = classData.BaseCritChance;
 
-                case PlayerClass.Rogue:
-                    BaseMaxHP = 100;
-                    BaseMaxMana = 70;
-                    BaseAttack = 18;
-                    BaseDefense = 8;
-                    BaseMagicPower = 8;
-                    BaseSpeed = 16;
-                    BaseCritChance = 0.35;
-                    break;
-            }
+            // Set starting resources
+            Gold = classData.StartingGold;
+            PotionCount = classData.StartingPotions;
 
             // Set current stats
             MaxHP = BaseMaxHP;
@@ -110,6 +93,51 @@ namespace TestRPGGame.Entities.Player
 
             CurrentHP = MaxHP;
             CurrentMana = MaxMana;
+        }
+
+        private void InitializeStartingEquipment()
+        {
+            // Give each class randomized low-tier starting equipment
+            // Force Common rarity by setting level to 1 and using the generator
+            var weapon = EquipmentGenerator.GenerateItem(1, EquipmentSlot.Weapon);
+            var armor = EquipmentGenerator.GenerateItem(1, EquipmentSlot.Armor);
+
+            // Filter to appropriate weapon types for each class
+            weapon = EnsureClassAppropriateWeapon(weapon);
+
+            // Equip the starting gear directly
+            Inventory.Weapon = weapon;
+            Inventory.Armor = armor;
+        }
+
+        private EquipmentItem EnsureClassAppropriateWeapon(EquipmentItem weapon)
+        {
+            // Regenerate weapon until we get an appropriate type for the class
+            // This ensures warriors/rogues get physical weapons, mages get magical weapons
+            int maxAttempts = 10;
+            int attempts = 0;
+
+            while (attempts < maxAttempts)
+            {
+                bool isAppropriate = Class switch
+                {
+                    PlayerClass.Warrior => weapon.WeaponAttackType == Combat.AttackType.Physical,
+                    PlayerClass.Mage => weapon.WeaponAttackType != Combat.AttackType.Physical && weapon.WeaponAttackType != null,
+                    PlayerClass.Rogue => weapon.WeaponAttackType == Combat.AttackType.Physical,
+                    _ => true
+                };
+
+                if (isAppropriate)
+                {
+                    return weapon;
+                }
+
+                weapon = EquipmentGenerator.GenerateItem(1, EquipmentSlot.Weapon);
+                attempts++;
+            }
+
+            // If we can't find appropriate after max attempts, just return what we have
+            return weapon;
         }
 
         private void InitializeAbilities()
@@ -141,37 +169,16 @@ namespace TestRPGGame.Entities.Player
             Experience -= ExperienceToNextLevel;
             ExperienceToNextLevel = (int)(ExperienceToNextLevel * 1.5);
 
-            // Stat increases based on class - update BASE stats
-            switch (Class)
-            {
-                case PlayerClass.Warrior:
-                    BaseMaxHP += 25;
-                    BaseMaxMana += 5;
-                    BaseAttack += 3;
-                    BaseDefense += 3;
-                    BaseMagicPower += 1;
-                    BaseSpeed += 1;
-                    break;
+            // Load class data for stat growth
+            var classData = DataLoader.GetClass(Class.ToString());
 
-                case PlayerClass.Mage:
-                    BaseMaxHP += 12;
-                    BaseMaxMana += 15;
-                    BaseAttack += 1;
-                    BaseDefense += 2;
-                    BaseMagicPower += 4;
-                    BaseSpeed += 2;
-                    break;
-
-                case PlayerClass.Rogue:
-                    BaseMaxHP += 15;
-                    BaseMaxMana += 8;
-                    BaseAttack += 4;
-                    BaseDefense += 1;
-                    BaseMagicPower += 1;
-                    BaseSpeed += 3;
-                    BaseCritChance += 0.02;
-                    break;
-            }
+            // Apply data-driven stat increases
+            BaseMaxHP += classData.HPPerLevel;
+            BaseMaxMana += classData.ManaPerLevel;
+            BaseAttack += classData.AttackPerLevel;
+            BaseDefense += classData.DefensePerLevel;
+            BaseMagicPower += classData.MagicPowerPerLevel;
+            BaseSpeed += classData.SpeedPerLevel;
 
             // Recalculate with equipment
             UpdateStatsFromEquipment();

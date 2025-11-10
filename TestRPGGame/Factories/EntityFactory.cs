@@ -7,6 +7,7 @@ using TestRPGGame.Entities.Dungeon;
 using TestRPGGame.Abilities;
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Combat;
+using TestRPGGame.Equipment;
 
 namespace TestRPGGame.Factories
 {
@@ -55,12 +56,18 @@ namespace TestRPGGame.Factories
         {
             return data.Type.ToLower() switch
             {
-                "damage" => new DamageEffect(data.Multiplier, usesMagic: data.Type == "Magic"),
+                "damage" => new DamageEffect(data.Multiplier, usesMagic: data.Type == "Magic", guaranteedCrit: data.GuaranteedCrit),
                 "buff" => new BuffEffect(data.BuffName ?? "Unknown Buff", data.Duration),
                 "restore" => new RestoreEffect(data.Value, isMana: data.Value > 0),
                 "statmod" => new StatModEffect("speed", data.Value),
                 "dodge" => new DodgeEffect(),
                 "poison" => new PoisonEffect(data.DamagePerTurn, data.Duration, data.Value),
+                "damageovertime" => new PoisonEffect(data.Value, data.Duration, data.Value), // Burning/DOT effect
+                "healovertime" => new HealOverTimeEffect(data.Value, data.Duration),
+                "stun" => new StunEffect(data.Duration),
+                "thorns" => new ThornsEffect(data.Value, data.Duration),
+                "shield" => new ShieldEffect(data.Value, data.Duration),
+                "lifesteal" => new LifeStealEffect(data.Multiplier, data.Value),
                 _ => null
             };
         }
@@ -230,7 +237,7 @@ namespace TestRPGGame.Factories
         #region Item Factory
         // Item generation remains procedural in EquipmentGenerator
         // Items are configured via Data/items.json templates
-        // Future enhancement: Create items from data definitions
+        // TODO: Implement starting equipment system properly
         #endregion
     }
 }
