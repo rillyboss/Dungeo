@@ -57,76 +57,75 @@ namespace TestRPGGame
             {
                 Console.Clear();
                 UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Cyan);
-                UIHelper.PrintColoredLine("          LOAD OR NEW GAME", ConsoleColor.Yellow);
+                UIHelper.PrintColoredLine("          SELECT CHARACTER", ConsoleColor.Yellow);
                 UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Cyan);
 
-                Console.WriteLine("1. 🎮 New Game");
-                Console.WriteLine("2. 💾 Load Game");
+                var slots = SaveSystem.GetAllSaveSlots();
 
-                Console.Write("\nChoose option: ");
-                string choice = Console.ReadLine() ?? "";
-
-                switch (choice)
+                // Display all save slots
+                foreach (var saveSlot in slots)
                 {
-                    case "1":
-                        return false; // New game
+                    Console.Write($"{saveSlot.SlotNumber}. ");
 
-                    case "2":
-                        Player? loadedPlayer = LoadGameMenu();
-                        if (loadedPlayer != null)
-                        {
-                            player = loadedPlayer;
-                            UIHelper.PrintColoredLine("\n✅ Game loaded successfully!", ConsoleColor.Green);
-                            Thread.Sleep(1500);
-                            return true;
-                        }
-                        // If load failed or cancelled, loop back to menu
-                        break;
-
-                    default:
-                        UIHelper.PrintColoredLine("\n❌ Invalid choice!", ConsoleColor.Red);
-                        Thread.Sleep(1000);
-                        break;
+                    if (saveSlot.IsEmpty)
+                    {
+                        UIHelper.PrintColoredLine("[EMPTY SLOT - Create New Character]", ConsoleColor.DarkGray);
+                    }
+                    else
+                    {
+                        UIHelper.PrintColored($"{saveSlot.Name}", ConsoleColor.Yellow);
+                        Console.Write($" - Level {saveSlot.Level} {saveSlot.Class}");
+                        Console.Write($" (Saved: {saveSlot.SaveTime:MM/dd/yyyy HH:mm})");
+                        Console.WriteLine();
+                    }
                 }
-            }
-        }
 
-        private Player? LoadGameMenu()
-        {
-            while (true)
-            {
-                SaveSystem.DisplaySaveSlots();
-
-                Console.WriteLine("0. Back");
-                Console.Write("\nSelect save slot to load: ");
+                Console.WriteLine("\n0. Exit Game");
+                Console.Write("\nSelect slot (1-3) or 0 to exit: ");
                 string input = Console.ReadLine() ?? "";
 
                 if (input == "0")
                 {
-                    return null;
+                    Environment.Exit(0);
+                    return false;
                 }
 
                 if (int.TryParse(input, out int slot) && slot >= 1 && slot <= 3)
                 {
-                    var (loadedPlayer, loadedProgress) = SaveSystem.LoadGame(slot);
-                    if (loadedPlayer != null)
+                    var slotInfo = slots.FirstOrDefault(s => s.SlotNumber == slot);
+
+                    if (slotInfo != null && slotInfo.IsEmpty)
                     {
-                        lastSaveSlot = slot; // Track the slot for autosave
-                        if (loadedProgress != null)
-                        {
-                            dungeonProgress = loadedProgress;
-                        }
-                        return loadedPlayer;
+                        // Create new character in this slot
+                        lastSaveSlot = slot;
+                        return false; // Signal to create new character
                     }
                     else
                     {
-                        UIHelper.PrintColoredLine("\n❌ No save data in this slot!", ConsoleColor.Red);
-                        Thread.Sleep(1500);
+                        // Load existing character
+                        var (loadedPlayer, loadedProgress) = SaveSystem.LoadGame(slot);
+                        if (loadedPlayer != null)
+                        {
+                            lastSaveSlot = slot;
+                            player = loadedPlayer;
+                            if (loadedProgress != null)
+                            {
+                                dungeonProgress = loadedProgress;
+                            }
+                            UIHelper.PrintColoredLine("\n✅ Game loaded successfully!", ConsoleColor.Green);
+                            Thread.Sleep(1500);
+                            return true;
+                        }
+                        else
+                        {
+                            UIHelper.PrintColoredLine("\n❌ Failed to load save!", ConsoleColor.Red);
+                            Thread.Sleep(1500);
+                        }
                     }
                 }
                 else
                 {
-                    UIHelper.PrintColoredLine("\n❌ Invalid slot number!", ConsoleColor.Red);
+                    UIHelper.PrintColoredLine("\n❌ Invalid choice!", ConsoleColor.Red);
                     Thread.Sleep(1000);
                 }
             }
@@ -235,6 +234,8 @@ namespace TestRPGGame
                         break;
                     case "3":
                         shop.Enter(player);
+                        // Auto-save after shop visit
+                        AutoSave("after shop");
                         break;
                     case "4":
                         player.Inventory.DisplayInventory(player);
@@ -331,15 +332,9 @@ namespace TestRPGGame
                     player.Inventory.BackpackItems.Add(loot);
                 }
 
-                // Autosave after combat if enabled and we have a save slot
-                if (GameConfig.Config.CombatAutosave && lastSaveSlot.HasValue)
-                {
-                    if (SaveSystem.SaveGame(player, lastSaveSlot.Value, dungeonProgress))
-                    {
-                        Console.WriteLine();
-                        UIHelper.PrintColoredLine("💾 Game auto-saved", ConsoleColor.DarkGray);
-                    }
-                }
+                // Auto-save after combat
+                Console.WriteLine();
+                AutoSave("after combat");
 
                 Console.WriteLine("\nPress any key to continue...");
                 Console.ReadKey(true);
@@ -455,6 +450,21 @@ namespace TestRPGGame
             }
         }
 
+        /// <summary>
+        /// Auto-save helper method - saves silently to the last used slot
+        /// </summary>
+        private void AutoSave(string context = "")
+        {
+            if (lastSaveSlot.HasValue && player != null)
+            {
+                if (SaveSystem.SaveGame(player, lastSaveSlot.Value, dungeonProgress))
+                {
+                    string message = string.IsNullOrEmpty(context) ? "💾 Auto-saved" : $"💾 Auto-saved ({context})";
+                    UIHelper.PrintColoredLine(message, ConsoleColor.DarkGray);
+                }
+            }
+        }
+
         private void Rest()
         {
             Console.Clear();
@@ -510,6 +520,9 @@ namespace TestRPGGame
                 }
 
                 UIHelper.PrintColoredLine("\n✨ You feel refreshed and ready for battle!", ConsoleColor.Yellow);
+
+                // Auto-save after resting
+                AutoSave("after rest");
             }
 
             Console.WriteLine("\nPress any key to continue...");
@@ -620,10 +633,10 @@ namespace TestRPGGame
                         // Enter the dungeon!
                         bool success = dungeonRunner.RunDungeon(player, dungeon, dungeonProgress);
 
-                        // Auto-save after dungeon if successful
-                        if (success && GameConfig.Config.CombatAutosave && lastSaveSlot.HasValue)
+                        // Auto-save after dungeon completion
+                        if (success)
                         {
-                            SaveSystem.SaveGame(player, lastSaveSlot.Value, dungeonProgress);
+                            AutoSave("dungeon complete");
                         }
 
                         // Return to menu
