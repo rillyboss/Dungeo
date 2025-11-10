@@ -491,13 +491,11 @@ namespace TestRPGGame.Combat
                 UIHelper.PrintColoredLine($"   ⚡ STUNNED! {enemy.Name} loses their next turn!", ConsoleColor.Yellow);
             }
 
-            // Apply Thorns damage to player
-            foreach (var effect in specialEffects)
+            // Check if enemy has Thorns active and reflect damage to player
+            if (enemy.StatusEffects != null && enemy.StatusEffects.ThornsValue > 0)
             {
-                if (effect.Type == EffectType.Thorns)
-                {
-                    // Thorns is defensive, applies when taking damage, not dealing it
-                }
+                player.CurrentHP -= enemy.StatusEffects.ThornsValue;
+                UIHelper.PrintColoredLine($"   🌵 THORNS! You take {enemy.StatusEffects.ThornsValue} reflected damage!", ConsoleColor.Yellow);
             }
         }
 
@@ -716,6 +714,16 @@ namespace TestRPGGame.Combat
                         {
                             // Enemy buffs are simplified for now - just show message
                             UIHelper.PrintColoredLine($"   ⚡ {enemy.Name} is empowered by {buffEffect.BuffName}!", ConsoleColor.Yellow);
+                        }
+                        else if (effect is ThornsEffect thornsEffect)
+                        {
+                            // Apply Thorns to enemy
+                            if (enemy.StatusEffects != null)
+                            {
+                                enemy.StatusEffects.ThornsValue = thornsEffect.ReflectDamage;
+                                enemy.StatusEffects.ThornsTurns = thornsEffect.Duration;
+                                UIHelper.PrintColoredLine($"   🌵 {enemy.Name} is surrounded by thorns! ({thornsEffect.ReflectDamage} damage reflection for {thornsEffect.Duration} turns)", ConsoleColor.Yellow);
+                            }
                         }
 
                         Thread.Sleep(500);
