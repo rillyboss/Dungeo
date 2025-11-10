@@ -81,8 +81,12 @@ namespace TestRPGGame.Tests
                 var weapon = EquipmentGenerator.GenerateItem(1, EquipmentSlot.Weapon);
                 if (weapon.Rarity == ItemRarity.Common)
                     commonNames.Add(weapon.Name.Split(' ')[0]); // Get prefix
+            }
 
-                weapon = EquipmentGenerator.GenerateItem(20, EquipmentSlot.Weapon);
+            // Generate more legendary attempts since they're rare (2% chance)
+            for (int i = 0; i < 200; i++)
+            {
+                var weapon = EquipmentGenerator.GenerateItem(20, EquipmentSlot.Weapon);
                 if (weapon.Rarity == ItemRarity.Legendary)
                     legendaryNames.Add(weapon.Name.Split(' ')[0]); // Get prefix
             }

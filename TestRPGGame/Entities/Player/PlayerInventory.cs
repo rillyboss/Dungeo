@@ -62,7 +62,7 @@ namespace TestRPGGame.Entities.Player
                         var item = BackpackItems[i];
                         Console.Write($"  {i + 1}. ");
                         UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                        Console.WriteLine($" (Lv {item.Level}) - {item.Slot}");
+                        Console.WriteLine($" (Lv {item.Level}) - {item.Slot.GetDisplayName()}");
                     }
                     Console.WriteLine();
                 }

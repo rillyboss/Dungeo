@@ -65,7 +65,8 @@ namespace TestRPGGame.DataLoading
                     weapon_suffixes = LoadJsonFile<Dictionary<string, WeaponSuffixData>>(Path.Combine("Items", "weapon-suffixes.json")),
                     armor_prefixes = LoadJsonFile<Dictionary<string, ArmorPrefixData>>(Path.Combine("Items", "armor-prefixes.json")),
                     armor_suffixes = LoadJsonFile<Dictionary<string, ArmorSuffixData>>(Path.Combine("Items", "armor-suffixes.json")),
-                    rarity_multipliers = LoadJsonFile<Dictionary<string, double>>(Path.Combine("Items", "rarity-multipliers.json"))
+                    rarity_multipliers = LoadJsonFile<Dictionary<string, double>>(Path.Combine("Items", "rarity-multipliers.json")),
+                    rarity_thresholds = LoadJsonFile<Dictionary<string, RarityThresholdData>>(Path.Combine("Items", "rarity-thresholds.json"))
                 };
 
                 // Load enemy modifier data

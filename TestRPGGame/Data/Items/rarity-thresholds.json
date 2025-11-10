@@ -1,0 +1,32 @@
+{
+  // Level-based rarity thresholds
+  // Each rarity defines: min level required, and roll threshold (0-100)
+  "Legendary": {
+    "MinLevel": 10,
+    "RollThreshold": 98
+  },
+  "Epic": {
+    "MinLevel": 7,
+    "RollThreshold": 92
+  },
+  "Rare": {
+    "MinLevel": 4,
+    "RollThreshold": 80
+  },
+  "Uncommon": {
+    "MinLevel": 1,
+    "RollThreshold": 30
+  },
+  "Common": {
+    "MinLevel": 1,
+    "RollThreshold": 0
+  },
+
+  // Special cases
+  "RareLowLevel": {
+    // Very rare chance for Rare items at levels 1-3
+    "MinLevel": 1,
+    "MaxLevel": 3,
+    "RollThreshold": 95
+  }
+}

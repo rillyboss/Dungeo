@@ -72,12 +72,68 @@ namespace TestRPGGame.Equipment
 
         private static ItemRarity DetermineRarity(int level)
         {
-            int roll = random.Next(100) + (level * 2); // Level increases chance of better items
+            // Data-driven rarity system
+            // Load thresholds from items.json
+            var thresholds = _itemData!.RarityThresholds;
+            if (thresholds == null || thresholds.Count == 0)
+            {
+                // Fallback to simple system if no data
+                return ItemRarity.Common;
+            }
 
-            if (roll >= 95) return ItemRarity.Legendary;
-            if (roll >= 80) return ItemRarity.Epic;
-            if (roll >= 60) return ItemRarity.Rare;
-            if (roll >= 35) return ItemRarity.Uncommon;
+            int roll = random.Next(100);
+
+            // Check rarities in order from highest to lowest
+            // Legendary
+            if (thresholds.TryGetValue("Legendary", out var legendaryThreshold) &&
+                level >= legendaryThreshold.MinLevel &&
+                level <= legendaryThreshold.MaxLevel &&
+                roll >= legendaryThreshold.RollThreshold)
+            {
+                return ItemRarity.Legendary;
+            }
+
+            // Epic
+            if (thresholds.TryGetValue("Epic", out var epicThreshold) &&
+                level >= epicThreshold.MinLevel &&
+                level <= epicThreshold.MaxLevel &&
+                roll >= epicThreshold.RollThreshold)
+            {
+                return ItemRarity.Epic;
+            }
+
+            // Rare (check special low-level rare first)
+            if (thresholds.TryGetValue("RareLowLevel", out var rareLowLevel) &&
+                level >= rareLowLevel.MinLevel &&
+                level <= rareLowLevel.MaxLevel &&
+                roll >= rareLowLevel.RollThreshold)
+            {
+                return ItemRarity.Rare;
+            }
+
+            // Rare (normal)
+            if (thresholds.TryGetValue("Rare", out var rareThreshold) &&
+                level >= rareThreshold.MinLevel &&
+                level <= rareThreshold.MaxLevel &&
+                roll >= rareThreshold.RollThreshold)
+            {
+                return ItemRarity.Rare;
+            }
+
+            // Uncommon (scale with level)
+            if (thresholds.TryGetValue("Uncommon", out var uncommonThreshold))
+            {
+                // Make uncommon more common as level increases
+                int adjustedThreshold = Math.Max(uncommonThreshold.RollThreshold, 65 - (level * 3));
+                if (level >= uncommonThreshold.MinLevel &&
+                    level <= uncommonThreshold.MaxLevel &&
+                    roll >= adjustedThreshold)
+                {
+                    return ItemRarity.Uncommon;
+                }
+            }
+
+            // Default to Common
             return ItemRarity.Common;
         }
 
