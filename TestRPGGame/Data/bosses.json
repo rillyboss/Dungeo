@@ -129,6 +129,7 @@
     "Speed": 20,
     "GoldReward": 0,
     "ExpReward": 0,
+    "DefaultBehavior": "aggressive",
     "Abilities": [
       {
         "AbilityId": "boss_inferno_blast",
@@ -145,6 +146,41 @@
       {
         "AbilityId": "boss_burning_curse",
         "UseThreshold": 100
+      }
+    ],
+    "Phases": [
+      {
+        "HPThreshold": 100,
+        "BehaviorId": "aggressive",
+        "PhaseMessage": "{name} roars with fury!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": ["boss_dragons_rage"],
+        "AbilityPriorityBoost": {
+          "boss_inferno_blast": 2.0,
+          "boss_burning_curse": 1.5
+        }
+      },
+      {
+        "HPThreshold": 60,
+        "BehaviorId": "berserker",
+        "PhaseMessage": "{name}'s flames grow more intense as his rage builds!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_dragons_rage": 2.5,
+          "boss_molten_armor": 1.8
+        }
+      },
+      {
+        "HPThreshold": 30,
+        "BehaviorId": "berserker",
+        "PhaseMessage": "{name} enters a berserk frenzy! The flames consume everything!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_dragons_rage": 3.0,
+          "boss_inferno_blast": 2.5
+        }
       }
     ],
     "PossibleDrops": []
@@ -245,6 +281,7 @@
     "Speed": 30,
     "GoldReward": 0,
     "ExpReward": 0,
+    "DefaultBehavior": "tactical",
     "Abilities": [
       {
         "AbilityId": "boss_void_annihilation",
@@ -269,6 +306,54 @@
       {
         "AbilityId": "boss_consuming_void",
         "UseThreshold": 100
+      }
+    ],
+    "Phases": [
+      {
+        "HPThreshold": 100,
+        "BehaviorId": "tactical",
+        "PhaseMessage": "The {name} emerges from the shadows...",
+        "EnabledAbilities": [],
+        "DisabledAbilities": ["boss_reality_tear", "boss_consuming_void"],
+        "AbilityPriorityBoost": {
+          "boss_void_annihilation": 1.8,
+          "boss_eternal_darkness": 1.5
+        }
+      },
+      {
+        "HPThreshold": 70,
+        "BehaviorId": "cunning",
+        "PhaseMessage": "The {name} begins weaving dark magic!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": ["boss_consuming_void"],
+        "AbilityPriorityBoost": {
+          "boss_reality_tear": 2.0,
+          "boss_void_barrier": 2.2,
+          "boss_eternal_darkness": 1.8
+        }
+      },
+      {
+        "HPThreshold": 40,
+        "BehaviorId": "defensive",
+        "PhaseMessage": "The {name} retreats into darkness, regenerating his power!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_void_regeneration": 3.0,
+          "boss_void_barrier": 2.5
+        }
+      },
+      {
+        "HPThreshold": 20,
+        "BehaviorId": "berserker",
+        "PhaseMessage": "The {name} unleashes the full power of the void! Reality tears apart!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_consuming_void": 3.5,
+          "boss_reality_tear": 3.0,
+          "boss_void_annihilation": 2.8
+        }
       }
     ],
     "PossibleDrops": []

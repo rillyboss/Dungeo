@@ -21,6 +21,7 @@ namespace TestRPGGame.DataLoading
         private static ItemGenerationData? _itemGeneration;
         private static Dictionary<string, EnemyPrefixData>? _enemyPrefixes;
         private static Dictionary<string, EnemySuffixData>? _enemySuffixes;
+        private static Dictionary<string, EnemyBehaviorData>? _behaviors;
 
         /// <summary>
         /// Load all game data from JSON files.
@@ -69,11 +70,15 @@ namespace TestRPGGame.DataLoading
                 _enemyPrefixes = LoadJsonFile<Dictionary<string, EnemyPrefixData>>(Path.Combine("Enemies", "enemy-prefixes.json"));
                 _enemySuffixes = LoadJsonFile<Dictionary<string, EnemySuffixData>>(Path.Combine("Enemies", "enemy-suffixes.json"));
 
+                // Load enemy behaviors
+                _behaviors = LoadJsonFile<Dictionary<string, EnemyBehaviorData>>(Path.Combine("Enemies", "enemy-behaviors.json"));
+
                 Console.WriteLine($"✓ Loaded {_abilities.Count} abilities ({enemyAbilities.Count} enemy abilities)");
                 Console.WriteLine($"✓ Loaded {_enemies.Count} enemies (including {bossEnemies.Count} bosses)");
                 Console.WriteLine($"✓ Loaded {_dungeons.Count} dungeons");
                 Console.WriteLine($"✓ Loaded item generation data ({_itemGeneration.WeaponPrefixes.Count} weapon prefixes, {_itemGeneration.WeaponTypes.Count} weapon types)");
                 Console.WriteLine($"✓ Loaded enemy modifiers ({_enemyPrefixes.Count} prefixes, {_enemySuffixes.Count} suffixes)");
+                Console.WriteLine($"✓ Loaded {_behaviors.Count} enemy behaviors");
             }
             catch (Exception ex)
             {
@@ -183,6 +188,20 @@ namespace TestRPGGame.DataLoading
             if (!_enemySuffixes.TryGetValue(id, out var suffix))
                 throw new KeyNotFoundException($"Enemy suffix not found: {id}");
             return suffix;
+        }
+
+        // Behavior queries
+        public static EnemyBehaviorData? GetBehavior(string id)
+        {
+            if (_behaviors == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
+            _behaviors.TryGetValue(id, out var behavior);
+            return behavior; // Returns null if not found (intentional for default behavior)
+        }
+
+        public static IEnumerable<EnemyBehaviorData> GetBehaviorsWithSpawnChance()
+        {
+            if (_behaviors == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
+            return _behaviors.Values.Where(b => b.SpawnChance > 0);
         }
     }
 }

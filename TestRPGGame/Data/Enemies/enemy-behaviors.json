@@ -1,0 +1,148 @@
+{
+  // Enemy AI Behavior Patterns
+  // These define how enemies make decisions in combat
+
+  "aggressive": {
+    "Id": "aggressive",
+    "Name": "Aggressive",
+    "Description": "Focuses on dealing damage, less concerned with defense",
+    "AbilityWeights": {
+      "damage": 2.0,
+      "buff": 1.3,
+      "heal": 0.5,
+      "defensive": 0.4,
+      "control": 1.2
+    },
+    "StatModifiers": {
+      "Attack": 1.15,
+      "Defense": 0.95,
+      "Speed": 1.05
+    },
+    "DecisionFactors": {
+      "playerLowHP": 2.0,
+      "selfLowHP": 0.6,
+      "playerHasBuffs": 1.1
+    },
+    "SpawnChance": 0.15
+  },
+
+  "defensive": {
+    "Id": "defensive",
+    "Name": "Defensive",
+    "Description": "Prioritizes survival and outlasting the opponent",
+    "AbilityWeights": {
+      "damage": 0.8,
+      "buff": 1.1,
+      "heal": 2.0,
+      "defensive": 2.5,
+      "control": 0.9
+    },
+    "StatModifiers": {
+      "Attack": 0.9,
+      "Defense": 1.25,
+      "Speed": 0.95
+    },
+    "DecisionFactors": {
+      "playerLowHP": 0.8,
+      "selfLowHP": 2.5,
+      "playerHasBuffs": 0.9
+    },
+    "SpawnChance": 0.12
+  },
+
+  "tactical": {
+    "Id": "tactical",
+    "Name": "Tactical",
+    "Description": "Balanced approach with smart ability timing",
+    "AbilityWeights": {
+      "damage": 1.2,
+      "buff": 1.5,
+      "heal": 1.3,
+      "defensive": 1.4,
+      "control": 1.6
+    },
+    "StatModifiers": {
+      "Attack": 1.05,
+      "Defense": 1.05,
+      "Speed": 1.1
+    },
+    "DecisionFactors": {
+      "playerLowHP": 1.5,
+      "selfLowHP": 1.5,
+      "playerHasBuffs": 1.4
+    },
+    "SpawnChance": 0.10
+  },
+
+  "berserker": {
+    "Id": "berserker",
+    "Name": "Berserker",
+    "Description": "Becomes more dangerous at low HP, reckless offense",
+    "AbilityWeights": {
+      "damage": 2.5,
+      "buff": 1.8,
+      "heal": 0.2,
+      "defensive": 0.3,
+      "control": 0.8
+    },
+    "StatModifiers": {
+      "Attack": 1.25,
+      "Defense": 0.85,
+      "Speed": 1.1
+    },
+    "DecisionFactors": {
+      "playerLowHP": 2.5,
+      "selfLowHP": 0.3,
+      "playerHasBuffs": 0.8
+    },
+    "SpawnChance": 0.08
+  },
+
+  "cunning": {
+    "Id": "cunning",
+    "Name": "Cunning",
+    "Description": "Uses status effects and control abilities strategically",
+    "AbilityWeights": {
+      "damage": 1.0,
+      "buff": 1.4,
+      "heal": 1.0,
+      "defensive": 1.2,
+      "control": 2.2
+    },
+    "StatModifiers": {
+      "Attack": 1.0,
+      "Defense": 1.1,
+      "Speed": 1.15
+    },
+    "DecisionFactors": {
+      "playerLowHP": 1.3,
+      "selfLowHP": 1.2,
+      "playerHasBuffs": 1.6
+    },
+    "SpawnChance": 0.10
+  },
+
+  "default": {
+    "Id": "default",
+    "Name": "Default",
+    "Description": "Standard balanced behavior",
+    "AbilityWeights": {
+      "damage": 1.0,
+      "buff": 1.0,
+      "heal": 1.0,
+      "defensive": 1.0,
+      "control": 1.0
+    },
+    "StatModifiers": {
+      "Attack": 1.0,
+      "Defense": 1.0,
+      "Speed": 1.0
+    },
+    "DecisionFactors": {
+      "playerLowHP": 1.2,
+      "selfLowHP": 1.2,
+      "playerHasBuffs": 1.0
+    },
+    "SpawnChance": 0.0
+  }
+}

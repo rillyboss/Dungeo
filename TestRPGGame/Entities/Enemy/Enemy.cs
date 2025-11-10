@@ -10,6 +10,7 @@ namespace TestRPGGame.Entities.Enemy
         public string Name { get; set; } // Full name with modifiers
         public string Prefix { get; set; } = ""; // Modifier prefix
         public string Suffix { get; set; } = ""; // Modifier suffix
+        public string Behavior { get; set; } = ""; // Behavior modifier (shown in name for regular enemies)
         public EnemyType Type { get; set; }
         public int MaxHP { get; set; }
         public int CurrentHP { get; set; }
@@ -20,6 +21,7 @@ namespace TestRPGGame.Entities.Enemy
         public int ExpReward { get; set; }
         public List<EnemyAbility> Abilities { get; set; }
         public CombatStatusEffects? StatusEffects { get; set; }
+        public EnemyAI? AI { get; set; } // AI decision engine
 
         public Enemy(string name, EnemyType type, int hp, int attack, int defense, int speed, int gold, int exp)
         {
@@ -27,6 +29,7 @@ namespace TestRPGGame.Entities.Enemy
             Name = name;
             Prefix = "";
             Suffix = "";
+            Behavior = "";
             Type = type;
             MaxHP = hp;
             CurrentHP = hp;
@@ -37,6 +40,7 @@ namespace TestRPGGame.Entities.Enemy
             ExpReward = exp;
             Abilities = new List<EnemyAbility>();
             StatusEffects = null; // Created on-demand when needed
+            AI = null; // Created by EnemyFactory
         }
 
         public void TakeDamage(int damage)

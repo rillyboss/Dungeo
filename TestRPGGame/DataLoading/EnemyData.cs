@@ -16,5 +16,15 @@ namespace TestRPGGame.DataLoading
         public int ExpReward { get; set; }
         public List<EnemyAbilityData> Abilities { get; set; } = new();
         public List<string> PossibleDrops { get; set; } = new();
+
+        /// <summary>
+        /// Default behavior for this enemy (optional). If not set, uses "default" behavior.
+        /// </summary>
+        public string? DefaultBehavior { get; set; }
+
+        /// <summary>
+        /// Phases for this enemy (primarily for bosses, but any enemy can have phases).
+        /// </summary>
+        public List<EnemyPhaseData>? Phases { get; set; }
     }
 }
