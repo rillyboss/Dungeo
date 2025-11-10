@@ -6,6 +6,7 @@ using TestRPGGame.Combat;
 using TestRPGGame.Equipment;
 using TestRPGGame.UI;
 using TestRPGGame.Systems;
+using TestRPGGame.DataLoading;
 using PlayerEntity = TestRPGGame.Entities.Player.Player;
 using EnemyEntity = TestRPGGame.Entities.Enemy.Enemy;
 
@@ -49,8 +50,10 @@ namespace TestRPGGame.Entities.Dungeon
                 Thread.Sleep(1500);
             }
 
-            // Run encounters
-            foreach (var encounter in dungeon.Encounters)
+            // Generate and run random encounters (or use fixed encounters for legacy dungeons)
+            var encounters = GenerateEncounters(dungeon, player.Level);
+
+            foreach (var encounter in encounters)
             {
                 if (!RunEncounter(player, encounter))
                 {
@@ -112,6 +115,84 @@ namespace TestRPGGame.Entities.Dungeon
             return true;
         }
 
+        /// <summary>
+        /// Generate random encounters for this dungeon run, providing variety and replayability.
+        /// Uses EncounterPool and EncounterConfig if available, otherwise uses fixed Encounters list.
+        /// </summary>
+        private List<DungeonEncounter> GenerateEncounters(Dungeon dungeon, int playerLevel)
+        {
+            var generatedEncounters = new List<DungeonEncounter>();
+
+            // Legacy mode: Use fixed encounters if no encounter pool defined
+            if (dungeon.EncounterPool == null || dungeon.EncounterPool.Count == 0)
+            {
+                return dungeon.Encounters;
+            }
+
+            // New mode: Generate random encounters from pool
+            var config = dungeon.EncounterConfig ?? new DungeonEncounterConfig();
+
+            // Determine number of encounters
+            int numEncounters = random.Next(config.MinEncounters, config.MaxEncounters + 1);
+            int numCombatEncounters = random.Next(config.MinCombatEncounters, config.MaxCombatEncounters + 1);
+
+            // Create a shuffled copy of the encounter pool
+            var availableEncounters = dungeon.EncounterPool.ToList();
+            ShuffleList(availableEncounters);
+
+            // Add choice/event encounters
+            for (int i = 0; i < numEncounters && availableEncounters.Count > 0; i++)
+            {
+                var encounterData = availableEncounters[0];
+                availableEncounters.RemoveAt(0);
+                generatedEncounters.Add(encounterData);
+
+                // Random chance for bonus combat encounter after this
+                if (random.NextDouble() < config.RandomCombatChance)
+                {
+                    generatedEncounters.Add(CreateRandomCombatEncounter(playerLevel));
+                }
+            }
+
+            // Add guaranteed combat encounters
+            for (int i = 0; i < numCombatEncounters; i++)
+            {
+                generatedEncounters.Add(CreateRandomCombatEncounter(playerLevel));
+            }
+
+            // Shuffle the final encounter order for variety
+            ShuffleList(generatedEncounters);
+
+            return generatedEncounters;
+        }
+
+        /// <summary>
+        /// Create a random combat encounter with an enemy appropriate for the player's level.
+        /// </summary>
+        private DungeonEncounter CreateRandomCombatEncounter(int playerLevel)
+        {
+            var encounter = new DungeonEncounter("You hear movement ahead...");
+            encounter.IsCombat = true;
+            encounter.CombatLevel = playerLevel; // Store level for enemy generation
+            return encounter;
+        }
+
+        /// <summary>
+        /// Fisher-Yates shuffle algorithm for randomizing lists.
+        /// </summary>
+        private void ShuffleList<T>(List<T> list)
+        {
+            int n = list.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = random.Next(n + 1);
+                T value = list[k];
+                list[k] = list[n];
+                list[n] = value;
+            }
+        }
+
         private void ShowDungeonIntro(Dungeon dungeon)
         {
             Console.Clear();
@@ -133,6 +214,34 @@ namespace TestRPGGame.Entities.Dungeon
 
         private bool RunEncounter(PlayerEntity player, DungeonEncounter encounter)
         {
+            // Handle random combat encounters (no choices, just fight)
+            if (encounter.IsCombat && encounter.CombatLevel.HasValue)
+            {
+                Console.Clear();
+                UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Red);
+                UIHelper.PrintColoredLine("          ENEMY ENCOUNTER!", ConsoleColor.Yellow);
+                UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Red);
+
+                UIHelper.PrintColoredLine(encounter.Description, ConsoleColor.White);
+                Thread.Sleep(1200);
+
+                // Generate random enemy at appropriate level
+                EnemyEntity enemy = Entities.Enemy.EnemyFactory.CreateEnemy(encounter.CombatLevel.Value);
+                CombatSystem normalCombat = new CombatSystem();
+                bool victory = normalCombat.StartBattle(player, enemy);
+
+                if (!victory)
+                {
+                    return false;
+                }
+
+                UIHelper.PrintColoredLine("\n✓ Enemy defeated!", ConsoleColor.Green);
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey(true);
+                return true;
+            }
+
+            // Handle choice-based encounters
             Console.Clear();
             UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Cyan);
             UIHelper.PrintColoredLine("          DUNGEON ENCOUNTER", ConsoleColor.Yellow);

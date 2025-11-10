@@ -14,6 +14,11 @@ namespace TestRPGGame.Entities.Dungeon
         public int? ManaReward { get; set; }
         public int? GoldReward { get; set; }
 
+        /// <summary>
+        /// For random combat encounters - the level to use for enemy generation
+        /// </summary>
+        public int? CombatLevel { get; set; }
+
         public DungeonEncounter(string description)
         {
             Description = description;

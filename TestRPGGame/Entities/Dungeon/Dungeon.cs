@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using EnemyEntity = TestRPGGame.Entities.Enemy.Enemy;
+using TestRPGGame.DataLoading;
 
 namespace TestRPGGame.Entities.Dungeon
 {
@@ -16,6 +17,10 @@ namespace TestRPGGame.Entities.Dungeon
         public EnemyEntity Boss { get; set; }
         public int Difficulty { get; set; }
 
+        // New: Random encounter system
+        public DungeonEncounterConfig? EncounterConfig { get; set; }
+        public List<DungeonEncounter> EncounterPool { get; set; }
+
         public Dungeon(string name, DungeonType type, string story, int difficulty)
         {
             Name = name;
@@ -26,6 +31,7 @@ namespace TestRPGGame.Entities.Dungeon
             MinibossReward = new DungeonReward();
             BossReward = new DungeonReward();
             Encounters = new List<DungeonEncounter>();
+            EncounterPool = new List<DungeonEncounter>();
         }
     }
 }

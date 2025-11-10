@@ -8,14 +8,21 @@
     "RequiredDungeonIds": [],
     "MinibossId": "goblin_champion",
     "BossId": "goblin_king",
-    "Encounters": [
+    "EncounterConfig": {
+      "MinEncounters": 2,
+      "MaxEncounters": 4,
+      "MinCombatEncounters": 2,
+      "MaxCombatEncounters": 4,
+      "RandomCombatChance": 0.25
+    },
+    "EncounterPool": [
       {
         "Type": "Choice",
         "Text": "You enter the dark caves. Two passages split before you.\nThe left passage has fresh torch marks. The right echoes with dripping water.",
         "Choices": [
           {
             "Text": "Take the left passage (torch marks)",
-            "Effect": "TakeDamage",
+            "Effect": "None",
             "Value": 0
           },
           {
@@ -36,6 +43,70 @@
           },
           {
             "Text": "Leave it alone",
+            "Effect": "None",
+            "Value": 0
+          }
+        ]
+      },
+      {
+        "Type": "Choice",
+        "Text": "A wounded goblin lies trapped under fallen rocks.\nHe pleads for help in broken Common tongue.",
+        "Choices": [
+          {
+            "Text": "Help free the goblin",
+            "Effect": "Heal",
+            "Value": 20
+          },
+          {
+            "Text": "Leave him to his fate",
+            "Effect": "None",
+            "Value": 0
+          }
+        ]
+      },
+      {
+        "Type": "Choice",
+        "Text": "You find a stash of goblin provisions - dried meat, mushrooms, and a waterskin.",
+        "Choices": [
+          {
+            "Text": "Eat the provisions",
+            "Effect": "HealAndRestoreMana",
+            "Value": 30
+          },
+          {
+            "Text": "Don't risk it - could be poisoned",
+            "Effect": "None",
+            "Value": 0
+          }
+        ]
+      },
+      {
+        "Type": "Choice",
+        "Text": "You spot a glowing crystal embedded in the cave wall.\nIt pulses with strange energy.",
+        "Choices": [
+          {
+            "Text": "Touch the crystal",
+            "Effect": "RestoreManaAndTakeDamage",
+            "Value": 40
+          },
+          {
+            "Text": "Leave it alone",
+            "Effect": "None",
+            "Value": 0
+          }
+        ]
+      },
+      {
+        "Type": "Choice",
+        "Text": "A narrow chasm blocks your path. You could try to jump across or find another way.",
+        "Choices": [
+          {
+            "Text": "Jump across",
+            "Effect": "TakeDamage",
+            "Value": 15
+          },
+          {
+            "Text": "Climb down and around (slow but safe)",
             "Effect": "None",
             "Value": 0
           }

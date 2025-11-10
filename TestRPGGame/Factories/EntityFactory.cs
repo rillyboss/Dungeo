@@ -142,13 +142,24 @@ namespace TestRPGGame.Factories
                 MinLootRarity = Math.Min(2, data.RecommendedLevel / 3)
             };
 
-            // Create encounters
+            // Create encounters (legacy fixed encounters)
             dungeon.Encounters = new List<DungeonEncounter>();
             foreach (var encounterData in data.Encounters)
             {
                 var encounter = CreateDungeonEncounter(encounterData);
                 dungeon.Encounters.Add(encounter);
             }
+
+            // Create encounter pool for random generation
+            dungeon.EncounterPool = new List<DungeonEncounter>();
+            foreach (var encounterData in data.EncounterPool)
+            {
+                var encounter = CreateDungeonEncounter(encounterData);
+                dungeon.EncounterPool.Add(encounter);
+            }
+
+            // Copy encounter configuration
+            dungeon.EncounterConfig = data.EncounterConfig;
 
             // Load miniboss and boss using unified enemy system
             var minibossData = DataLoader.GetEnemy(data.MinibossId);
