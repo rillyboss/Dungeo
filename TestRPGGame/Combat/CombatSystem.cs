@@ -70,7 +70,7 @@ namespace TestRPGGame.Combat
             AsciiArt.DrawCombatStart();
             Thread.Sleep(800);
 
-            UIHelper.PrintColoredLine($"\n     ⚔️  A wild {enemy.Name} appears!  ⚔️\n", ConsoleColor.Red);
+            UIHelper.PrintColoredLine($"\n     ⚔️  {enemy.Name} appears!  ⚔️\n", ConsoleColor.Red);
             UIHelper.PrintColoredLine($"Type: {enemy.Type}", ConsoleColor.Gray);
             AsciiArt.DrawEnemy(enemy.Name);
 
@@ -543,6 +543,7 @@ namespace TestRPGGame.Combat
                 UIHelper.PrintColored($"💢 {enemy.Name} uses ", ConsoleColor.Red);
                 UIHelper.PrintColored($"{enemyAbility.Ability.Name}", ConsoleColor.Yellow);
                 UIHelper.PrintColoredLine($"!", ConsoleColor.Red);
+                UIHelper.PrintColoredLine($"   {enemyAbility.Ability.Description}", ConsoleColor.Gray);
                 Thread.Sleep(600);
 
                 if (playerDodgeNext)

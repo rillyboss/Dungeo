@@ -114,41 +114,25 @@ namespace TestRPGGame.Systems
                 }
                 else
                 {
-                    // Group by slot for easier browsing
-                    var grouped = new Dictionary<EquipmentSlot, List<EquipmentItem>>();
-
-                    foreach (var item in shopInventory)
+                    // Display items with their actual index
+                    for (int i = 0; i < shopInventory.Count; i++)
                     {
-                        if (!grouped.ContainsKey(item.Slot))
-                        {
-                            grouped[item.Slot] = new List<EquipmentItem>();
-                        }
-                        grouped[item.Slot].Add(item);
-                    }
+                        var item = shopInventory[i];
+                        Console.Write($"  {i + 1}. ");
+                        UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                        Console.Write($" ({item.Slot})");
+                        Console.WriteLine($" (Lv {item.Level}) - {item.Price} gold");
 
-                    int index = 1;
-                    foreach (var group in grouped)
-                    {
-                        UIHelper.PrintColoredLine($"--- {group.Key} ---", ConsoleColor.White);
-                        foreach (var item in group.Value)
-                        {
-                            Console.Write($"  {index}. ");
-                            UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                            Console.WriteLine($" (Lv {item.Level}) - {item.Price} gold");
-
-                            // Show key stats
-                            Console.Write("     ");
-                            if (item.AttackBonus > 0) Console.Write($"⚔️ +{item.AttackBonus} ");
-                            if (item.DefenseBonus > 0) Console.Write($"🛡️ +{item.DefenseBonus} ");
-                            if (item.MagicBonus > 0) Console.Write($"🔮 +{item.MagicBonus} ");
-                            if (item.HPBonus > 0) Console.Write($"❤️ +{item.HPBonus} ");
-                            if (item.SpecialEffects.Count > 0) Console.Write($"✨ x{item.SpecialEffects.Count} ");
-                            Console.WriteLine();
-
-                            index++;
-                        }
+                        // Show key stats
+                        Console.Write("     ");
+                        if (item.AttackBonus > 0) Console.Write($"⚔️ +{item.AttackBonus} ");
+                        if (item.DefenseBonus > 0) Console.Write($"🛡️ +{item.DefenseBonus} ");
+                        if (item.MagicBonus > 0) Console.Write($"🔮 +{item.MagicBonus} ");
+                        if (item.HPBonus > 0) Console.Write($"❤️ +{item.HPBonus} ");
+                        if (item.SpecialEffects.Count > 0) Console.Write($"✨ x{item.SpecialEffects.Count} ");
                         Console.WriteLine();
                     }
+                    Console.WriteLine();
                 }
 
                 Console.WriteLine("0. Back");

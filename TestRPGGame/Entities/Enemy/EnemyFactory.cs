@@ -57,24 +57,27 @@ namespace TestRPGGame.Entities.Enemy
 
         private static void ApplyRandomModifiers(Enemy enemy, EnemyData enemyData, int level)
         {
-            // Chance to get prefix/suffix increases with level
-            // Prefix: 20% base + 5% per level (capped at 80%)
-            // Suffix: 15% base + 4% per level (capped at 70%)
-            // Behavior: Rolled based on behavior spawn chances (only for regular enemies, not bosses)
-            int prefixChance = Math.Min(80, 20 + (level * 5));
-            int suffixChance = Math.Min(70, 15 + (level * 4));
+            // Chance to get modifiers increases with level, but limited at low levels
+            // At level 1-2: rarely get multiple modifiers
+            // At level 5+: can get 2-3 modifiers more commonly
+            // At level 10+: can get all 3 modifiers
+
+            int prefixChance = Math.Min(70, 10 + (level * 4));  // 10-70% (reduced from 20-80%)
+            int suffixChance = Math.Min(60, 5 + (level * 3));   // 5-60% (reduced from 15-70%)
 
             EnemyPrefixData? prefix = null;
             EnemySuffixData? suffix = null;
             EnemyBehaviorData? behaviorModifier = null;
+            int modifierCount = 0;
+            int maxModifiers = Math.Min(3, 1 + (level / 3)); // Level 1-2: max 1, Level 3-5: max 2, Level 6+: max 3
 
             // Roll for behavior modifier (only for non-boss enemies)
             // Bosses are identified by having Phases defined in their data
             bool isBoss = (enemyData.Phases != null && enemyData.Phases.Count > 0);
-            if (!isBoss)
+            if (!isBoss && level >= 2) // Behaviors only appear at level 2+
             {
                 var availableBehaviors = DataLoader.GetBehaviorsWithSpawnChance().ToList();
-                if (availableBehaviors.Count > 0)
+                if (availableBehaviors.Count > 0 && modifierCount < maxModifiers)
                 {
                     double totalChance = availableBehaviors.Sum(b => b.SpawnChance);
                     double roll = random.NextDouble();
@@ -89,6 +92,7 @@ namespace TestRPGGame.Entities.Enemy
                             if (roll < cumulative)
                             {
                                 behaviorModifier = behavior;
+                                modifierCount++;
                                 break;
                             }
                         }
@@ -97,22 +101,24 @@ namespace TestRPGGame.Entities.Enemy
             }
 
             // Roll for prefix
-            if (random.Next(100) < prefixChance)
+            if (modifierCount < maxModifiers && random.Next(100) < prefixChance)
             {
                 var availablePrefixes = DataLoader.GetEnemyPrefixesByLevel(level).ToList();
                 if (availablePrefixes.Count > 0)
                 {
                     prefix = availablePrefixes[random.Next(availablePrefixes.Count)];
+                    modifierCount++;
                 }
             }
 
-            // Roll for suffix
-            if (random.Next(100) < suffixChance)
+            // Roll for suffix (less likely if already has prefix)
+            if (modifierCount < maxModifiers && random.Next(100) < suffixChance)
             {
                 var availableSuffixes = DataLoader.GetEnemySuffixesByLevel(level).ToList();
                 if (availableSuffixes.Count > 0)
                 {
                     suffix = availableSuffixes[random.Next(availableSuffixes.Count)];
+                    modifierCount++;
                 }
             }
 
