@@ -268,6 +268,172 @@ When adding new data-driven systems, follow this checklist:
 - [ ] Update this configuration file with patterns used
 - [ ] Commit with detailed explanation
 
+## Git Commit Standards
+
+### Commit Message Format
+All commits must follow the Conventional Commits format with detailed explanations:
+
+```
+<type>: <brief summary (50 chars max)>
+
+<detailed description paragraph explaining WHAT changed>
+
+<explanation paragraph describing WHY the change was made>
+
+Features/Changes:
+- Bullet point list of key changes
+- Specific details about implementations
+- Quantifiable impacts (e.g., "12 new tests", "11 prefix types")
+
+Technical details:
+- Important implementation notes
+- Breaking changes or migrations
+- Performance implications
+
+🤖 Generated with [Claude Code](https://claude.com/claude-code)
+
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
+### Commit Types
+- **feat**: New feature or capability added to the game
+- **fix**: Bug fix or correction
+- **refactor**: Code restructuring without behavior change
+- **docs**: Documentation additions or updates
+- **test**: Test additions or modifications
+- **perf**: Performance improvements
+- **chore**: Maintenance tasks, dependency updates
+
+### What Makes a Good Commit Message
+
+#### The Summary Line
+- Start with type prefix (feat, fix, refactor, etc.)
+- Keep under 50 characters
+- Use imperative mood ("Add" not "Added" or "Adds")
+- Be specific but concise
+- Examples:
+  - Good: `feat: Add enemy prefix/suffix modifier system`
+  - Bad: `feat: enemies` or `feat: made some changes to enemies`
+
+#### The Description Body
+Must answer these questions:
+1. **What changed?** - Specific details about the implementation
+2. **Why did it change?** - The motivation and reasoning behind the change
+3. **How does it work?** - Key technical details and approaches used
+
+#### Required Sections
+
+**For feature commits (feat:)**
+- Brief summary of the feature and its purpose
+- Features/Changes bullet list with specifics
+- Technical details about implementation
+- Test coverage added
+- Impact on gameplay or user experience
+
+Example:
+```
+feat: Add enemy prefix/suffix modifier system
+
+Implement randomized enemy modifiers that scale with player level, adding
+variety and challenge to combat encounters.
+
+This was added to increase combat variety and create more memorable enemy
+encounters. The system uses the same prefix/suffix pattern as item generation
+for consistency and reusability.
+
+Features:
+- Enemy prefixes: Stat multipliers (HP, Attack, Defense, Speed, Gold, Exp)
+- Enemy suffixes: Grant additional abilities and flat bonuses
+- 11 prefix types ranging from Hardy (1.2x HP) to Legendary (2.0x stats)
+- 15 suffix types adding 1-3 abilities each with gold/exp bonuses
+- Level-based randomization: 20-80% prefix chance, 15-70% suffix chance
+
+Technical details:
+- Added BaseName, Prefix, Suffix properties to Enemy class
+- DataLoader: Load and query enemy modifiers by level
+- EnemyFactory: ApplyRandomModifiers() with level-scaled probability
+- 12 new tests validating modifier system (92 total tests passing)
+```
+
+**For refactoring commits (refactor:)**
+- What was reorganized and why
+- Benefits of the new organization
+- What remains functionally the same
+- Any migration steps taken
+
+Example:
+```
+refactor: Separate enemy abilities into dedicated JSON file
+
+Move enemy-only abilities from abilities.json into a new enemy-abilities.json
+file for better organization and maintainability.
+
+This separation makes it clearer which abilities are available to players vs
+enemies, and follows the same organizational pattern as item generation data
+(Items/ subdirectory). It also makes the codebase more maintainable as the
+number of abilities grows.
+
+Changes:
+- Created Data/enemy-abilities.json with 13 enemy abilities
+- Updated DataLoader to load both files and merge dictionaries
+- All functionality remains identical (80 tests passing)
+```
+
+**For documentation commits (docs:)**
+- What documentation was added/updated
+- Why this documentation is important
+- What problems it solves or questions it answers
+
+**For bug fixes (fix:)**
+- What was broken and how it manifested
+- Root cause of the issue
+- How the fix resolves it
+- Any edge cases now handled
+
+### Commit Checklist
+Before committing, ensure:
+- [ ] Commit message has descriptive type prefix
+- [ ] Summary line is under 50 characters
+- [ ] Body explains WHAT changed (with specifics)
+- [ ] Body explains WHY the change was made
+- [ ] Technical details section lists key implementation notes
+- [ ] Test coverage is mentioned (pass/fail, count)
+- [ ] Breaking changes are clearly called out
+- [ ] Related files are all included in the commit
+- [ ] All tests pass before committing
+
+### Anti-Patterns to Avoid
+
+**Vague messages:**
+- Bad: `fix: fixed stuff`
+- Bad: `feat: updates`
+- Bad: `refactor: changes`
+
+**Missing context:**
+- Bad: `feat: Add modifiers` (What kind? For what? How do they work?)
+- Good: `feat: Add enemy prefix/suffix modifier system`
+
+**No explanation of why:**
+- Bad: Only listing what changed without explaining the motivation
+- Good: Explaining both what changed AND why it was necessary
+
+**Bundling unrelated changes:**
+- Bad: Committing enemy modifiers + unrelated bug fix + doc update
+- Good: Separate commits for each logical change
+
+### Examples from This Project
+
+See recent commits for examples of good commit messages:
+```bash
+git log --oneline -10
+```
+
+Each commit in this project follows the standard and explains:
+- What system/feature was added or changed
+- Why the change improves the codebase
+- Technical implementation details
+- Test coverage and validation
+
 ## Resources
 
 ### JSON Schema
