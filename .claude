@@ -1,0 +1,290 @@
+# Claude Code Configuration for TestRPGGame
+
+## Project Overview
+This is a data-driven text-based RPG game built with C# and .NET. All game content is defined in JSON files to enable rapid iteration without code changes.
+
+## Data-Driven Design Principles
+
+### Core Philosophy
+- **All game content lives in JSON files** - Enemies, abilities, items, dungeons, and modifiers are data, not code
+- **Code defines systems, data defines content** - The codebase implements mechanics; JSON files define what players experience
+- **Easy to extend** - Adding new content should require only JSON changes, not code changes
+- **Testable** - Data structures should be validated through comprehensive unit tests
+
+### File Organization Standards
+
+#### Directory Structure
+```
+Data/
+├── abilities.json              # Player class abilities
+├── enemy-abilities.json        # Enemy-only abilities
+├── enemies.json                # Base enemy templates
+├── bosses.json                 # Boss definitions
+├── dungeons.json               # Dungeon configurations
+├── Enemies/                    # Enemy-specific data
+│   ├── enemy-prefixes.json     # Stat modifiers
+│   └── enemy-suffixes.json     # Ability-granting modifiers
+└── Items/                      # Item generation data
+    ├── weapon-prefixes.json
+    ├── weapon-types.json
+    ├── weapon-suffixes.json
+    ├── armor-prefixes.json
+    ├── armor-suffixes.json
+    └── rarity-multipliers.json
+```
+
+#### Naming Conventions
+- **Files**: kebab-case (e.g., `enemy-abilities.json`, `weapon-prefixes.json`)
+- **Directories**: PascalCase (e.g., `Enemies/`, `Items/`)
+- **JSON Keys**: Use descriptive names matching C# property conventions
+- **IDs**: Unique identifiers using snake_case (e.g., `fireball`, `enemy_enrage`)
+
+### Data Structure Patterns
+
+#### 1. Dictionary-Based Data Files
+All JSON data files should use dictionary structures for O(1) lookups:
+```json
+{
+  "EntityId": {
+    "Id": "EntityId",
+    "Name": "Display Name",
+    ...
+  }
+}
+```
+
+#### 2. Data Classes
+Every JSON structure requires a corresponding C# data class in `DataLoading/`:
+```csharp
+public class EntityData
+{
+    public string Id { get; set; } = "";
+    public string Name { get; set; } = "";
+    // Properties match JSON structure exactly
+}
+```
+
+#### 3. DataLoader Responsibilities
+The `DataLoader` class is the single source of truth for all game data:
+- **Caching**: Store loaded data in private static dictionaries
+- **Loading**: `LoadAllData()` loads everything at startup
+- **Querying**: Provide public static methods for data access
+- **Validation**: Throw meaningful exceptions for missing data
+
+Example query methods:
+```csharp
+public static EntityData GetEntity(string id)
+public static IEnumerable<EntityData> GetEntitiesByLevel(int level)
+```
+
+#### 4. Level-Based Availability
+Content that unlocks at specific levels should use `MinLevel` property:
+```json
+{
+  "Elite": {
+    "MinLevel": 5,
+    ...
+  }
+}
+```
+
+Query pattern:
+```csharp
+return _data.Values.Where(d => d.MinLevel <= level);
+```
+
+### Factory Pattern for Entities
+
+#### Factory Responsibilities
+- **EntityFactory**: Core entity creation (stats, abilities)
+- **EnemyFactory**: Enemy-specific logic (modifiers, randomization)
+- **ItemFactory**: Item generation (prefixes, suffixes, rarities)
+
+#### Separation of Concerns
+- Factories create instances from data
+- Data classes are pure DTOs (no logic)
+- Entities hold runtime state
+- Data files define templates
+
+### Modifier System Pattern
+
+The prefix/suffix modifier pattern established for enemies should be reused:
+
+#### Prefixes
+- Modify stats using **multipliers**
+- Grant passive bonuses
+- Example: "Elite" enemy (1.4x HP, 1.3x Attack)
+
+#### Suffixes
+- Grant **additional abilities**
+- Add flat bonuses (gold, exp, stats)
+- Example: "the Relentless" (+2 abilities, +50 gold)
+
+#### Implementation
+```csharp
+// Load available modifiers by level
+var modifiers = DataLoader.GetModifiersByLevel(level);
+
+// Roll for modifier
+if (random.Next(100) < chancePercent)
+{
+    var modifier = modifiers[random.Next(modifiers.Count)];
+    ApplyModifier(entity, modifier);
+}
+```
+
+### Testing Standards
+
+#### Data Validation Tests
+Every data file requires tests:
+- Data loads without errors
+- All IDs are unique
+- All references are valid (abilities, items, etc.)
+- Multipliers are positive
+- Level ranges are valid
+
+#### System Tests
+- Factories create valid entities from data
+- Modifiers apply correctly
+- Level-based filtering works
+- Randomization stays within bounds
+
+Example test structure:
+```csharp
+[Fact]
+public void DataFile_ShouldLoadFromJSON()
+{
+    var data = DataLoader.GetAllEntities().ToList();
+    Assert.NotEmpty(data);
+}
+
+[Fact]
+public void AllReferences_ShouldBeValid()
+{
+    foreach (var entity in DataLoader.GetAllEntities())
+    {
+        foreach (var refId in entity.References)
+        {
+            Assert.NotNull(DataLoader.GetReference(refId));
+        }
+    }
+}
+```
+
+### Adding New Content
+
+#### To add a new enemy:
+1. Add entry to `Data/enemies.json`
+2. Reference existing abilities by ID
+3. No code changes needed
+4. Run tests to validate
+
+#### To add a new ability:
+1. Add to `Data/abilities.json` or `Data/enemy-abilities.json`
+2. Use existing ability types/effects
+3. No code changes needed
+4. Tests validate references
+
+#### To add a new game system:
+1. Create data classes in `DataLoading/`
+2. Create JSON file(s) in `Data/`
+3. Update `DataLoader.LoadAllData()` and add query methods
+4. Create factory if needed
+5. Write comprehensive tests
+6. Document in this file
+
+### JSON Best Practices
+
+#### Formatting
+- Use 2-space indentation
+- Allow trailing commas (parser configured for this)
+- Allow comments (for documentation)
+- One entity per top-level key
+
+#### Comments in JSON
+The JsonSerializer is configured to skip comments:
+```json
+{
+  // This is a comment explaining the design choice
+  "enemy_id": {
+    "Name": "Enemy Name"
+  }
+}
+```
+
+#### Validation
+- All string IDs must match their dictionary key
+- All numeric values must be positive unless explicitly supporting negatives
+- All ability/item references must exist in their respective files
+
+### Consistency Rules
+
+1. **Never hardcode game content in C# code**
+   - Bad: `if (enemyName == "Dragon") { ... }`
+   - Good: Check enemy properties from data
+
+2. **Always use DataLoader for data access**
+   - Bad: `File.ReadAllText("enemies.json")`
+   - Good: `DataLoader.GetEnemy("dragon")`
+
+3. **Maintain referential integrity**
+   - All IDs referenced in one file must exist in their source file
+   - Use tests to validate all references
+
+4. **Keep data files focused**
+   - Separate by entity type (enemies, items, abilities)
+   - Separate by subsystem (prefixes, suffixes, types)
+   - Use subdirectories when a category has multiple files
+
+5. **Document complex data structures**
+   - Add comments to JSON explaining non-obvious design choices
+   - Document multiplier ranges and their intended effects
+   - Explain level progression curves
+
+### Migration and Refactoring
+
+When refactoring data:
+1. Create new JSON files
+2. Update DataLoader to load from both old and new sources
+3. Merge data appropriately
+4. Update all tests
+5. Commit with clear explanation of organizational improvement
+
+Example from this project:
+- Split `abilities.json` into player and enemy abilities
+- Maintained backward compatibility during transition
+- Used dictionary merging to combine both sources
+- All tests passed after refactor
+
+## Future System Additions
+
+When adding new data-driven systems, follow this checklist:
+- [ ] Create data class(es) in `DataLoading/`
+- [ ] Create JSON file(s) in appropriate `Data/` subdirectory
+- [ ] Add loading code to `DataLoader.LoadAllData()`
+- [ ] Add query method(s) to `DataLoader`
+- [ ] Create/update factory if needed
+- [ ] Write minimum 5 validation tests
+- [ ] Update this configuration file with patterns used
+- [ ] Commit with detailed explanation
+
+## Resources
+
+### JSON Schema
+Consider adding JSON Schema files for validation:
+- Enables IDE autocomplete for JSON files
+- Validates structure before runtime
+- Documents expected format
+
+### Performance Considerations
+- Current caching strategy: Load all data at startup
+- Dictionary lookups are O(1)
+- LINQ queries are lazy-evaluated where possible
+- For large datasets, consider indexed queries
+
+### Data Versioning
+If data format changes become needed:
+- Add version field to JSON files
+- Implement migration logic in DataLoader
+- Maintain backward compatibility for one version
+- Test with both old and new formats
