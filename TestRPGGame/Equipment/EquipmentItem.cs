@@ -63,7 +63,7 @@ namespace TestRPGGame.Equipment
         {
             UIHelper.PrintColored($"[{Rarity}] {Name}", GetRarityColor());
             Console.WriteLine($" (Lv {Level})");
-            Console.WriteLine($"Slot: {Slot}");
+            Console.WriteLine($"Slot: {Slot.GetDisplayName()}");
 
             // Display attack type for weapons
             if (WeaponAttackType.HasValue)

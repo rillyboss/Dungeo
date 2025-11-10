@@ -179,13 +179,32 @@ namespace TestRPGGame.Factories
                 foreach (var choice in data.Choices)
                 {
                     encounter.Choices.Add(choice.Text);
-                    encounter.ChoiceResults.Add($"{choice.Effect}: {choice.Value}");
+                    string friendlyEffect = GetFriendlyEffectName(choice.Effect);
+                    encounter.ChoiceResults.Add($"{friendlyEffect}: {choice.Value}");
                 }
             }
 
             encounter.IsCombat = data.Type?.ToLower() == "combat";
 
             return encounter;
+        }
+
+        private static string GetFriendlyEffectName(string effect)
+        {
+            return effect switch
+            {
+                "TakeDamage" => "Take Damage",
+                "GainGold" => "Gain Gold",
+                "GainGoldAndMana" => "Gain Gold and Mana",
+                "RestoreManaAndTakeDamage" => "Restore Mana but Take Damage",
+                "TakeDamageAndLoseMana" => "Take Damage and Lose Mana",
+                "Heal" => "Heal",
+                "RestoreMana" => "Restore Mana",
+                "GainExperience" => "Gain Experience",
+                "FindItem" => "Find Item",
+                "Combat" => "Combat",
+                _ => effect // Fallback to original if not mapped
+            };
         }
 
         #endregion

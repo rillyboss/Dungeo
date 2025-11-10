@@ -120,7 +120,7 @@ namespace TestRPGGame.Systems
                         var item = shopInventory[i];
                         Console.Write($"  {i + 1}. ");
                         UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                        Console.Write($" ({item.Slot})");
+                        Console.Write($" ({item.Slot.GetDisplayName()})");
                         Console.WriteLine($" (Lv {item.Level}) - {item.Price} gold");
 
                         // Show key stats
