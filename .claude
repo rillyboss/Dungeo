@@ -1,5 +1,64 @@
 # Claude Code Configuration for TestRPGGame
 
+## Session Tracking & Development Workflow
+
+### IMPORTANT: Start Every Session Here
+Before beginning any work, follow this workflow:
+
+1. **Read DEVELOPMENT_LOG.md**
+   - Review the most recent session to understand what was done
+   - Check "Pending Tasks" section for prioritized work items
+   - Review "Known Issues" for any blockers
+   - Understand the current state of the project
+
+2. **Verify Project Health**
+   ```bash
+   dotnet test  # All 86 tests should pass
+   git status   # Check for uncommitted changes
+   ```
+
+3. **Start New Session Entry**
+   - When beginning work, add a new session entry to `DEVELOPMENT_LOG.md`
+   - Include: Date, context, and goals for this session
+   - Use the existing format as a template
+
+### Session Documentation Standards
+
+#### During the Session
+- Use the `TodoWrite` tool to track tasks in real-time
+- Document completed tasks with:
+  - What was changed (specific file references with line numbers)
+  - Why it was changed (context and motivation)
+  - How it works (technical implementation notes)
+  - Test results and validation
+
+#### End of Session Checklist
+- [ ] Update `DEVELOPMENT_LOG.md`:
+  - Add all completed tasks to current session
+  - Update pending tasks with new items discovered
+  - Add any new known issues
+  - Write session summary with stats (files changed, tests passing, etc.)
+- [ ] Run final tests: `dotnet test`
+- [ ] Commit all changes with detailed message (see Git Commit Standards below)
+- [ ] Verify all tests still pass after commit
+
+### Quick Reference Files
+
+- **DEVELOPMENT_LOG.md** - Complete session history and task tracking
+- **SESSION_GUIDE.md** - Quick reference for commands and workflows
+- **.claude** (this file) - Project architecture and standards
+
+### Current Project State (Updated Each Session)
+
+**Last Updated**: 2025-01-10
+- **Tests Passing**: 86/86 ✅
+- **Recent Major Changes**:
+  - Classes are now data-driven (classes.json)
+  - All classes balanced (Rogue nerfed, Mage buffed)
+  - Starting equipment system implemented
+  - Save slot deletion feature added
+  - All status effects functional (DOT, HOT, etc.)
+
 ## Project Overview
 This is a data-driven text-based RPG game built with C# and .NET. All game content is defined in JSON files to enable rapid iteration without code changes.
 
