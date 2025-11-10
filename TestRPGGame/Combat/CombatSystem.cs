@@ -16,11 +16,442 @@ namespace TestRPGGame.Combat
         private Random random = new Random();
         private Dictionary<string, int> activeBuffs = new Dictionary<string, int>();
         private bool playerDodgeNext = false;
-        private int poisonDamage = 0;
-        private int poisonTurns = 0;
-        private int bleedDamage = 0;
-        private int bleedTurns = 0;
         private bool enemyStunNext = false;
+        private Ability? queuedPlayerAbility = null;
+        private EnemyAbility? queuedEnemyAbility = null;
+
+        /// <summary>
+        /// Get the effective speed of the player including buffs
+        /// </summary>
+        private int GetPlayerEffectiveSpeed(Player player)
+        {
+            int speed = player.Speed;
+
+            // Add speed buff if active
+            if (player.StatusEffects != null && player.StatusEffects.SpeedBuffTurns > 0)
+            {
+                speed += player.StatusEffects.SpeedBuffValue;
+            }
+
+            return speed;
+        }
+
+        /// <summary>
+        /// Get the effective speed of the enemy including buffs
+        /// </summary>
+        private int GetEnemyEffectiveSpeed(Enemy enemy)
+        {
+            int speed = enemy.Speed;
+
+            // Add speed buff if active
+            if (enemy.StatusEffects != null && enemy.StatusEffects.SpeedBuffTurns > 0)
+            {
+                speed += enemy.StatusEffects.SpeedBuffValue;
+            }
+
+            return speed;
+        }
+
+        /// <summary>
+        /// Determine who goes first this turn based on speed and priority abilities
+        /// Returns true if player goes first, false if enemy goes first
+        /// </summary>
+        private bool DetermineInitialTurnOrder(Player player, Enemy enemy)
+        {
+            bool playerHasPriority = queuedPlayerAbility != null && queuedPlayerAbility.Priority;
+            bool enemyHasPriority = queuedEnemyAbility != null && queuedEnemyAbility.Ability.Priority;
+
+            // If both have priority or neither has priority, use speed
+            if (playerHasPriority == enemyHasPriority)
+            {
+                int playerSpeed = GetPlayerEffectiveSpeed(player);
+                int enemySpeed = GetEnemyEffectiveSpeed(enemy);
+                return playerSpeed >= enemySpeed; // Player wins ties
+            }
+
+            // Whoever has priority goes first
+            return playerHasPriority;
+        }
+
+        /// <summary>
+        /// Player chooses their action for this turn (doesn't execute it yet)
+        /// Returns true if player fled, false otherwise
+        /// </summary>
+        private bool PlayerChooseAction(Player player, Enemy enemy, bool canFlee)
+        {
+            UIHelper.PrintColoredLine("\nYOUR TURN:", ConsoleColor.Yellow);
+            Console.WriteLine("1. ⚔️  Attack");
+            Console.WriteLine("2. 🎯 Use Ability");
+            Console.WriteLine("3. 🧪 Use Potion");
+            if (canFlee)
+            {
+                Console.WriteLine("4. 🏃 Flee");
+            }
+
+            Console.Write("\nChoose action: ");
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    // Basic attack queued
+                    queuedPlayerAbility = null;
+                    break;
+                case "2":
+                    // Select ability (will set queuedPlayerAbility)
+                    SelectPlayerAbility(player, enemy, canFlee);
+                    break;
+                case "3":
+                    if (player.UsePotion())
+                    {
+                        UIHelper.PrintColoredLine($"\n🧪 You used a potion and restored {player.MaxHP / 2} HP!", ConsoleColor.Green);
+                        UIHelper.PrintColoredLine($"Potions remaining: {player.PotionCount}", ConsoleColor.Gray);
+                        Thread.Sleep(1000);
+                        queuedPlayerAbility = null; // Potion use counts as basic action
+                    }
+                    else
+                    {
+                        UIHelper.PrintColoredLine("\n❌ No potions left!", ConsoleColor.Red);
+                        return PlayerChooseAction(player, enemy, canFlee);
+                    }
+                    break;
+                case "4":
+                    if (canFlee)
+                    {
+                        return AttemptFlee(player, enemy);
+                    }
+                    else
+                    {
+                        UIHelper.PrintColoredLine("\n❌ You cannot flee from this battle!", ConsoleColor.Red);
+                        return PlayerChooseAction(player, enemy, canFlee);
+                    }
+                default:
+                    UIHelper.PrintColoredLine("\n❌ Invalid choice! Please try again.", ConsoleColor.Red);
+                    Thread.Sleep(1000);
+                    return PlayerChooseAction(player, enemy, canFlee);
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Player selects an ability to use
+        /// </summary>
+        private void SelectPlayerAbility(Player player, Enemy enemy, bool canFlee)
+        {
+            var unlockedAbilities = player.Abilities.Where(a => a.IsUnlocked).ToList();
+
+            if (unlockedAbilities.Count == 0)
+            {
+                UIHelper.PrintColoredLine("\n❌ No abilities unlocked yet!", ConsoleColor.Red);
+                Thread.Sleep(1000);
+                PlayerChooseAction(player, enemy, canFlee);
+                return;
+            }
+
+            Console.WriteLine("\n╔════ ABILITIES ════╗");
+            for (int i = 0; i < unlockedAbilities.Count; i++)
+            {
+                var ability = unlockedAbilities[i];
+                string status = ability.CanUse(player.CurrentMana) ? "✓" : "✗";
+                string cdInfo = ability.CurrentCooldown > 0 ? $" (CD: {ability.CurrentCooldown})" : "";
+                string priorityIcon = ability.Priority ? "⚡" : "";
+                Console.WriteLine($"{i + 1}. {status} {priorityIcon}{ability.Name} ({ability.ManaCost} mana){cdInfo}");
+            }
+            Console.WriteLine("0. Cancel");
+            Console.WriteLine("╚═══════════════════╝");
+
+            Console.Write("\nChoose ability: ");
+            string choice = Console.ReadLine();
+
+            if (choice == "0")
+            {
+                PlayerChooseAction(player, enemy, canFlee);
+                return;
+            }
+
+            if (int.TryParse(choice, out int abilityIndex) && abilityIndex > 0 && abilityIndex <= unlockedAbilities.Count)
+            {
+                var ability = unlockedAbilities[abilityIndex - 1];
+
+                if (!ability.CanUse(player.CurrentMana))
+                {
+                    UIHelper.PrintColoredLine("\n❌ Cannot use this ability! (Not enough mana or on cooldown)", ConsoleColor.Red);
+                    Thread.Sleep(1000);
+                    SelectPlayerAbility(player, enemy, canFlee);
+                    return;
+                }
+
+                // Queue the ability for execution
+                queuedPlayerAbility = ability;
+            }
+            else
+            {
+                UIHelper.PrintColoredLine("\n❌ Invalid choice!", ConsoleColor.Red);
+                Thread.Sleep(1000);
+                SelectPlayerAbility(player, enemy, canFlee);
+            }
+        }
+
+        /// <summary>
+        /// Enemy chooses their action for this turn (doesn't execute it yet)
+        /// </summary>
+        private void EnemyChooseAction(Player player, Enemy enemy)
+        {
+            // Use AI to select ability if available
+            if (enemy.AI != null)
+            {
+                queuedEnemyAbility = enemy.AI.SelectAbility(enemy, player, activeBuffs);
+            }
+            else
+            {
+                // Fallback: simple iteration through abilities (old behavior)
+                foreach (var enemyAbility in enemy.Abilities)
+                {
+                    if (enemyAbility.CanUse(enemy.CurrentHP, enemy.MaxHP))
+                    {
+                        queuedEnemyAbility = enemyAbility;
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Execute the player's queued action
+        /// </summary>
+        private void ExecutePlayerAction(Player player, Enemy enemy)
+        {
+            // Apply player status effects at start of their action
+            if (player.StatusEffects != null)
+            {
+                player.StatusEffects.ApplyPlayerTurnEffects(player, enemy);
+                Thread.Sleep(500);
+            }
+
+            if (queuedPlayerAbility != null)
+            {
+                // Use ability
+                player.CurrentMana -= queuedPlayerAbility.ManaCost;
+                queuedPlayerAbility.Use();
+
+                Console.WriteLine();
+                AsciiArt.DrawAbilityUse(queuedPlayerAbility.Name);
+                ExecuteAbility(player, enemy, queuedPlayerAbility);
+                Thread.Sleep(1000);
+            }
+            else
+            {
+                // Basic attack
+                PerformBasicAttack(player, enemy);
+                Thread.Sleep(1000);
+            }
+        }
+
+        /// <summary>
+        /// Execute the enemy's queued action
+        /// </summary>
+        private void ExecuteEnemyAction(Player player, Enemy enemy)
+        {
+            UIHelper.PrintColoredLine($"\n{enemy.Name}'s TURN:", ConsoleColor.Red);
+            Thread.Sleep(800);
+
+            // Apply enemy status effects at start of their action
+            if (enemy.StatusEffects != null)
+            {
+                enemy.StatusEffects.ApplyEnemyTurnEffects(enemy, player);
+                Thread.Sleep(500);
+            }
+
+            // Check for phase transition and show phase message
+            if (enemy.AI != null)
+            {
+                string? phaseMessage = enemy.AI.GetCurrentPhaseMessage(enemy.Name);
+                if (!string.IsNullOrEmpty(phaseMessage))
+                {
+                    UIHelper.PrintColoredLine($"\n⚡ {phaseMessage}", ConsoleColor.Magenta);
+                    Thread.Sleep(1000);
+                }
+            }
+
+            // Check if enemy is stunned
+            if (enemyStunNext)
+            {
+                UIHelper.PrintColoredLine($"⚡ {enemy.Name} is stunned and loses their turn!", ConsoleColor.Yellow);
+                enemyStunNext = false;
+                Thread.Sleep(1000);
+                return;
+            }
+
+            // Execute ability or basic attack
+            if (queuedEnemyAbility != null)
+            {
+                var enemyAbility = queuedEnemyAbility;
+                enemyAbility.Use();
+
+                UIHelper.PrintColored($"💢 {enemy.Name} uses ", ConsoleColor.Red);
+                UIHelper.PrintColored($"{enemyAbility.Ability.Name}", ConsoleColor.Yellow);
+                UIHelper.PrintColoredLine($"!", ConsoleColor.Red);
+                UIHelper.PrintColoredLine($"   {enemyAbility.Ability.Description}", ConsoleColor.Gray);
+                Thread.Sleep(600);
+
+                if (playerDodgeNext)
+                {
+                    UIHelper.PrintColoredLine($"💨 You dodged {enemy.Name}'s {enemyAbility.Ability.Name}!", ConsoleColor.Cyan);
+                    playerDodgeNext = false;
+                }
+                else
+                {
+                    ExecuteEnemyAbilityEffects(player, enemy, enemyAbility);
+                }
+            }
+            else
+            {
+                // Basic attack
+                if (playerDodgeNext)
+                {
+                    UIHelper.PrintColoredLine($"💨 You dodged {enemy.Name}'s attack!", ConsoleColor.Cyan);
+                    playerDodgeNext = false;
+                }
+                else
+                {
+                    int actualDamage = ApplyDamageToPlayer(player, enemy, enemy.Attack);
+                    UIHelper.PrintColoredLine($"⚔️  {enemy.Name} attacks! {actualDamage} damage!", ConsoleColor.Red);
+                }
+            }
+
+            // Notify AI of turn end
+            if (enemy.AI != null)
+            {
+                enemy.AI.OnTurnEnd();
+            }
+
+            Thread.Sleep(1000);
+        }
+
+        /// <summary>
+        /// Apply end of turn effects: regeneration, cooldowns, etc.
+        /// </summary>
+        private void ApplyEndOfTurnEffects(Player player, Enemy enemy)
+        {
+            // Regenerate mana
+            int manaRegen = (int)(player.MaxMana * GameConfig.Config.ManaRegenRate);
+            if (manaRegen > 0)
+            {
+                player.RestoreMana(manaRegen);
+                UIHelper.PrintColoredLine($"💙 Restored {manaRegen} mana", ConsoleColor.Cyan);
+                Thread.Sleep(500);
+            }
+
+            // Regenerate health
+            int healthRegen = (int)(player.MaxHP * GameConfig.Config.HealthRegenRate);
+            if (healthRegen > 0)
+            {
+                player.Heal(healthRegen);
+                UIHelper.PrintColoredLine($"❤️  Restored {healthRegen} HP", ConsoleColor.Green);
+                Thread.Sleep(500);
+            }
+
+            // Tick down legacy activeBuffs (for backwards compatibility with Battle Rage, etc.)
+            List<string> expiredBuffs = new List<string>();
+            foreach (var buff in activeBuffs)
+            {
+                activeBuffs[buff.Key]--;
+                if (activeBuffs[buff.Key] <= 0)
+                {
+                    expiredBuffs.Add(buff.Key);
+                }
+            }
+            foreach (var buff in expiredBuffs)
+            {
+                activeBuffs.Remove(buff);
+                UIHelper.PrintColoredLine($"⏰ {buff} effect has worn off!", ConsoleColor.Gray);
+                Thread.Sleep(500);
+            }
+
+            // Reduce ability cooldowns
+            foreach (var ability in player.Abilities)
+            {
+                ability.ReduceCooldown();
+            }
+            foreach (var ability in enemy.Abilities)
+            {
+                ability.ReduceCooldown();
+            }
+        }
+
+        /// <summary>
+        /// Execute enemy ability effects
+        /// </summary>
+        private void ExecuteEnemyAbilityEffects(Player player, Enemy enemy, EnemyAbility enemyAbility)
+        {
+            // Execute each effect manually (simplified for enemy abilities)
+            foreach (var effect in enemyAbility.Ability.Effects)
+            {
+                if (effect is DamageEffect damageEffect)
+                {
+                    // Calculate damage based on enemy attack
+                    int baseDamage = (int)(enemy.Attack * damageEffect.Multiplier);
+                    int actualDamage = ApplyDamageToPlayer(player, enemy, baseDamage);
+                    UIHelper.PrintColoredLine($"   💥 {actualDamage} damage dealt!", ConsoleColor.Red);
+                }
+                else if (effect is PoisonEffect poisonEffect)
+                {
+                    // Enemy applies burning/DOT to player via player StatusEffects
+                    if (player.StatusEffects != null)
+                    {
+                        player.StatusEffects.DamageOverTimeAmount = poisonEffect.DamagePerTurn;
+                        player.StatusEffects.DamageOverTimeTurns = poisonEffect.Duration;
+                        UIHelper.PrintColoredLine($"   🔥 You are burning! ({poisonEffect.DamagePerTurn} damage/turn for {poisonEffect.Duration} turns)", ConsoleColor.Red);
+                    }
+                }
+                else if (effect is RestoreEffect restoreEffect)
+                {
+                    // Enemy heals itself
+                    int healAmount = Math.Min(restoreEffect.Amount, enemy.MaxHP - enemy.CurrentHP);
+                    enemy.CurrentHP += healAmount;
+                    UIHelper.PrintColoredLine($"   💚 {enemy.Name} heals for {healAmount} HP!", ConsoleColor.Green);
+
+                    // Notify AI that enemy used a heal ability
+                    if (enemy.AI != null)
+                    {
+                        enemy.AI.RecordHealUsed();
+                    }
+                }
+                else if (effect is HealOverTimeEffect hotEffect)
+                {
+                    // Apply heal over time to enemy
+                    if (enemy.StatusEffects != null)
+                    {
+                        enemy.StatusEffects.HealOverTimeAmount = hotEffect.HealPerTurn;
+                        enemy.StatusEffects.HealOverTimeTurns = hotEffect.Duration;
+                        UIHelper.PrintColoredLine($"   💚 {enemy.Name} begins regenerating! ({hotEffect.HealPerTurn} HP/turn for {hotEffect.Duration} turns)", ConsoleColor.Green);
+                    }
+                }
+                else if (effect is StatModEffect statModEffect)
+                {
+                    // Reduce player's speed temporarily (simplified - just show message for now)
+                    UIHelper.PrintColoredLine($"   🔻 Your combat effectiveness is reduced!", ConsoleColor.Magenta);
+                }
+                else if (effect is BuffEffect buffEffect)
+                {
+                    // Enemy buffs are simplified for now - just show message
+                    UIHelper.PrintColoredLine($"   ⚡ {enemy.Name} is empowered by {buffEffect.BuffName}!", ConsoleColor.Yellow);
+                }
+                else if (effect is ThornsEffect thornsEffect)
+                {
+                    // Apply Thorns to enemy
+                    if (enemy.StatusEffects != null)
+                    {
+                        enemy.StatusEffects.ThornsValue = thornsEffect.ReflectDamage;
+                        enemy.StatusEffects.ThornsTurns = thornsEffect.Duration;
+                        UIHelper.PrintColoredLine($"   🌵 {enemy.Name} is surrounded by thorns! ({thornsEffect.ReflectDamage} damage reflection for {thornsEffect.Duration} turns)", ConsoleColor.Yellow);
+                    }
+                }
+
+                Thread.Sleep(500);
+            }
+        }
 
         public bool StartBossBattle(Player player, Enemy boss, bool isMiniboss = false)
         {
@@ -60,10 +491,6 @@ namespace TestRPGGame.Combat
             Console.Clear();
             activeBuffs.Clear();
             playerDodgeNext = false;
-            poisonDamage = 0;
-            poisonTurns = 0;
-            bleedDamage = 0;
-            bleedTurns = 0;
             enemyStunNext = false;
             player.ResetForNewBattle();
 
@@ -76,98 +503,42 @@ namespace TestRPGGame.Combat
 
             Thread.Sleep(1500);
 
-            // Determine turn order based on speed
-            bool playerTurn = player.Speed >= enemy.Speed;
-
             while (player.CurrentHP > 0 && enemy.CurrentHP > 0)
             {
                 DisplayBattleStatus(player, enemy);
 
-                if (playerTurn)
+                // Reset queued abilities for this turn
+                queuedPlayerAbility = null;
+                queuedEnemyAbility = null;
+
+                // PHASE 1: Player chooses action (this may queue an ability)
+                bool playerFled = PlayerChooseAction(player, enemy, canFlee);
+                if (playerFled) return false;
+                if (enemy.CurrentHP <= 0) break;
+
+                // PHASE 2: Enemy chooses action (this may queue an ability)
+                EnemyChooseAction(player, enemy);
+                if (player.CurrentHP <= 0) break;
+
+                // PHASE 3: Determine turn order based on speed and priority
+                bool playerGoesFirst = DetermineInitialTurnOrder(player, enemy);
+
+                // PHASE 4: Execute actions in order
+                if (playerGoesFirst)
                 {
-                    // Regenerate mana at start of player turn
-                    int manaRegen = (int)(player.MaxMana * GameConfig.Config.ManaRegenRate);
-                    if (manaRegen > 0)
-                    {
-                        player.RestoreMana(manaRegen);
-                        UIHelper.PrintColoredLine($"💙 Restored {manaRegen} mana", ConsoleColor.Cyan);
-                        Thread.Sleep(500);
-                    }
-
-                    // Apply poison damage at start of enemy's turn (on the enemy)
-                    if (poisonTurns > 0)
-                    {
-                        enemy.CurrentHP -= poisonDamage;
-                        UIHelper.PrintColoredLine($"💚 Poison deals {poisonDamage} damage to {enemy.Name}!", ConsoleColor.Green);
-                        poisonTurns--;
-                        Thread.Sleep(800);
-                    }
-
-                    // Player buff durations tick down at start of player turn
-                    List<string> expiredBuffs = new List<string>();
-                    foreach (var buff in activeBuffs)
-                    {
-                        activeBuffs[buff.Key]--;
-                        if (activeBuffs[buff.Key] <= 0)
-                        {
-                            expiredBuffs.Add(buff.Key);
-                        }
-                    }
-                    foreach (var buff in expiredBuffs)
-                    {
-                        activeBuffs.Remove(buff);
-                        UIHelper.PrintColoredLine($"⏰ {buff} effect has worn off!", ConsoleColor.Gray);
-                        Thread.Sleep(500);
-                    }
-
-                    bool playerFled = PlayerTurn(player, enemy, canFlee);
-                    if (playerFled) return false; // Player fled, return false to indicate defeat/flee
+                    ExecutePlayerAction(player, enemy);
                     if (enemy.CurrentHP <= 0) break;
-                    playerTurn = false;
+                    ExecuteEnemyAction(player, enemy);
                 }
                 else
                 {
-                    // Apply bleed damage at start of enemy turn
-                    if (bleedTurns > 0)
-                    {
-                        player.CurrentHP -= bleedDamage;
-                        UIHelper.PrintColoredLine($"🩸 Bleeding! You take {bleedDamage} damage!", ConsoleColor.Red);
-                        bleedTurns--;
-                        Thread.Sleep(800);
-                    }
-
-                    // Check if enemy is stunned
-                    if (enemyStunNext)
-                    {
-                        UIHelper.PrintColoredLine($"⚡ {enemy.Name} is stunned and loses their turn!", ConsoleColor.Yellow);
-                        enemyStunNext = false;
-                    }
-                    else
-                    {
-                        EnemyTurn(player, enemy);
-                    }
+                    ExecuteEnemyAction(player, enemy);
                     if (player.CurrentHP <= 0) break;
-                    playerTurn = true;
+                    ExecutePlayerAction(player, enemy);
                 }
 
-                // Regenerate health per turn
-                int healthRegen = (int)(player.MaxHP * GameConfig.Config.HealthRegenRate);
-                if (healthRegen > 0)
-                {
-                    player.Heal(healthRegen);
-                    UIHelper.PrintColoredLine($"❤️  Restored {healthRegen} HP", ConsoleColor.Green);
-                    Thread.Sleep(500);
-                }
-
-                // Reduce ability cooldowns
-                foreach (var ability in player.Abilities)
-                {
-                    ability.ReduceCooldown();
-                }
-                foreach (var ability in enemy.Abilities)
-                {
-                    ability.ReduceCooldown();
-                }
+                // End of turn: regeneration, status effects, cooldowns
+                ApplyEndOfTurnEffects(player, enemy);
             }
 
             return player.CurrentHP > 0;
@@ -186,15 +557,27 @@ namespace TestRPGGame.Combat
 
             // Display player status effects
             List<string> playerEffects = new List<string>();
-            // Check for burning from enemy status effects
-            if (enemy.StatusEffects != null && enemy.StatusEffects.DamageOverTimeTurns > 0)
-                playerEffects.Add($"🔥 Burning ({enemy.StatusEffects.DamageOverTimeAmount} dmg/turn, {enemy.StatusEffects.DamageOverTimeTurns} turns)");
-            if (poisonTurns > 0)
-                playerEffects.Add($"💚 Poisoned ({poisonDamage} dmg/turn, {poisonTurns} turns)");
-            if (bleedTurns > 0)
-                playerEffects.Add($"🩸 Bleeding ({bleedDamage} dmg/turn, {bleedTurns} turns)");
+            if (player.StatusEffects != null)
+            {
+                // Status effects from Player.StatusEffects
+                if (player.StatusEffects.DamageOverTimeTurns > 0)
+                    playerEffects.Add($"🔥 Burning ({player.StatusEffects.DamageOverTimeAmount} dmg/turn, {player.StatusEffects.DamageOverTimeTurns} turns)");
+                if (player.StatusEffects.BleedTurns > 0)
+                    playerEffects.Add($"🩸 Bleeding ({player.StatusEffects.BleedAmount} dmg/turn, {player.StatusEffects.BleedTurns} turns)");
+                if (player.StatusEffects.HealOverTimeTurns > 0)
+                    playerEffects.Add($"💚 Regenerating ({player.StatusEffects.HealOverTimeAmount} HP/turn, {player.StatusEffects.HealOverTimeTurns} turns)");
+                if (player.StatusEffects.SpeedBuffTurns > 0)
+                    playerEffects.Add($"⚡ Speed Boost (+{player.StatusEffects.SpeedBuffValue}, {player.StatusEffects.SpeedBuffTurns} turns)");
+                if (player.StatusEffects.ShieldValue > 0)
+                    playerEffects.Add($"🛡️  Shield ({player.StatusEffects.ShieldValue} HP, {player.StatusEffects.ShieldTurns} turns)");
+                if (player.StatusEffects.ThornsValue > 0)
+                    playerEffects.Add($"🌵 Thorns ({player.StatusEffects.ThornsValue} dmg reflect, {player.StatusEffects.ThornsTurns} turns)");
+            }
+            // Legacy activeBuffs (Battle Rage, Shield Wall, etc.)
             if (activeBuffs.ContainsKey("Battle Rage"))
                 playerEffects.Add($"⚡ Battle Rage ({activeBuffs["Battle Rage"]} turns)");
+            if (activeBuffs.ContainsKey("Shield Wall"))
+                playerEffects.Add($"🛡️  Shield Wall ({activeBuffs["Shield Wall"]} turns)");
             if (playerDodgeNext)
                 playerEffects.Add($"💨 Dodge Ready");
 
@@ -225,6 +608,8 @@ namespace TestRPGGame.Combat
                     enemyEffects.Add($"🛡️  Shield ({enemy.StatusEffects.ShieldValue} HP, {enemy.StatusEffects.ShieldTurns} turns)");
                 if (enemy.StatusEffects.ThornsValue > 0)
                     enemyEffects.Add($"🌵 Thorns ({enemy.StatusEffects.ThornsValue} dmg reflect, {enemy.StatusEffects.ThornsTurns} turns)");
+                if (enemy.StatusEffects.SpeedBuffTurns > 0)
+                    enemyEffects.Add($"⚡ Speed Boost (+{enemy.StatusEffects.SpeedBuffValue}, {enemy.StatusEffects.SpeedBuffTurns} turns)");
                 if (enemy.StatusEffects.IsEnraged)
                     enemyEffects.Add($"😤 Enraged ({enemy.StatusEffects.EnrageDamageMultiplier}x dmg, {enemy.StatusEffects.EnrageTurns} turns)");
                 if (enemyStunNext)
@@ -481,9 +866,13 @@ namespace TestRPGGame.Combat
             }
             if (bleedProc)
             {
-                bleedDamage = bleedDmg;
-                bleedTurns = 3; // Bleed lasts 3 turns
-                UIHelper.PrintColoredLine($"   🩸 BLEED! Enemy inflicts {bleedDmg} damage per turn!", ConsoleColor.DarkRed);
+                // Apply bleed via enemy's status effects
+                if (enemy.StatusEffects != null)
+                {
+                    enemy.StatusEffects.BleedAmount = bleedDmg;
+                    enemy.StatusEffects.BleedTurns = 3; // Bleed lasts 3 turns
+                }
+                UIHelper.PrintColoredLine($"   🩸 BLEED! {enemy.Name} is bleeding {bleedDmg} damage per turn!", ConsoleColor.DarkRed);
             }
             if (stunProc)
             {
@@ -569,9 +958,8 @@ namespace TestRPGGame.Combat
             {
                 ActiveBuffs = activeBuffs,
                 PlayerDodgeNext = playerDodgeNext,
-                PoisonDamage = poisonDamage,
-                PoisonTurns = poisonTurns,
-                Random = random
+                Random = random,
+                IsPlayerAbility = true
             };
 
             // Execute all effects
@@ -583,13 +971,8 @@ namespace TestRPGGame.Combat
                 if (effect is DodgeEffect)
                 {
                     playerDodgeNext = true;
-                    player.Speed += 5;
                 }
-                else if (effect is PoisonEffect poisonEffect)
-                {
-                    poisonDamage = poisonEffect.DamagePerTurn;
-                    poisonTurns = poisonEffect.Duration;
-                }
+                // Other effects like Poison are now handled via Player.StatusEffects
             }
         }
 

@@ -230,11 +230,12 @@
   "enemy_quick_strike": {
     "Id": "enemy_quick_strike",
     "Name": "Quick Strike",
-    "Description": "A fast strike with moderate damage",
+    "Description": "A fast strike with moderate damage - always strikes first!",
     "PlayerClass": "Enemy",
     "ManaCost": 0,
     "Cooldown": 2,
     "Type": "Physical",
+    "Priority": true,
     "IsStarting": false,
     "IsUnlockable": false,
     "UnlockLevel": 0,

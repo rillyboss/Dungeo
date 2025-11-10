@@ -36,7 +36,8 @@ namespace TestRPGGame.Factories
                 data.PurchaseCost
             )
             {
-                IsUnlocked = data.IsStarting
+                IsUnlocked = data.IsStarting,
+                Priority = data.Priority
             };
 
             // Convert data effects to game effects

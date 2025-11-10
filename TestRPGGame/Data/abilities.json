@@ -177,11 +177,12 @@
   "rogue_backstab": {
     "Id": "rogue_backstab",
     "Name": "Backstab",
-    "Description": "Deal 3x damage, guaranteed crit",
+    "Description": "Strike from the shadows - guaranteed crit and goes first!",
     "PlayerClass": "Rogue",
     "ManaCost": 25,
     "Cooldown": 3,
     "Type": "Physical",
+    "Priority": true,
     "IsStarting": true,
     "IsUnlockable": false,
     "UnlockLevel": 0,

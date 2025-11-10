@@ -39,6 +39,10 @@ namespace TestRPGGame.Combat
         // Stun
         public int StunTurnsRemaining { get; set; }
 
+        // Speed buff/debuff
+        public int SpeedBuffValue { get; set; }
+        public int SpeedBuffTurns { get; set; }
+
         public CombatStatusEffects()
         {
             HealOverTimeTurns = 0;
@@ -55,6 +59,8 @@ namespace TestRPGGame.Combat
             EnrageTurns = 0;
             EnrageDamageMultiplier = 1.0;
             StunTurnsRemaining = 0;
+            SpeedBuffValue = 0;
+            SpeedBuffTurns = 0;
         }
 
         /// <summary>
@@ -129,6 +135,17 @@ namespace TestRPGGame.Combat
             {
                 StunTurnsRemaining--;
             }
+
+            // Reduce speed buff duration
+            if (SpeedBuffTurns > 0)
+            {
+                SpeedBuffTurns--;
+                if (SpeedBuffTurns == 0)
+                {
+                    SpeedBuffValue = 0;
+                    UIHelper.PrintColoredLine($"⚡ {enemy.Name}'s speed buff fades!", ConsoleColor.Gray);
+                }
+            }
         }
 
         /// <summary>
@@ -180,6 +197,17 @@ namespace TestRPGGame.Combat
                 if (ShieldTurns == 0)
                 {
                     ShieldValue = 0;
+                }
+            }
+
+            // Reduce speed buff duration
+            if (SpeedBuffTurns > 0)
+            {
+                SpeedBuffTurns--;
+                if (SpeedBuffTurns == 0)
+                {
+                    SpeedBuffValue = 0;
+                    UIHelper.PrintColoredLine($"⚡ Your speed buff fades!", ConsoleColor.Gray);
                 }
             }
         }

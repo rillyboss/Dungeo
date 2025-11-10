@@ -11,6 +11,7 @@ namespace TestRPGGame.DataLoading
         public int ManaCost { get; set; }
         public int Cooldown { get; set; }
         public string Type { get; set; } = "";
+        public bool Priority { get; set; } = false;
         public bool IsStarting { get; set; }
         public bool IsUnlockable { get; set; }
         public int UnlockLevel { get; set; }

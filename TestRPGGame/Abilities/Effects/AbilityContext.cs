@@ -11,9 +11,11 @@ namespace TestRPGGame.Abilities.Effects
         public Enemy? Enemy { get; set; }
         public System.Collections.Generic.Dictionary<string, int>? ActiveBuffs { get; set; }
         public bool PlayerDodgeNext { get; set; }
-        public int PoisonDamage { get; set; }
-        public int PoisonTurns { get; set; }
         public Random Random { get; set; }
+        /// <summary>
+        /// Tracks if this is a player-used ability (true) or enemy-used ability (false)
+        /// </summary>
+        public bool IsPlayerAbility { get; set; }
 
         public AbilityContext(Player player, Enemy? enemy = null)
         {

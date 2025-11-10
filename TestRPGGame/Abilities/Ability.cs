@@ -15,6 +15,10 @@ namespace TestRPGGame.Abilities
         public bool IsUnlocked { get; set; }
         public int UnlockLevel { get; set; }
         public int PurchaseCost { get; set; }
+        /// <summary>
+        /// If true, this ability always goes first regardless of speed
+        /// </summary>
+        public bool Priority { get; set; }
 
         public Ability(string name, int manaCost, int cooldown, string description, AbilityType type,
                       int unlockLevel = 1, int purchaseCost = 0)

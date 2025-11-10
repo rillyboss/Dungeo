@@ -39,6 +39,9 @@ namespace TestRPGGame.Entities.Player
         // Abilities
         public List<Ability> Abilities { get; set; }
 
+        // Combat status effects
+        public CombatStatusEffects StatusEffects { get; set; }
+
         // Base stats (without equipment)
         private int BaseMaxHP { get; set; }
         private int BaseMaxMana { get; set; }
@@ -57,6 +60,7 @@ namespace TestRPGGame.Entities.Player
             ExperienceToNextLevel = 100;
             Inventory = new PlayerInventory();
             Abilities = new List<Ability>();
+            StatusEffects = new CombatStatusEffects();
 
             InitializeFromClassData();
             InitializeAbilities();
@@ -308,6 +312,9 @@ namespace TestRPGGame.Entities.Player
             {
                 ability.CurrentCooldown = 0;
             }
+
+            // Reset status effects for new battle
+            StatusEffects = new CombatStatusEffects();
         }
     }
 }
