@@ -1,0 +1,98 @@
+{
+  "": {
+    "Id": "",
+    "Name": "",
+    "Effects": []
+  },
+  "of Protection": {
+    "Id": "of Protection",
+    "Name": "of Protection",
+    "Effects": [
+      {
+        "Type": "Fortified",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Turtle": {
+    "Id": "of the Turtle",
+    "Name": "of the Turtle",
+    "Effects": [
+      {
+        "Type": "Fortified",
+        "Value": 8,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Thorns",
+        "Value": 10,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Fortitude": {
+    "Id": "of Fortitude",
+    "Name": "of Fortitude",
+    "Effects": [
+      {
+        "Type": "Fortified",
+        "Value": 6,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Resilience": {
+    "Id": "of Resilience",
+    "Name": "of Resilience",
+    "Effects": [
+      {
+        "Type": "Fortified",
+        "Value": 5,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Swift",
+        "Value": 3,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Mountain": {
+    "Id": "of the Mountain",
+    "Name": "of the Mountain",
+    "Effects": [
+      {
+        "Type": "Fortified",
+        "Value": 10,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Thorns",
+        "Value": 15,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Invulnerability": {
+    "Id": "of Invulnerability",
+    "Name": "of Invulnerability",
+    "Effects": [
+      {
+        "Type": "Fortified",
+        "Value": 12,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Thorns",
+        "Value": 20,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Swift",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  }
+}

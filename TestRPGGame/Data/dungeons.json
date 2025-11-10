@@ -1,0 +1,261 @@
+{
+  "goblin_caves": {
+    "Id": "goblin_caves",
+    "Name": "Goblin Caves",
+    "Description": "Deep beneath the hillside, the Goblin Caves echo with the chattering of greenskins.\nTravelers have reported stolen goods and kidnapped villagers. The Goblin King grows bold.\nIt's time to put an end to their raids.",
+    "RecommendedLevel": 1,
+    "RequiredDungeonsCompleted": 0,
+    "RequiredDungeonIds": [],
+    "MinibossId": "goblin_champion",
+    "BossId": "goblin_king",
+    "Encounters": [
+      {
+        "Type": "Choice",
+        "Text": "You enter the dark caves. Two passages split before you.\nThe left passage has fresh torch marks. The right echoes with dripping water.",
+        "Choices": [
+          {
+            "Text": "Take the left passage (torch marks)",
+            "Effect": "TakeDamage",
+            "Value": 0
+          },
+          {
+            "Text": "Take the right passage (dripping water)",
+            "Effect": "TakeDamage",
+            "Value": 10
+          }
+        ]
+      },
+      {
+        "Type": "Choice",
+        "Text": "You discover a goblin treasure hoard! But it's trapped.\nDo you attempt to disarm it or walk away?",
+        "Choices": [
+          {
+            "Text": "Attempt to disarm the trap",
+            "Effect": "GainGoldAndMana",
+            "Value": 50
+          },
+          {
+            "Text": "Leave it alone",
+            "Effect": "None",
+            "Value": 0
+          }
+        ]
+      }
+    ],
+    "Rewards": {
+      "MinibossGold": 125,
+      "BossGold": 300,
+      "GuaranteedItems": [],
+      "PossibleItems": [],
+      "ItemDropChance": 1.0
+    }
+  },
+
+  "haunted_crypt": {
+    "Id": "haunted_crypt",
+    "Name": "Haunted Crypt",
+    "Description": "The ancient crypt of the Mourning Lords has awakened with unholy power.\nUndead rise from their tombs, and a dark presence stirs within.\nOnly the brave dare enter this cursed place.",
+    "RecommendedLevel": 3,
+    "RequiredDungeonsCompleted": 1,
+    "RequiredDungeonIds": ["goblin_caves"],
+    "MinibossId": "grave_lich",
+    "BossId": "death_knight",
+    "Encounters": [
+      {
+        "Type": "Choice",
+        "Text": "Skeletal warriors block your path. You notice a crumbling wall to the side.\nFight them head-on or try to sneak past?",
+        "Choices": [
+          {
+            "Text": "Fight the skeletal warriors",
+            "Effect": "Combat",
+            "Value": 0
+          },
+          {
+            "Text": "Sneak through the crumbling wall",
+            "Effect": "TakeDamage",
+            "Value": 15
+          }
+        ]
+      },
+      {
+        "Type": "Choice",
+        "Text": "You find an altar with a glowing chalice. Do you drink from it?",
+        "Choices": [
+          {
+            "Text": "Drink from the chalice",
+            "Effect": "HealAndRestoreMana",
+            "Value": 50
+          },
+          {
+            "Text": "Ignore it",
+            "Effect": "None",
+            "Value": 0
+          }
+        ]
+      }
+    ],
+    "Rewards": {
+      "MinibossGold": 250,
+      "BossGold": 600,
+      "GuaranteedItems": [],
+      "PossibleItems": [],
+      "ItemDropChance": 1.0
+    }
+  },
+
+  "dragons_lair": {
+    "Id": "dragons_lair",
+    "Name": "Dragon's Lair",
+    "Description": "High in the Scorched Peaks, an ancient red dragon has claimed a mountain as its domain.\nIts hoard is legendary, filled with treasures from a thousand conquered kingdoms.\nBut the dragon Infernus is not easily parted from his gold.",
+    "RecommendedLevel": 6,
+    "RequiredDungeonsCompleted": 2,
+    "RequiredDungeonIds": ["goblin_caves", "haunted_crypt"],
+    "MinibossId": "dragon_wyrm",
+    "BossId": "infernus",
+    "Encounters": [
+      {
+        "Type": "Choice",
+        "Text": "A massive lava flow blocks your path. You can try to jump across or find another way.",
+        "Choices": [
+          {
+            "Text": "Make the dangerous jump",
+            "Effect": "TakeDamage",
+            "Value": 30
+          },
+          {
+            "Text": "Search for another path",
+            "Effect": "GainGold",
+            "Value": 100
+          }
+        ]
+      },
+      {
+        "Type": "Choice",
+        "Text": "Dragon cultists guard an inner chamber. They offer to let you pass for tribute.",
+        "Choices": [
+          {
+            "Text": "Pay them 50 gold",
+            "Effect": "PayGold",
+            "Value": 50
+          },
+          {
+            "Text": "Refuse and fight",
+            "Effect": "RestoreMana",
+            "Value": 40
+          }
+        ]
+      }
+    ],
+    "Rewards": {
+      "MinibossGold": 500,
+      "BossGold": 1250,
+      "GuaranteedItems": [],
+      "PossibleItems": [],
+      "ItemDropChance": 1.0
+    }
+  },
+
+  "ancient_ruins": {
+    "Id": "ancient_ruins",
+    "Name": "Ancient Ruins",
+    "Description": "The Lost City of Aethermoor, where an ancient civilization wielded magic beyond comprehension.\nNow only stone golems and magical constructs patrol the crumbling halls.\nAt its heart lies the Arcane Nexus, pulsing with raw power.",
+    "RecommendedLevel": 9,
+    "RequiredDungeonsCompleted": 3,
+    "RequiredDungeonIds": ["goblin_caves", "haunted_crypt", "dragons_lair"],
+    "MinibossId": "stone_colossus",
+    "BossId": "arcane_guardian",
+    "Encounters": [
+      {
+        "Type": "Choice",
+        "Text": "Ancient runes glow on the walls. You can try to decipher them or move on.",
+        "Choices": [
+          {
+            "Text": "Study the runes",
+            "Effect": "BoostStat",
+            "Value": 2
+          },
+          {
+            "Text": "Ignore them and proceed",
+            "Effect": "None",
+            "Value": 0
+          }
+        ]
+      },
+      {
+        "Type": "Choice",
+        "Text": "A shimmering portal offers a shortcut, but it radiates unstable energy.",
+        "Choices": [
+          {
+            "Text": "Step through the portal",
+            "Effect": "RestoreManaAndTakeDamage",
+            "Value": 60
+          },
+          {
+            "Text": "Take the long way",
+            "Effect": "GainGold",
+            "Value": 150
+          }
+        ]
+      }
+    ],
+    "Rewards": {
+      "MinibossGold": 750,
+      "BossGold": 1750,
+      "GuaranteedItems": [],
+      "PossibleItems": [],
+      "ItemDropChance": 1.0
+    }
+  },
+
+  "void_temple": {
+    "Id": "void_temple",
+    "Name": "Void Temple",
+    "Description": "Beyond the veil of reality, the Void Temple drifts in eternal darkness.\nHere, the Void Lord seeks to consume all of existence.\nThis is the ultimate challenge - few return from this nightmare realm.",
+    "RecommendedLevel": 12,
+    "RequiredDungeonsCompleted": 4,
+    "RequiredDungeonIds": ["goblin_caves", "haunted_crypt", "dragons_lair", "ancient_ruins"],
+    "MinibossId": "void_harbinger",
+    "BossId": "void_lord",
+    "Encounters": [
+      {
+        "Type": "Choice",
+        "Text": "Void tendrils reach out to drain your life force. You must act quickly!",
+        "Choices": [
+          {
+            "Text": "Channel your energy to resist",
+            "Effect": "BoostAllStats",
+            "Value": 3
+          },
+          {
+            "Text": "Run through and take the hit",
+            "Effect": "TakeDamageAndLoseMana",
+            "Value": 40
+          }
+        ]
+      },
+      {
+        "Type": "Choice",
+        "Text": "An echo of a fallen hero offers you a choice: power or wisdom.",
+        "Choices": [
+          {
+            "Text": "Choose power",
+            "Effect": "BoostAttack",
+            "Value": 5
+          },
+          {
+            "Text": "Choose wisdom",
+            "Effect": "BoostMana",
+            "Value": 50
+          }
+        ]
+      }
+    ],
+    "Rewards": {
+      "MinibossGold": 1250,
+      "BossGold": 4000,
+      "GuaranteedItems": [],
+      "PossibleItems": [],
+      "ItemDropChance": 1.0
+    }
+  }
+}

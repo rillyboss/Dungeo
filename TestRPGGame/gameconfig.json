@@ -1,0 +1,9 @@
+{
+  "ManaRegenRate": 0.05,
+  "HealthRegenRate": 0.0,
+  "RestingCost": 10,
+  "AbilityPurchaseCostMultiplier": 100,
+  "AbilityUnlockLevel": 5,
+  "PotionHealPercent": 0.5,
+  "CombatAutosave": true
+}

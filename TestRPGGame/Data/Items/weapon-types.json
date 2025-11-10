@@ -1,0 +1,98 @@
+{
+  "Sword": {
+    "Id": "Sword",
+    "Name": "Sword",
+    "AttackType": "Physical",
+    "AttackWeight": 1.0,
+    "MagicWeight": 0.0,
+    "SpeedBonus": 0
+  },
+  "Axe": {
+    "Id": "Axe",
+    "Name": "Axe",
+    "AttackType": "Physical",
+    "AttackWeight": 1.3,
+    "MagicWeight": 0.0,
+    "SpeedBonus": -2
+  },
+  "Dagger": {
+    "Id": "Dagger",
+    "Name": "Dagger",
+    "AttackType": "Physical",
+    "AttackWeight": 0.7,
+    "MagicWeight": 0.0,
+    "SpeedBonus": 5
+  },
+  "Staff": {
+    "Id": "Staff",
+    "Name": "Staff",
+    "AttackType": "Arcane",
+    "AttackWeight": 0.5,
+    "MagicWeight": 1.5,
+    "SpeedBonus": 0
+  },
+  "Bow": {
+    "Id": "Bow",
+    "Name": "Bow",
+    "AttackType": "Physical",
+    "AttackWeight": 1.1,
+    "MagicWeight": 0.0,
+    "SpeedBonus": 3
+  },
+  "Spear": {
+    "Id": "Spear",
+    "Name": "Spear",
+    "AttackType": "Physical",
+    "AttackWeight": 1.2,
+    "MagicWeight": 0.0,
+    "SpeedBonus": 1
+  },
+  "Mace": {
+    "Id": "Mace",
+    "Name": "Mace",
+    "AttackType": "Holy",
+    "AttackWeight": 1.1,
+    "MagicWeight": 0.3,
+    "SpeedBonus": -1
+  },
+  "Wand": {
+    "Id": "Wand",
+    "Name": "Wand",
+    "AttackType": "Arcane",
+    "AttackWeight": 0.3,
+    "MagicWeight": 1.3,
+    "SpeedBonus": 2
+  },
+  "Halberd": {
+    "Id": "Halberd",
+    "Name": "Halberd",
+    "AttackType": "Physical",
+    "AttackWeight": 1.4,
+    "MagicWeight": 0.0,
+    "SpeedBonus": -3
+  },
+  "Scythe": {
+    "Id": "Scythe",
+    "Name": "Scythe",
+    "AttackType": "Dark",
+    "AttackWeight": 1.2,
+    "MagicWeight": 0.5,
+    "SpeedBonus": 0
+  },
+  "Katana": {
+    "Id": "Katana",
+    "Name": "Katana",
+    "AttackType": "Physical",
+    "AttackWeight": 1.0,
+    "MagicWeight": 0.0,
+    "SpeedBonus": 4
+  },
+  "Claymore": {
+    "Id": "Claymore",
+    "Name": "Claymore",
+    "AttackType": "Physical",
+    "AttackWeight": 1.5,
+    "MagicWeight": 0.0,
+    "SpeedBonus": -4
+  }
+}

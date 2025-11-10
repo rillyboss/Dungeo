@@ -1,0 +1,360 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using TestRPGGame.Combat;
+using TestRPGGame.Equipment;
+using TestRPGGame.UI;
+using TestRPGGame.Systems;
+using PlayerEntity = TestRPGGame.Entities.Player.Player;
+using EnemyEntity = TestRPGGame.Entities.Enemy.Enemy;
+
+namespace TestRPGGame.Entities.Dungeon
+{
+    public class DungeonProgress
+    {
+        public Dictionary<string, bool> CompletedDungeons { get; set; }
+
+        public DungeonProgress()
+        {
+            CompletedDungeons = new Dictionary<string, bool>();
+        }
+    }
+
+    public class DungeonRunner
+    {
+        private DungeonCombatSystem combatSystem;
+        private Random random;
+        private List<EquipmentItem> dungeonLoot;
+
+        public DungeonRunner()
+        {
+            combatSystem = new DungeonCombatSystem();
+            random = new Random();
+            dungeonLoot = new List<EquipmentItem>();
+        }
+
+        public bool RunDungeon(PlayerEntity player, Dungeon dungeon, DungeonProgress progress)
+        {
+            dungeonLoot.Clear();
+
+            // Display dungeon intro
+            ShowDungeonIntro(dungeon);
+
+            // Pay entry cost
+            if (dungeon.Requirements.GoldCost > 0)
+            {
+                player.Gold -= dungeon.Requirements.GoldCost;
+                UIHelper.PrintColoredLine($"💰 You pay {dungeon.Requirements.GoldCost} gold to enter the dungeon.", ConsoleColor.Yellow);
+                Thread.Sleep(1500);
+            }
+
+            // Run encounters
+            foreach (var encounter in dungeon.Encounters)
+            {
+                if (!RunEncounter(player, encounter))
+                {
+                    // Player chose to flee or died
+                    return false;
+                }
+
+                if (player.CurrentHP <= 0)
+                {
+                    HandleDeath(player);
+                    return false;
+                }
+            }
+
+            // Miniboss fight
+            UIHelper.PrintColoredLine("\n\n⚠️  You've reached the inner sanctum...", ConsoleColor.Yellow);
+            Thread.Sleep(1500);
+
+            bool minibossVictory = combatSystem.StartBossBattle(player, dungeon.Miniboss, true);
+
+            if (!minibossVictory)
+            {
+                HandleDeath(player);
+                return false;
+            }
+
+            // Miniboss rewards
+            ShowMinibossVictory(player, dungeon);
+
+            // Offer choice: leave or continue
+            if (!OfferContinueChoice())
+            {
+                // Player chooses to leave with miniboss rewards
+                GiveRewards(player, dungeon.MinibossReward, false);
+                return true;
+            }
+
+            // Boss fight
+            UIHelper.PrintColoredLine("\n\n💀 You venture deeper into the heart of darkness...", ConsoleColor.DarkRed);
+            Thread.Sleep(2000);
+
+            bool bossVictory = combatSystem.StartBossBattle(player, dungeon.Boss, false);
+
+            if (!bossVictory)
+            {
+                HandleDeath(player);
+                // Player loses ALL loot on final boss death
+                dungeonLoot.Clear();
+                return false;
+            }
+
+            // Full dungeon completion
+            ShowBossVictory(player, dungeon);
+            GiveRewards(player, dungeon.BossReward, true);
+
+            // Mark dungeon as completed
+            progress.CompletedDungeons[dungeon.Name] = true;
+
+            return true;
+        }
+
+        private void ShowDungeonIntro(Dungeon dungeon)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("╔══════════════════════════════════════════════════════════╗", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine($"  {dungeon.Name.ToUpper()}", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("╚══════════════════════════════════════════════════════════╝\n", ConsoleColor.Cyan);
+
+            // Word wrap the story
+            var storyLines = dungeon.Story.Split('\n');
+            foreach (var line in storyLines)
+            {
+                UIHelper.PrintColoredLine(line, ConsoleColor.Gray);
+            }
+
+            Console.WriteLine("\n");
+            UIHelper.PrintColoredLine("Press any key to enter the dungeon...", ConsoleColor.DarkGray);
+            Console.ReadKey(true);
+        }
+
+        private bool RunEncounter(PlayerEntity player, DungeonEncounter encounter)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine("          DUNGEON ENCOUNTER", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Cyan);
+
+            UIHelper.PrintColoredLine(encounter.Description + "\n", ConsoleColor.White);
+
+            for (int i = 0; i < encounter.Choices.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {encounter.Choices[i]}");
+            }
+
+            Console.Write("\nYour choice: ");
+            string choice = Console.ReadLine() ?? "";
+
+            if (int.TryParse(choice, out int choiceIndex) && choiceIndex > 0 && choiceIndex <= encounter.Choices.Count)
+            {
+                int index = choiceIndex - 1;
+                Console.WriteLine();
+                UIHelper.PrintColoredLine(encounter.ChoiceResults[index], ConsoleColor.Yellow);
+                Thread.Sleep(1500);
+
+                // Apply encounter effects
+                if (index == 0 && encounter.GoldReward.HasValue)
+                {
+                    player.Gold += encounter.GoldReward.Value;
+                    UIHelper.PrintColoredLine($"\n💰 +{encounter.GoldReward.Value} gold!", ConsoleColor.Yellow);
+                }
+                if (index == 0 && encounter.HealthReward.HasValue)
+                {
+                    player.Heal(encounter.HealthReward.Value);
+                    UIHelper.PrintColoredLine($"\n❤️  +{encounter.HealthReward.Value} HP!", ConsoleColor.Green);
+                }
+                if (index == 0 && encounter.ManaReward.HasValue)
+                {
+                    player.RestoreMana(encounter.ManaReward.Value);
+                    UIHelper.PrintColoredLine($"\n💙 +{encounter.ManaReward.Value} mana!", ConsoleColor.Cyan);
+                }
+
+                // Negative effects for certain choices
+                if (index == 1 && encounter.ChoiceResults[index].Contains("10 damage"))
+                {
+                    player.CurrentHP -= 10;
+                    UIHelper.PrintColoredLine($"\n💔 You take 10 damage! HP: {player.CurrentHP}/{player.MaxHP}", ConsoleColor.Red);
+                }
+                if (index == 1 && encounter.ChoiceResults[index].Contains("15 HP"))
+                {
+                    player.CurrentHP -= 15;
+                    UIHelper.PrintColoredLine($"\n💔 You take 15 damage! HP: {player.CurrentHP}/{player.MaxHP}", ConsoleColor.Red);
+                }
+
+                // Combat encounter
+                if (index == 0 && encounter.ChoiceResults[index].Contains("Combat"))
+                {
+                    Thread.Sleep(1000);
+                    EnemyEntity enemy = Entities.Enemy.EnemyFactory.CreateEnemy(player.Level + 1); // Slightly harder
+                    CombatSystem normalCombat = new CombatSystem();
+                    bool victory = normalCombat.StartBattle(player, enemy);
+
+                    if (!victory)
+                    {
+                        return false;
+                    }
+
+                    // No gold/exp from dungeon random encounters - that's for bosses
+                    UIHelper.PrintColoredLine("\n✓ Enemy defeated!", ConsoleColor.Green);
+                }
+
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey(true);
+                return true;
+            }
+
+            return true;
+        }
+
+        private void ShowMinibossVictory(PlayerEntity player, Dungeon dungeon)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("\n╔══════════════════════════════════════════╗", ConsoleColor.Green);
+            UIHelper.PrintColoredLine("║      MINIBOSS DEFEATED!               ║", ConsoleColor.Green);
+            UIHelper.PrintColoredLine("╚══════════════════════════════════════════╝\n", ConsoleColor.Green);
+
+            UIHelper.PrintColoredLine($"You have defeated the {dungeon.Miniboss.Name}!", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine($"\nMiniboss rewards available:", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine($"  💰 {dungeon.MinibossReward.GoldMin}-{dungeon.MinibossReward.GoldMax} gold", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine($"  ⭐ {dungeon.MinibossReward.Experience} experience", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine($"  ✨ {dungeon.MinibossReward.GuaranteedLootCount} guaranteed items (min rarity: {GetRarityName(dungeon.MinibossReward.MinLootRarity)})", ConsoleColor.Magenta);
+
+            Thread.Sleep(2000);
+        }
+
+        private void ShowBossVictory(PlayerEntity player, Dungeon dungeon)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("\n╔══════════════════════════════════════════╗", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("║      DUNGEON CONQUERED!               ║", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("╚══════════════════════════════════════════╝\n", ConsoleColor.Yellow);
+
+            UIHelper.PrintColoredLine($"You have defeated {dungeon.Boss.Name} and conquered the {dungeon.Name}!", ConsoleColor.Yellow);
+            Thread.Sleep(1500);
+        }
+
+        private bool OfferContinueChoice()
+        {
+            Console.WriteLine("\n");
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("      CHOICE: LEAVE OR CONTINUE?", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Yellow);
+
+            UIHelper.PrintColoredLine("You can leave now with the miniboss rewards...", ConsoleColor.White);
+            UIHelper.PrintColoredLine("Or press on to face the final boss for greater treasures!", ConsoleColor.White);
+            UIHelper.PrintColoredLine("\n⚠️  WARNING: If you die to the final boss, you lose ALL loot!", ConsoleColor.Red);
+
+            Console.WriteLine("\n1. Leave the dungeon (safe, keep miniboss rewards)");
+            Console.WriteLine("2. Continue to the final boss (risky, greater rewards)");
+
+            Console.Write("\nYour choice: ");
+            string choice = Console.ReadLine() ?? "";
+
+            return choice == "2";
+        }
+
+        private void GiveRewards(PlayerEntity player, DungeonReward reward, bool isBossReward)
+        {
+            Console.WriteLine();
+            UIHelper.PrintColoredLine("╔══════════════ REWARDS ══════════════╗", ConsoleColor.Green);
+
+            // Gold
+            int goldReward = random.Next(reward.GoldMin, reward.GoldMax + 1);
+            player.Gold += goldReward;
+            UIHelper.PrintColoredLine($"  💰 Gold: +{goldReward} (Total: {player.Gold})", ConsoleColor.Yellow);
+
+            // Experience
+            bool leveledUp = player.GainExperience(reward.Experience);
+            UIHelper.PrintColoredLine($"  ⭐ Experience: +{reward.Experience}", ConsoleColor.Cyan);
+
+            if (leveledUp)
+            {
+                UIHelper.PrintColoredLine($"\n  🎉 LEVEL UP! You are now level {player.Level}!", ConsoleColor.Magenta);
+            }
+
+            // Loot
+            Console.WriteLine();
+            UIHelper.PrintColoredLine($"  ✨ Legendary Loot:", ConsoleColor.Magenta);
+
+            for (int i = 0; i < reward.GuaranteedLootCount; i++)
+            {
+                EquipmentItem item = GenerateDungeonLoot(player.Level, reward.MinLootRarity);
+                player.Inventory.BackpackItems.Add(item);
+
+                UIHelper.PrintColored($"    • ", ConsoleColor.White);
+                UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                Console.WriteLine();
+            }
+
+            UIHelper.PrintColoredLine("╚═════════════════════════════════════╝", ConsoleColor.Green);
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey(true);
+        }
+
+        private EquipmentItem GenerateDungeonLoot(int playerLevel, int minRarity)
+        {
+            // Force minimum rarity
+            EquipmentItem item;
+            int attempts = 0;
+
+            do
+            {
+                item = EquipmentGenerator.GenerateItem(playerLevel + 2); // Better loot than regular
+                attempts++;
+            } while (GetRarityValue(item.Rarity) < minRarity && attempts < 50);
+
+            return item;
+        }
+
+        private int GetRarityValue(ItemRarity rarity)
+        {
+            return rarity switch
+            {
+                ItemRarity.Common => 0,
+                ItemRarity.Uncommon => 1,
+                ItemRarity.Rare => 2,
+                ItemRarity.Epic => 3,
+                ItemRarity.Legendary => 4,
+                _ => 0
+            };
+        }
+
+        private string GetRarityName(int rarityValue)
+        {
+            return rarityValue switch
+            {
+                0 => "Common",
+                1 => "Uncommon",
+                2 => "Rare",
+                3 => "Epic",
+                4 => "Legendary",
+                _ => "Common"
+            };
+        }
+
+        private void HandleDeath(PlayerEntity player)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("\n╔══════════════════════════════════════════╗", ConsoleColor.Red);
+            UIHelper.PrintColoredLine("║           DEFEAT!                     ║", ConsoleColor.Red);
+            UIHelper.PrintColoredLine("╚══════════════════════════════════════════╝\n", ConsoleColor.Red);
+
+            UIHelper.PrintColoredLine("You have been defeated in the dungeon...", ConsoleColor.Red);
+            UIHelper.PrintColoredLine("You crawl back to safety, but lose all dungeon loot and some gold.", ConsoleColor.Gray);
+
+            int goldLost = Math.Min(player.Gold / 4, 200);
+            player.Gold -= goldLost;
+            player.CurrentHP = player.MaxHP / 2;
+
+            UIHelper.PrintColoredLine($"\n💰 Lost {goldLost} gold", ConsoleColor.Red);
+            UIHelper.PrintColoredLine($"❤️  Recovered to {player.CurrentHP} HP", ConsoleColor.Gray);
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey(true);
+        }
+    }
+}

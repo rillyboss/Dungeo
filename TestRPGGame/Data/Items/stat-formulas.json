@@ -1,0 +1,7 @@
+{
+  "base_stat": "level * 2",
+  "weapon_attack": "baseStat * rarityMultiplier * prefixMultiplier * weaponTypeWeight * random(1.5, 2.0)",
+  "weapon_magic": "baseStat * rarityMultiplier * prefixMagicMultiplier * weaponTypeMagicWeight",
+  "armor_defense": "baseStat * rarityMultiplier * prefixDefenseMultiplier * slotMultiplier * random(1.5, 2.0)",
+  "armor_hp": "baseStat * rarityMultiplier * prefixHPMultiplier * 3"
+}

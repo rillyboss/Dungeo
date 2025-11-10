@@ -1,0 +1,115 @@
+{
+  "": {
+    "Id": "",
+    "Name": "",
+    "Effects": []
+  },
+  "of Power": {
+    "Id": "of Power",
+    "Name": "of Power",
+    "Effects": [
+      {
+        "Type": "Mighty",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Bear": {
+    "Id": "of the Bear",
+    "Name": "of the Bear",
+    "Effects": [
+      {
+        "Type": "Mighty",
+        "Value": 8,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Fortified",
+        "Value": 3,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Fury": {
+    "Id": "of Fury",
+    "Name": "of Fury",
+    "Effects": [
+      {
+        "Type": "DoubleDamage",
+        "Value": 0,
+        "ProcChance": 20
+      }
+    ]
+  },
+  "of Swiftness": {
+    "Id": "of Swiftness",
+    "Name": "of Swiftness",
+    "Effects": [
+      {
+        "Type": "Swift",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Phoenix": {
+    "Id": "of the Phoenix",
+    "Name": "of the Phoenix",
+    "Effects": [
+      {
+        "Type": "LifeSteal",
+        "Value": 25,
+        "ProcChance": 30
+      }
+    ]
+  },
+  "of Destruction": {
+    "Id": "of Destruction",
+    "Name": "of Destruction",
+    "Effects": [
+      {
+        "Type": "DoubleDamage",
+        "Value": 0,
+        "ProcChance": 25
+      },
+      {
+        "Type": "CriticalFocus",
+        "Value": 15,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Chaos": {
+    "Id": "of Chaos",
+    "Name": "of Chaos",
+    "Effects": [
+      {
+        "Type": "ChainLightning",
+        "Value": 40,
+        "ProcChance": 20
+      },
+      {
+        "Type": "Bleed",
+        "Value": 15,
+        "ProcChance": 25
+      }
+    ]
+  },
+  "of the Void": {
+    "Id": "of the Void",
+    "Name": "of the Void",
+    "Effects": [
+      {
+        "Type": "ManaSiphon",
+        "Value": 10,
+        "ProcChance": 35
+      },
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "ProcChance": 15
+      }
+    ]
+  }
+}

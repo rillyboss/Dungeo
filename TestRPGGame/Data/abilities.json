@@ -1,0 +1,259 @@
+{
+  // Warrior Abilities
+  "warrior_power_strike": {
+    "Id": "warrior_power_strike",
+    "Name": "Power Strike",
+    "Description": "Deal 2.5x damage",
+    "PlayerClass": "Warrior",
+    "ManaCost": 20,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "IsStarting": true,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.5
+      }
+    ]
+  },
+  "warrior_shield_wall": {
+    "Id": "warrior_shield_wall",
+    "Name": "Shield Wall",
+    "Description": "Reduce damage by 50% for 2 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 25,
+    "Cooldown": 4,
+    "Type": "Defensive",
+    "IsStarting": true,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Shield Wall",
+        "Duration": 2
+      }
+    ]
+  },
+  "warrior_battle_rage": {
+    "Id": "warrior_battle_rage",
+    "Name": "Battle Rage",
+    "Description": "Increase attack by 50% for 3 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 30,
+    "Cooldown": 5,
+    "Type": "Buff",
+    "IsStarting": true,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Battle Rage",
+        "Duration": 3
+      }
+    ]
+  },
+  "warrior_whirlwind": {
+    "Id": "warrior_whirlwind",
+    "Name": "Whirlwind",
+    "Description": "Deal 3.5x AoE damage",
+    "PlayerClass": "Warrior",
+    "ManaCost": 40,
+    "Cooldown": 6,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 200,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.5
+      }
+    ]
+  },
+
+  // Mage Abilities
+  "mage_fireball": {
+    "Id": "mage_fireball",
+    "Name": "Fireball",
+    "Description": "Deal 3x magic damage",
+    "PlayerClass": "Mage",
+    "ManaCost": 25,
+    "Cooldown": 3,
+    "Type": "Magic",
+    "IsStarting": true,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.0
+      }
+    ]
+  },
+  "mage_ice_lance": {
+    "Id": "mage_ice_lance",
+    "Name": "Ice Lance",
+    "Description": "Deal 2.5x magic damage + slow enemy",
+    "PlayerClass": "Mage",
+    "ManaCost": 35,
+    "Cooldown": 4,
+    "Type": "Magic",
+    "IsStarting": true,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.5
+      },
+      {
+        "Type": "StatMod",
+        "Value": -3,
+        "Duration": 0
+      }
+    ]
+  },
+  "mage_mana_surge": {
+    "Id": "mage_mana_surge",
+    "Name": "Mana Surge",
+    "Description": "Restore 50 mana",
+    "PlayerClass": "Mage",
+    "ManaCost": 20,
+    "Cooldown": 3,
+    "Type": "Buff",
+    "IsStarting": true,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Restore",
+        "Value": 50,
+        "Duration": 0
+      }
+    ]
+  },
+  "mage_meteor_strike": {
+    "Id": "mage_meteor_strike",
+    "Name": "Meteor Strike",
+    "Description": "Deal 4x magic damage",
+    "PlayerClass": "Mage",
+    "ManaCost": 50,
+    "Cooldown": 7,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 200,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 4.0
+      }
+    ]
+  },
+
+  // Rogue Abilities
+  "rogue_backstab": {
+    "Id": "rogue_backstab",
+    "Name": "Backstab",
+    "Description": "Deal 3x damage, guaranteed crit",
+    "PlayerClass": "Rogue",
+    "ManaCost": 25,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "IsStarting": true,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.0
+      }
+    ]
+  },
+  "rogue_poison_blade": {
+    "Id": "rogue_poison_blade",
+    "Name": "Poison Blade",
+    "Description": "Deal damage over time for 3 turns",
+    "PlayerClass": "Rogue",
+    "ManaCost": 30,
+    "Cooldown": 4,
+    "Type": "Physical",
+    "IsStarting": true,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Poison",
+        "Value": 20,
+        "Duration": 3,
+        "DamagePerTurn": 15
+      }
+    ]
+  },
+  "rogue_shadow_step": {
+    "Id": "rogue_shadow_step",
+    "Name": "Shadow Step",
+    "Description": "Dodge next attack + increase speed",
+    "PlayerClass": "Rogue",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": true,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Dodge",
+        "Duration": 0
+      }
+    ]
+  },
+  "rogue_assassinate": {
+    "Id": "rogue_assassinate",
+    "Name": "Assassinate",
+    "Description": "Deal 5x damage, guaranteed crit",
+    "PlayerClass": "Rogue",
+    "ManaCost": 45,
+    "Cooldown": 6,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 200,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 5.0
+      }
+    ]
+  }
+}

@@ -1,0 +1,79 @@
+{
+  "Leather": {
+    "Id": "Leather",
+    "Name": "Leather",
+    "DefenseMultiplier": 0.8,
+    "HPMultiplier": 0.9,
+    "MinRarity": 0
+  },
+  "Chainmail": {
+    "Id": "Chainmail",
+    "Name": "Chainmail",
+    "DefenseMultiplier": 1.0,
+    "HPMultiplier": 1.0,
+    "MinRarity": 0
+  },
+  "Iron": {
+    "Id": "Iron",
+    "Name": "Iron",
+    "DefenseMultiplier": 1.1,
+    "HPMultiplier": 1.1,
+    "MinRarity": 1
+  },
+  "Steel": {
+    "Id": "Steel",
+    "Name": "Steel",
+    "DefenseMultiplier": 1.3,
+    "HPMultiplier": 1.2,
+    "MinRarity": 1
+  },
+  "Plate": {
+    "Id": "Plate",
+    "Name": "Plate",
+    "DefenseMultiplier": 1.4,
+    "HPMultiplier": 1.3,
+    "MinRarity": 2
+  },
+  "Mythril": {
+    "Id": "Mythril",
+    "Name": "Mythril",
+    "DefenseMultiplier": 1.5,
+    "HPMultiplier": 1.4,
+    "MinRarity": 2
+  },
+  "Dragon Scale": {
+    "Id": "Dragon Scale",
+    "Name": "Dragon Scale",
+    "DefenseMultiplier": 1.7,
+    "HPMultiplier": 1.6,
+    "MinRarity": 3
+  },
+  "Legendary": {
+    "Id": "Legendary",
+    "Name": "Legendary",
+    "DefenseMultiplier": 1.6,
+    "HPMultiplier": 1.7,
+    "MinRarity": 3
+  },
+  "Divine": {
+    "Id": "Divine",
+    "Name": "Divine",
+    "DefenseMultiplier": 1.8,
+    "HPMultiplier": 1.8,
+    "MinRarity": 4
+  },
+  "Adamantine": {
+    "Id": "Adamantine",
+    "Name": "Adamantine",
+    "DefenseMultiplier": 2.0,
+    "HPMultiplier": 1.5,
+    "MinRarity": 4
+  },
+  "Ethereal": {
+    "Id": "Ethereal",
+    "Name": "Ethereal",
+    "DefenseMultiplier": 1.5,
+    "HPMultiplier": 2.0,
+    "MinRarity": 4
+  }
+}
