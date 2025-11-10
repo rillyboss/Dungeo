@@ -20,6 +20,8 @@ namespace TestRPGGame.DataLoading
         private static Dictionary<string, BossData>? _bosses;
         private static Dictionary<string, DungeonData>? _dungeons;
         private static ItemGenerationData? _itemGeneration;
+        private static Dictionary<string, EnemyPrefixData>? _enemyPrefixes;
+        private static Dictionary<string, EnemySuffixData>? _enemySuffixes;
 
         /// <summary>
         /// Load all game data from JSON files.
@@ -29,10 +31,13 @@ namespace TestRPGGame.DataLoading
             try
             {
                 // Load player abilities
-                _abilities = LoadJsonFile<Dictionary<string, AbilityData>>("abilities.json");
+                var playerAbilities = LoadJsonFile<Dictionary<string, AbilityData>>("abilities.json");
 
                 // Load enemy abilities and merge with player abilities
                 var enemyAbilities = LoadJsonFile<Dictionary<string, AbilityData>>("enemy-abilities.json");
+
+                // Merge into a single dictionary before assigning to _abilities
+                _abilities = new Dictionary<string, AbilityData>(playerAbilities);
                 foreach (var ability in enemyAbilities)
                 {
                     _abilities[ability.Key] = ability.Value;
@@ -53,11 +58,16 @@ namespace TestRPGGame.DataLoading
                     rarity_multipliers = LoadJsonFile<Dictionary<string, double>>(Path.Combine("Items", "rarity-multipliers.json"))
                 };
 
+                // Load enemy modifier data
+                _enemyPrefixes = LoadJsonFile<Dictionary<string, EnemyPrefixData>>(Path.Combine("Enemies", "enemy-prefixes.json"));
+                _enemySuffixes = LoadJsonFile<Dictionary<string, EnemySuffixData>>(Path.Combine("Enemies", "enemy-suffixes.json"));
+
                 Console.WriteLine($"✓ Loaded {_abilities.Count} abilities ({enemyAbilities.Count} enemy abilities)");
                 Console.WriteLine($"✓ Loaded {_enemies.Count} enemies");
                 Console.WriteLine($"✓ Loaded {_bosses.Count} bosses");
                 Console.WriteLine($"✓ Loaded {_dungeons.Count} dungeons");
                 Console.WriteLine($"✓ Loaded item generation data ({_itemGeneration.WeaponPrefixes.Count} weapon prefixes, {_itemGeneration.WeaponTypes.Count} weapon types)");
+                Console.WriteLine($"✓ Loaded enemy modifiers ({_enemyPrefixes.Count} prefixes, {_enemySuffixes.Count} suffixes)");
             }
             catch (Exception ex)
             {
@@ -145,6 +155,35 @@ namespace TestRPGGame.DataLoading
         {
             if (_itemGeneration == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
             return _itemGeneration;
+        }
+
+        // Enemy modifier queries
+        public static IEnumerable<EnemyPrefixData> GetEnemyPrefixesByLevel(int level)
+        {
+            if (_enemyPrefixes == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
+            return _enemyPrefixes.Values.Where(p => p.MinLevel <= level);
+        }
+
+        public static IEnumerable<EnemySuffixData> GetEnemySuffixesByLevel(int level)
+        {
+            if (_enemySuffixes == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
+            return _enemySuffixes.Values.Where(s => s.MinLevel <= level);
+        }
+
+        public static EnemyPrefixData GetEnemyPrefix(string id)
+        {
+            if (_enemyPrefixes == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
+            if (!_enemyPrefixes.TryGetValue(id, out var prefix))
+                throw new KeyNotFoundException($"Enemy prefix not found: {id}");
+            return prefix;
+        }
+
+        public static EnemySuffixData GetEnemySuffix(string id)
+        {
+            if (_enemySuffixes == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
+            if (!_enemySuffixes.TryGetValue(id, out var suffix))
+                throw new KeyNotFoundException($"Enemy suffix not found: {id}");
+            return suffix;
         }
     }
 }

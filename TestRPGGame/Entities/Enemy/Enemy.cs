@@ -7,7 +7,10 @@ namespace TestRPGGame.Entities.Enemy
 {
     public class Enemy
     {
-        public string Name { get; set; }
+        public string BaseName { get; set; } // Original enemy name
+        public string Name { get; set; } // Full name with modifiers
+        public string Prefix { get; set; } = ""; // Modifier prefix
+        public string Suffix { get; set; } = ""; // Modifier suffix
         public EnemyType Type { get; set; }
         public int MaxHP { get; set; }
         public int CurrentHP { get; set; }
@@ -23,7 +26,10 @@ namespace TestRPGGame.Entities.Enemy
 
         public Enemy(string name, EnemyType type, int hp, int attack, int defense, int speed, int gold, int exp)
         {
+            BaseName = name;
             Name = name;
+            Prefix = "";
+            Suffix = "";
             Type = type;
             MaxHP = hp;
             CurrentHP = hp;
@@ -41,7 +47,10 @@ namespace TestRPGGame.Entities.Enemy
         // Constructor for boss enemies
         public Enemy(string name, int level, EnemyType type)
         {
+            BaseName = name;
             Name = name;
+            Prefix = "";
+            Suffix = "";
             Type = type;
             MaxHP = 100;
             CurrentHP = 100;

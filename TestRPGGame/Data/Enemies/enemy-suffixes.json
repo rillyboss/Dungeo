@@ -1,0 +1,125 @@
+{
+  // Enemy Suffixes - Add special abilities and enhance rewards
+  // Higher level suffixes grant additional abilities and better loot
+
+  "": {
+    "Id": "",
+    "Name": "",
+    "MinLevel": 0,
+    "AdditionalAbilities": [],
+    "GoldBonus": 0,
+    "ExpBonus": 0
+  },
+  "the Nimble": {
+    "Id": "the Nimble",
+    "Name": "the Nimble",
+    "MinLevel": 1,
+    "AdditionalAbilities": ["enemy_quick_strike"],
+    "GoldBonus": 10,
+    "ExpBonus": 10
+  },
+  "the Brutal": {
+    "Id": "the Brutal",
+    "Name": "the Brutal",
+    "MinLevel": 2,
+    "AdditionalAbilities": ["enemy_fierce_strike"],
+    "GoldBonus": 15,
+    "ExpBonus": 15
+  },
+  "the Toxic": {
+    "Id": "the Toxic",
+    "Name": "the Toxic",
+    "MinLevel": 2,
+    "AdditionalAbilities": ["enemy_poison_spit"],
+    "GoldBonus": 20,
+    "ExpBonus": 15
+  },
+  "the Enraged": {
+    "Id": "the Enraged",
+    "Name": "the Enraged",
+    "MinLevel": 3,
+    "AdditionalAbilities": ["enemy_enrage"],
+    "GoldBonus": 20,
+    "ExpBonus": 20
+  },
+  "the Cursed": {
+    "Id": "the Cursed",
+    "Name": "the Cursed",
+    "MinLevel": 3,
+    "AdditionalAbilities": ["enemy_curse"],
+    "GoldBonus": 25,
+    "ExpBonus": 20
+  },
+  "the Armored": {
+    "Id": "the Armored",
+    "Name": "the Armored",
+    "MinLevel": 4,
+    "AdditionalAbilities": ["enemy_harden_skin"],
+    "GoldBonus": 25,
+    "ExpBonus": 25
+  },
+  "the Bloodthirsty": {
+    "Id": "the Bloodthirsty",
+    "Name": "the Bloodthirsty",
+    "MinLevel": 4,
+    "AdditionalAbilities": ["enemy_life_drain"],
+    "GoldBonus": 30,
+    "ExpBonus": 25
+  },
+  "the Destroyer": {
+    "Id": "the Destroyer",
+    "Name": "the Destroyer",
+    "MinLevel": 5,
+    "AdditionalAbilities": ["enemy_crushing_blow"],
+    "GoldBonus": 35,
+    "ExpBonus": 30
+  },
+  "the Relentless": {
+    "Id": "the Relentless",
+    "Name": "the Relentless",
+    "MinLevel": 6,
+    "AdditionalAbilities": ["enemy_reckless_charge", "enemy_enrage"],
+    "GoldBonus": 50,
+    "ExpBonus": 40
+  },
+  "the Venomous": {
+    "Id": "the Venomous",
+    "Name": "the Venomous",
+    "MinLevel": 6,
+    "AdditionalAbilities": ["enemy_venom_strike"],
+    "GoldBonus": 45,
+    "ExpBonus": 35
+  },
+  "of Flames": {
+    "Id": "of Flames",
+    "Name": "of Flames",
+    "MinLevel": 5,
+    "AdditionalAbilities": ["enemy_flame_breath"],
+    "GoldBonus": 40,
+    "ExpBonus": 35
+  },
+  "of Darkness": {
+    "Id": "of Darkness",
+    "Name": "of Darkness",
+    "MinLevel": 5,
+    "AdditionalAbilities": ["enemy_dark_bolt", "enemy_curse"],
+    "GoldBonus": 45,
+    "ExpBonus": 40
+  },
+  "the Unstoppable": {
+    "Id": "the Unstoppable",
+    "Name": "the Unstoppable",
+    "MinLevel": 8,
+    "AdditionalAbilities": ["enemy_crushing_blow", "enemy_harden_skin", "enemy_enrage"],
+    "GoldBonus": 80,
+    "ExpBonus": 60
+  },
+  "the Deathlord": {
+    "Id": "the Deathlord",
+    "Name": "the Deathlord",
+    "MinLevel": 10,
+    "AdditionalAbilities": ["enemy_life_drain", "enemy_dark_bolt", "enemy_curse"],
+    "GoldBonus": 100,
+    "ExpBonus": 80
+  }
+}
