@@ -7,6 +7,7 @@ using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Entities.Boss;
 using TestRPGGame.Entities.Dungeon;
 using TestRPGGame.Abilities.Effects;
+using TestRPGGame.Equipment;
 using TestRPGGame.Systems;
 using TestRPGGame.UI;
 
@@ -52,6 +53,9 @@ namespace TestRPGGame.Combat
             bool playerDodgeNext = false;
             int poisonDamage = 0;
             int poisonTurns = 0;
+            int bleedDamage = 0;
+            int bleedTurns = 0;
+            bool enemyStunNext = false;
             var random = new Random();
 
             // Determine turn order based on speed
@@ -105,17 +109,35 @@ namespace TestRPGGame.Combat
                     }
                     else
                     {
-                        PlayerTurnInBossFight(player, boss, ref activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, random);
+                        PlayerTurnInBossFight(player, boss, ref activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, ref bleedDamage, ref bleedTurns, ref enemyStunNext, random);
                         if (boss.CurrentHP <= 0) break;
                     }
                     playerTurn = false;
                 }
                 else
                 {
+                    // Apply bleed damage at start of boss turn
+                    if (bleedTurns > 0)
+                    {
+                        player.CurrentHP -= bleedDamage;
+                        UIHelper.PrintColoredLine($"🩸 Bleeding! You take {bleedDamage} damage!", ConsoleColor.Red);
+                        bleedTurns--;
+                        Thread.Sleep(800);
+                    }
+
                     // Boss status effects tick at start of boss turn
                     boss.StatusEffects!.ApplyTurnEffects(boss, player);
 
-                    BossTurn(player, boss, ref playerDodgeNext, ref activeBuffs, random);
+                    // Check if boss is stunned
+                    if (enemyStunNext)
+                    {
+                        UIHelper.PrintColoredLine($"⚡ {boss.Name} is stunned and loses their turn!", ConsoleColor.Yellow);
+                        enemyStunNext = false;
+                    }
+                    else
+                    {
+                        BossTurn(player, boss, ref playerDodgeNext, ref activeBuffs, random);
+                    }
                     if (player.CurrentHP <= 0) break;
                     playerTurn = true;
                 }
@@ -218,7 +240,7 @@ namespace TestRPGGame.Combat
         }
 
         private void PlayerTurnInBossFight(Player player, Enemy boss, ref Dictionary<string, int> activeBuffs,
-            ref bool playerDodgeNext, ref int poisonDamage, ref int poisonTurns, Random random)
+            ref bool playerDodgeNext, ref int poisonDamage, ref int poisonTurns, ref int bleedDamage, ref int bleedTurns, ref bool enemyStunNext, Random random)
         {
             UIHelper.PrintColoredLine("YOUR TURN:", ConsoleColor.Yellow);
             Console.WriteLine("1. ⚔️  Attack");
@@ -231,10 +253,10 @@ namespace TestRPGGame.Combat
             switch (choice)
             {
                 case "1":
-                    PerformBossAttack(player, boss, activeBuffs, random);
+                    PerformBossAttack(player, boss, activeBuffs, ref bleedDamage, ref bleedTurns, ref enemyStunNext, random);
                     break;
                 case "2":
-                    UseBossAbility(player, boss, activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, random);
+                    UseBossAbility(player, boss, activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, ref bleedDamage, ref bleedTurns, ref enemyStunNext, random);
                     break;
                 case "3":
                     if (player.UsePotion())
@@ -245,7 +267,7 @@ namespace TestRPGGame.Combat
                     else
                     {
                         UIHelper.PrintColoredLine("\n❌ No potions left!", ConsoleColor.Red);
-                        PlayerTurnInBossFight(player, boss, ref activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, random);
+                        PlayerTurnInBossFight(player, boss, ref activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, ref bleedDamage, ref bleedTurns, ref enemyStunNext, random);
                         return;
                     }
                     break;
@@ -257,7 +279,7 @@ namespace TestRPGGame.Combat
             Thread.Sleep(1000);
         }
 
-        private void PerformBossAttack(Player player, Enemy boss, Dictionary<string, int> activeBuffs, Random random)
+        private void PerformBossAttack(Player player, Enemy boss, Dictionary<string, int> activeBuffs, ref int bleedDamage, ref int bleedTurns, ref bool enemyStunNext, Random random)
         {
             int damage = player.GetTotalAttack();
 
@@ -276,6 +298,49 @@ namespace TestRPGGame.Combat
 
             // Check for shield
             int actualDamage = Math.Max(1, damage - boss.Defense);
+
+            // Check for special effects BEFORE applying damage
+            var specialEffects = player.Inventory.GetAllSpecialEffects();
+            bool doubleProc = false;
+            int lifestealAmount = 0;
+            int manaSiphonAmount = 0;
+            bool stunProc = false;
+            bool bleedProc = false;
+            int bleedDmg = 0;
+            bool chainLightningProc = false;
+            int chainLightningDmg = 0;
+
+            foreach (var effect in specialEffects)
+            {
+                double roll = random.NextDouble() * 100;
+                if (roll < effect.ProcChance)
+                {
+                    switch (effect.Type)
+                    {
+                        case EffectType.DoubleDamage:
+                            actualDamage *= 2;
+                            doubleProc = true;
+                            break;
+                        case EffectType.LifeSteal:
+                            lifestealAmount = effect.Value;
+                            break;
+                        case EffectType.ManaSiphon:
+                            manaSiphonAmount = effect.Value;
+                            break;
+                        case EffectType.Stun:
+                            stunProc = true;
+                            break;
+                        case EffectType.Bleed:
+                            bleedProc = true;
+                            bleedDmg = effect.Value;
+                            break;
+                        case EffectType.ChainLightning:
+                            chainLightningProc = true;
+                            chainLightningDmg = effect.Value;
+                            break;
+                    }
+                }
+            }
 
             if (boss.StatusEffects!.ShieldValue > 0)
             {
@@ -309,10 +374,42 @@ namespace TestRPGGame.Combat
             {
                 UIHelper.PrintColoredLine($"⚔️  You deal {actualDamage} damage!", ConsoleColor.White);
             }
+
+            // Display special effect procs
+            if (doubleProc)
+            {
+                UIHelper.PrintColoredLine("   ✨ DOUBLE DAMAGE proc!", ConsoleColor.Magenta);
+            }
+            if (lifestealAmount > 0)
+            {
+                player.Heal(lifestealAmount);
+                UIHelper.PrintColoredLine($"   💉 Life Steal: Restored {lifestealAmount} HP!", ConsoleColor.Green);
+            }
+            if (manaSiphonAmount > 0)
+            {
+                player.RestoreMana(manaSiphonAmount);
+                UIHelper.PrintColoredLine($"   💫 Mana Siphon: Restored {manaSiphonAmount} mana!", ConsoleColor.Cyan);
+            }
+            if (chainLightningProc)
+            {
+                boss.CurrentHP -= chainLightningDmg;
+                UIHelper.PrintColoredLine($"   ⚡ CHAIN LIGHTNING! Deals {chainLightningDmg} bonus damage!", ConsoleColor.Yellow);
+            }
+            if (bleedProc)
+            {
+                bleedDamage = bleedDmg;
+                bleedTurns = 3; // Bleed lasts 3 turns
+                UIHelper.PrintColoredLine($"   🩸 BLEED! Boss inflicts {bleedDmg} damage per turn!", ConsoleColor.DarkRed);
+            }
+            if (stunProc)
+            {
+                enemyStunNext = true;
+                UIHelper.PrintColoredLine($"   ⚡ STUNNED! {boss.Name} loses their next turn!", ConsoleColor.Yellow);
+            }
         }
 
         private void UseBossAbility(Player player, Enemy boss, Dictionary<string, int> activeBuffs,
-            ref bool playerDodgeNext, ref int poisonDamage, ref int poisonTurns, Random random)
+            ref bool playerDodgeNext, ref int poisonDamage, ref int poisonTurns, ref int bleedDamage, ref int bleedTurns, ref bool enemyStunNext, Random random)
         {
             var unlockedAbilities = player.Abilities.Where(a => a.IsUnlocked).ToList();
 
@@ -320,7 +417,7 @@ namespace TestRPGGame.Combat
             {
                 UIHelper.PrintColoredLine("\n❌ No abilities unlocked yet!", ConsoleColor.Red);
                 Thread.Sleep(1000);
-                PlayerTurnInBossFight(player, boss, ref activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, random);
+                PlayerTurnInBossFight(player, boss, ref activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, ref bleedDamage, ref bleedTurns, ref enemyStunNext, random);
                 return;
             }
 
@@ -340,7 +437,7 @@ namespace TestRPGGame.Combat
 
             if (choice == "0")
             {
-                PlayerTurnInBossFight(player, boss, ref activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, random);
+                PlayerTurnInBossFight(player, boss, ref activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, ref bleedDamage, ref bleedTurns, ref enemyStunNext, random);
                 return;
             }
 
@@ -352,7 +449,7 @@ namespace TestRPGGame.Combat
                 {
                     UIHelper.PrintColoredLine("\n❌ Cannot use this ability!", ConsoleColor.Red);
                     Thread.Sleep(1000);
-                    UseBossAbility(player, boss, activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, random);
+                    UseBossAbility(player, boss, activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, ref bleedDamage, ref bleedTurns, ref enemyStunNext, random);
                     return;
                 }
 
@@ -390,7 +487,7 @@ namespace TestRPGGame.Combat
             {
                 UIHelper.PrintColoredLine("\n❌ Invalid choice!", ConsoleColor.Red);
                 Thread.Sleep(1000);
-                UseBossAbility(player, boss, activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, random);
+                UseBossAbility(player, boss, activeBuffs, ref playerDodgeNext, ref poisonDamage, ref poisonTurns, ref bleedDamage, ref bleedTurns, ref enemyStunNext, random);
             }
         }
 

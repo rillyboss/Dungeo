@@ -18,6 +18,9 @@ namespace TestRPGGame.Combat
         private bool playerDodgeNext = false;
         private int poisonDamage = 0;
         private int poisonTurns = 0;
+        private int bleedDamage = 0;
+        private int bleedTurns = 0;
+        private bool enemyStunNext = false;
 
         public bool StartBattle(Player player, Enemy enemy)
         {
@@ -26,6 +29,9 @@ namespace TestRPGGame.Combat
             playerDodgeNext = false;
             poisonDamage = 0;
             poisonTurns = 0;
+            bleedDamage = 0;
+            bleedTurns = 0;
+            enemyStunNext = false;
             player.ResetForNewBattle();
 
             AsciiArt.DrawCombatStart();
@@ -87,7 +93,25 @@ namespace TestRPGGame.Combat
                 }
                 else
                 {
-                    EnemyTurn(player, enemy);
+                    // Apply bleed damage at start of enemy turn
+                    if (bleedTurns > 0)
+                    {
+                        player.CurrentHP -= bleedDamage;
+                        UIHelper.PrintColoredLine($"🩸 Bleeding! You take {bleedDamage} damage!", ConsoleColor.Red);
+                        bleedTurns--;
+                        Thread.Sleep(800);
+                    }
+
+                    // Check if enemy is stunned
+                    if (enemyStunNext)
+                    {
+                        UIHelper.PrintColoredLine($"⚡ {enemy.Name} is stunned and loses their turn!", ConsoleColor.Yellow);
+                        enemyStunNext = false;
+                    }
+                    else
+                    {
+                        EnemyTurn(player, enemy);
+                    }
                     if (player.CurrentHP <= 0) break;
                     playerTurn = true;
                 }
@@ -236,6 +260,10 @@ namespace TestRPGGame.Combat
             int lifestealAmount = 0;
             int manaSiphonAmount = 0;
             bool stunProc = false;
+            bool bleedProc = false;
+            int bleedDmg = 0;
+            bool chainLightningProc = false;
+            int chainLightningDmg = 0;
 
             foreach (var effect in specialEffects)
             {
@@ -256,6 +284,14 @@ namespace TestRPGGame.Combat
                             break;
                         case EffectType.Stun:
                             stunProc = true;
+                            break;
+                        case EffectType.Bleed:
+                            bleedProc = true;
+                            bleedDmg = effect.Value;
+                            break;
+                        case EffectType.ChainLightning:
+                            chainLightningProc = true;
+                            chainLightningDmg = effect.Value;
                             break;
                     }
                 }
@@ -303,10 +339,21 @@ namespace TestRPGGame.Combat
                 player.RestoreMana(manaSiphonAmount);
                 UIHelper.PrintColoredLine($"   💫 Mana Siphon: Restored {manaSiphonAmount} mana!", ConsoleColor.Cyan);
             }
+            if (chainLightningProc)
+            {
+                enemy.CurrentHP -= chainLightningDmg;
+                UIHelper.PrintColoredLine($"   ⚡ CHAIN LIGHTNING! Deals {chainLightningDmg} bonus damage!", ConsoleColor.Yellow);
+            }
+            if (bleedProc)
+            {
+                bleedDamage = bleedDmg;
+                bleedTurns = 3; // Bleed lasts 3 turns
+                UIHelper.PrintColoredLine($"   🩸 BLEED! Enemy inflicts {bleedDmg} damage per turn!", ConsoleColor.DarkRed);
+            }
             if (stunProc)
             {
+                enemyStunNext = true;
                 UIHelper.PrintColoredLine($"   ⚡ STUNNED! {enemy.Name} loses their next turn!", ConsoleColor.Yellow);
-                // Note: Stun implementation would require turn skipping logic
             }
 
             // Apply Thorns damage to player
