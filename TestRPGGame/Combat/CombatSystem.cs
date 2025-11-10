@@ -46,6 +46,15 @@ namespace TestRPGGame.Combat
 
                 if (playerTurn)
                 {
+                    // Regenerate mana at start of player turn
+                    int manaRegen = (int)(player.MaxMana * GameConfig.Config.ManaRegenRate);
+                    if (manaRegen > 0)
+                    {
+                        player.RestoreMana(manaRegen);
+                        UIHelper.PrintColoredLine($"💙 Restored {manaRegen} mana", ConsoleColor.Cyan);
+                        Thread.Sleep(500);
+                    }
+
                     // Apply poison damage at start of enemy's turn (on the enemy)
                     if (poisonTurns > 0)
                     {
@@ -83,15 +92,7 @@ namespace TestRPGGame.Combat
                     playerTurn = true;
                 }
 
-                // Regenerate mana and health per turn
-                int manaRegen = (int)(player.MaxMana * GameConfig.Config.ManaRegenRate);
-                if (manaRegen > 0)
-                {
-                    player.RestoreMana(manaRegen);
-                    UIHelper.PrintColoredLine($"💙 Restored {manaRegen} mana", ConsoleColor.Cyan);
-                    Thread.Sleep(500);
-                }
-
+                // Regenerate health per turn
                 int healthRegen = (int)(player.MaxHP * GameConfig.Config.HealthRegenRate);
                 if (healthRegen > 0)
                 {

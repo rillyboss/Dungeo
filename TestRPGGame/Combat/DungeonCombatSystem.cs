@@ -63,6 +63,15 @@ namespace TestRPGGame.Combat
 
                 if (playerTurn)
                 {
+                    // Regenerate mana at start of player turn
+                    int manaRegen = (int)(player.MaxMana * GameConfig.Config.ManaRegenRate);
+                    if (manaRegen > 0)
+                    {
+                        player.RestoreMana(manaRegen);
+                        UIHelper.PrintColoredLine($"💙 Restored {manaRegen} mana", ConsoleColor.Cyan);
+                        Thread.Sleep(500);
+                    }
+
                     // Apply poison damage at start of player's turn (on the boss)
                     if (poisonTurns > 0)
                     {
@@ -109,15 +118,6 @@ namespace TestRPGGame.Combat
                     BossTurn(player, boss, ref playerDodgeNext, ref activeBuffs, random);
                     if (player.CurrentHP <= 0) break;
                     playerTurn = true;
-                }
-
-                // Regenerate mana per turn
-                int manaRegen = (int)(player.MaxMana * GameConfig.Config.ManaRegenRate);
-                if (manaRegen > 0)
-                {
-                    player.RestoreMana(manaRegen);
-                    UIHelper.PrintColoredLine($"💙 Restored {manaRegen} mana", ConsoleColor.Cyan);
-                    Thread.Sleep(500);
                 }
 
                 // Reduce ability cooldowns
