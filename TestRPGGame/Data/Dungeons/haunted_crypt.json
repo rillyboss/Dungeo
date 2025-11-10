@@ -1,0 +1,76 @@
+{
+  "Id": "haunted_crypt",
+  "Name": "Haunted Crypt",
+  "DisplayName": "The Haunted Crypt",
+  "Description": "The ancient crypt of the Mourning Lords has awakened with unholy power.\nUndead rise from their tombs, and a dark presence stirs within.\nOnly the brave dare enter this cursed place.",
+  "RecommendedLevel": 3,
+  "RequiredDungeonsCompleted": 1,
+  "RequiredDungeonIds": ["goblin_caves"],
+  "MinibossId": "grave_lich",
+  "BossId": "death_knight",
+  "EncounterConfig": {
+    "MinEncounters": 2,
+    "MaxEncounters": 4,
+    "MinCombatEncounters": 2,
+    "MaxCombatEncounters": 4,
+    "RandomCombatChance": 0.3
+  },
+  "EncounterPool": [
+    {
+      "Type": "Choice",
+      "Text": "Skeletal warriors block your path. You notice a crumbling wall to the side.\nFight them head-on or try to sneak past?",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Fight the skeletal warriors",
+          "Effect": "Combat",
+          "Value": 0
+        },
+        {
+          "Text": "Sneak through the crumbling wall",
+          "Effect": "TakeDamage",
+          "Value": 15
+        },
+        {
+          "Text": "Create a distraction and slip past",
+          "Effect": "RestoreMana",
+          "Value": 30
+        }
+      ]
+    },
+    {
+      "Type": "Choice",
+      "Text": "You find an altar with a glowing chalice. Do you drink from it?",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Drink from the chalice",
+          "Effect": "HealAndRestoreMana",
+          "Value": 50
+        },
+        {
+          "Text": "Ignore it",
+          "Effect": "None",
+          "Value": 0
+        },
+        {
+          "Text": "Pour the liquid on the ground as an offering",
+          "Effect": "Heal",
+          "Value": 35
+        },
+        {
+          "Text": "Take the chalice itself",
+          "Effect": "GainGold",
+          "Value": 100
+        }
+      ]
+    }
+  ],
+  "Rewards": {
+    "MinibossGold": 250,
+    "BossGold": 600,
+    "GuaranteedItems": [],
+    "PossibleItems": [],
+    "ItemDropChance": 1.0
+  }
+}

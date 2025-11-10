@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using EnemyEntity = TestRPGGame.Entities.Enemy.Enemy;
+using TestRPGGame.DataLoading;
 
 namespace TestRPGGame.Entities.Dungeon
 {
@@ -18,6 +19,16 @@ namespace TestRPGGame.Entities.Dungeon
         /// For random combat encounters - the level to use for enemy generation
         /// </summary>
         public int? CombatLevel { get; set; }
+
+        /// <summary>
+        /// All possible choices for this encounter (for random selection)
+        /// </summary>
+        public List<DungeonChoiceData>? AllChoices { get; set; }
+
+        /// <summary>
+        /// Number of choices to randomly select from AllChoices (0 = show all)
+        /// </summary>
+        public int RandomChoiceCount { get; set; }
 
         public DungeonEncounter(string description)
         {

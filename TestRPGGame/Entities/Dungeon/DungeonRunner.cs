@@ -193,6 +193,39 @@ namespace TestRPGGame.Entities.Dungeon
             }
         }
 
+        /// <summary>
+        /// Get randomized choice indices for an encounter.
+        /// If RandomChoiceCount > 0, randomly selects that many choices.
+        /// Otherwise, returns all choices in original order.
+        /// </summary>
+        private List<int> GetRandomizedChoiceIndices(DungeonEncounter encounter)
+        {
+            int totalChoices = encounter.Choices.Count;
+
+            // If no random selection needed, return all indices in order
+            if (encounter.RandomChoiceCount <= 0 || encounter.RandomChoiceCount >= totalChoices)
+            {
+                var allIndices = new List<int>();
+                for (int i = 0; i < totalChoices; i++)
+                {
+                    allIndices.Add(i);
+                }
+                return allIndices;
+            }
+
+            // Randomly select N choices
+            var availableIndices = new List<int>();
+            for (int i = 0; i < totalChoices; i++)
+            {
+                availableIndices.Add(i);
+            }
+
+            ShuffleList(availableIndices);
+
+            // Take only the requested number of choices
+            return availableIndices.Take(encounter.RandomChoiceCount).ToList();
+        }
+
         private void ShowDungeonIntro(Dungeon dungeon)
         {
             Console.Clear();
@@ -249,17 +282,22 @@ namespace TestRPGGame.Entities.Dungeon
 
             UIHelper.PrintColoredLine(encounter.Description + "\n", ConsoleColor.White);
 
-            for (int i = 0; i < encounter.Choices.Count; i++)
+            // Randomize choices if configured
+            List<int> selectedChoiceIndices = GetRandomizedChoiceIndices(encounter);
+
+            for (int i = 0; i < selectedChoiceIndices.Count; i++)
             {
-                Console.WriteLine($"{i + 1}. {encounter.Choices[i]}");
+                int actualIndex = selectedChoiceIndices[i];
+                Console.WriteLine($"{i + 1}. {encounter.Choices[actualIndex]}");
             }
 
             Console.Write("\nYour choice: ");
             string choice = Console.ReadLine() ?? "";
 
-            if (int.TryParse(choice, out int choiceIndex) && choiceIndex > 0 && choiceIndex <= encounter.Choices.Count)
+            if (int.TryParse(choice, out int choiceIndex) && choiceIndex > 0 && choiceIndex <= selectedChoiceIndices.Count)
             {
-                int index = choiceIndex - 1;
+                // Map the user's choice to the actual choice index
+                int index = selectedChoiceIndices[choiceIndex - 1];
                 Console.WriteLine();
                 UIHelper.PrintColoredLine(encounter.ChoiceResults[index], ConsoleColor.Yellow);
                 Thread.Sleep(1500);

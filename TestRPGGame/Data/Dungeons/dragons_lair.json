@@ -1,0 +1,76 @@
+{
+  "Id": "dragons_lair",
+  "Name": "Dragon's Lair",
+  "DisplayName": "The Dragon's Lair",
+  "Description": "High in the Scorched Peaks, an ancient red dragon has claimed a mountain as its domain.\nIts hoard is legendary, filled with treasures from a thousand conquered kingdoms.\nBut the dragon Infernus is not easily parted from his gold.",
+  "RecommendedLevel": 6,
+  "RequiredDungeonsCompleted": 2,
+  "RequiredDungeonIds": ["goblin_caves", "haunted_crypt"],
+  "MinibossId": "dragon_wyrm",
+  "BossId": "infernus",
+  "EncounterConfig": {
+    "MinEncounters": 2,
+    "MaxEncounters": 4,
+    "MinCombatEncounters": 2,
+    "MaxCombatEncounters": 4,
+    "RandomCombatChance": 0.35
+  },
+  "EncounterPool": [
+    {
+      "Type": "Choice",
+      "Text": "A massive lava flow blocks your path. You can try to jump across or find another way.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Make the dangerous jump",
+          "Effect": "TakeDamage",
+          "Value": 30
+        },
+        {
+          "Text": "Search for another path",
+          "Effect": "GainGold",
+          "Value": 100
+        },
+        {
+          "Text": "Use magic to create a bridge",
+          "Effect": "RestoreManaAndTakeDamage",
+          "Value": 50
+        }
+      ]
+    },
+    {
+      "Type": "Choice",
+      "Text": "Dragon cultists guard an inner chamber. They offer to let you pass for tribute.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Pay them 50 gold",
+          "Effect": "PayGold",
+          "Value": 50
+        },
+        {
+          "Text": "Refuse and fight",
+          "Effect": "RestoreMana",
+          "Value": 40
+        },
+        {
+          "Text": "Negotiate a lower price",
+          "Effect": "GainGold",
+          "Value": 25
+        },
+        {
+          "Text": "Try to sneak past them",
+          "Effect": "TakeDamage",
+          "Value": 20
+        }
+      ]
+    }
+  ],
+  "Rewards": {
+    "MinibossGold": 500,
+    "BossGold": 1250,
+    "GuaranteedItems": [],
+    "PossibleItems": [],
+    "ItemDropChance": 1.0
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "Id": "ancient_ruins",
+  "Name": "Ancient Ruins",
+  "DisplayName": "The Ancient Ruins of Aethermoor",
+  "Description": "The Lost City of Aethermoor, where an ancient civilization wielded magic beyond comprehension.\nNow only stone golems and magical constructs patrol the crumbling halls.\nAt its heart lies the Arcane Nexus, pulsing with raw power.",
+  "RecommendedLevel": 9,
+  "RequiredDungeonsCompleted": 3,
+  "RequiredDungeonIds": ["goblin_caves", "haunted_crypt", "dragons_lair"],
+  "MinibossId": "stone_colossus",
+  "BossId": "arcane_guardian",
+  "EncounterConfig": {
+    "MinEncounters": 3,
+    "MaxEncounters": 5,
+    "MinCombatEncounters": 2,
+    "MaxCombatEncounters": 4,
+    "RandomCombatChance": 0.3
+  },
+  "EncounterPool": [
+    {
+      "Type": "Choice",
+      "Text": "Ancient runes glow on the walls. You can try to decipher them or move on.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Study the runes",
+          "Effect": "BoostStat",
+          "Value": 2
+        },
+        {
+          "Text": "Ignore them and proceed",
+          "Effect": "None",
+          "Value": 0
+        },
+        {
+          "Text": "Touch the runes to absorb their power",
+          "Effect": "RestoreManaAndTakeDamage",
+          "Value": 70
+        },
+        {
+          "Text": "Copy them down for later study",
+          "Effect": "GainGold",
+          "Value": 150
+        }
+      ]
+    },
+    {
+      "Type": "Choice",
+      "Text": "A shimmering portal offers a shortcut, but it radiates unstable energy.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Step through the portal",
+          "Effect": "RestoreManaAndTakeDamage",
+          "Value": 60
+        },
+        {
+          "Text": "Take the long way",
+          "Effect": "GainGold",
+          "Value": 150
+        },
+        {
+          "Text": "Try to stabilize the portal first",
+          "Effect": "RestoreMana",
+          "Value": 60
+        }
+      ]
+    }
+  ],
+  "Rewards": {
+    "MinibossGold": 750,
+    "BossGold": 1750,
+    "GuaranteedItems": [],
+    "PossibleItems": [],
+    "ItemDropChance": 1.0
+  }
+}

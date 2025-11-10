@@ -53,7 +53,8 @@ namespace TestRPGGame.DataLoading
                     _enemies[boss.Key] = boss.Value;
                 }
 
-                _dungeons = LoadJsonFile<Dictionary<string, DungeonData>>("dungeons.json");
+                // Load dungeons from individual files in Dungeons folder
+                _dungeons = LoadDungeonsFromFolder();
 
                 // Load item generation data from separate files
                 _itemGeneration = new ItemGenerationData
@@ -105,6 +106,50 @@ namespace TestRPGGame.DataLoading
 
             return JsonSerializer.Deserialize<T>(json, options)
                 ?? throw new InvalidOperationException($"Failed to deserialize {filename}");
+        }
+
+        /// <summary>
+        /// Load all dungeon files from the Dungeons folder.
+        /// Each dungeon is in its own JSON file.
+        /// </summary>
+        private static Dictionary<string, DungeonData> LoadDungeonsFromFolder()
+        {
+            var dungeons = new Dictionary<string, DungeonData>();
+            string dungeonsPath = Path.Combine(DataPath, "Dungeons");
+
+            if (!Directory.Exists(dungeonsPath))
+            {
+                throw new DirectoryNotFoundException($"Dungeons directory not found: {dungeonsPath}");
+            }
+
+            var jsonFiles = Directory.GetFiles(dungeonsPath, "*.json");
+
+            foreach (var filePath in jsonFiles)
+            {
+                try
+                {
+                    string json = File.ReadAllText(filePath);
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                        ReadCommentHandling = JsonCommentHandling.Skip,
+                        AllowTrailingCommas = true
+                    };
+
+                    var dungeonData = JsonSerializer.Deserialize<DungeonData>(json, options);
+
+                    if (dungeonData != null)
+                    {
+                        dungeons[dungeonData.Id] = dungeonData;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Warning: Failed to load dungeon from {Path.GetFileName(filePath)}: {ex.Message}");
+                }
+            }
+
+            return dungeons;
         }
 
         // Ability queries

@@ -113,7 +113,9 @@ namespace TestRPGGame.Factories
                 dungeonType = DungeonType.GoblinCaves;
             }
 
-            var dungeon = new Dungeon(data.Name, dungeonType, data.Description, data.RecommendedLevel);
+            // Use DisplayName if provided, otherwise fall back to Name
+            string displayName = !string.IsNullOrEmpty(data.DisplayName) ? data.DisplayName : data.Name;
+            var dungeon = new Dungeon(displayName, dungeonType, data.Description, data.RecommendedLevel);
 
             // Set requirements
             dungeon.Requirements = new DungeonRequirements
@@ -187,6 +189,11 @@ namespace TestRPGGame.Factories
 
             if (data.Choices != null)
             {
+                // Store all choices for potential random selection
+                encounter.AllChoices = data.Choices;
+                encounter.RandomChoiceCount = data.RandomChoiceCount;
+
+                // Pre-populate with all choices (will be randomized at runtime if needed)
                 foreach (var choice in data.Choices)
                 {
                     encounter.Choices.Add(choice.Text);

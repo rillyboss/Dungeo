@@ -1,0 +1,169 @@
+{
+  "Id": "goblin_caves",
+  "Name": "Goblin Caves",
+  "DisplayName": "The Goblin Caves",
+  "Description": "Deep beneath the hillside, the Goblin Caves echo with the chattering of greenskins.\nTravelers have reported stolen goods and kidnapped villagers. The Goblin King grows bold.\nIt's time to put an end to their raids.",
+  "RecommendedLevel": 1,
+  "RequiredDungeonsCompleted": 0,
+  "RequiredDungeonIds": [],
+  "MinibossId": "goblin_champion",
+  "BossId": "goblin_king",
+  "EncounterConfig": {
+    "MinEncounters": 2,
+    "MaxEncounters": 4,
+    "MinCombatEncounters": 2,
+    "MaxCombatEncounters": 4,
+    "RandomCombatChance": 0.25
+  },
+  "EncounterPool": [
+    {
+      "Type": "Choice",
+      "Text": "You enter the dark caves. Two passages split before you.\nThe left passage has fresh torch marks. The right echoes with dripping water.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Take the left passage (torch marks)",
+          "Effect": "None",
+          "Value": 0
+        },
+        {
+          "Text": "Take the right passage (dripping water)",
+          "Effect": "TakeDamage",
+          "Value": 10
+        }
+      ]
+    },
+    {
+      "Type": "Choice",
+      "Text": "You discover a goblin treasure hoard! But it's trapped.\nDo you attempt to disarm it or walk away?",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Attempt to disarm the trap",
+          "Effect": "GainGoldAndMana",
+          "Value": 50
+        },
+        {
+          "Text": "Leave it alone",
+          "Effect": "None",
+          "Value": 0
+        },
+        {
+          "Text": "Try to grab the gold and run",
+          "Effect": "GainGold",
+          "Value": 30
+        },
+        {
+          "Text": "Throw a rock at it from a distance",
+          "Effect": "TakeDamage",
+          "Value": 5
+        }
+      ]
+    },
+    {
+      "Type": "Choice",
+      "Text": "A wounded goblin lies trapped under fallen rocks.\nHe pleads for help in broken Common tongue.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Help free the goblin",
+          "Effect": "Heal",
+          "Value": 20
+        },
+        {
+          "Text": "Leave him to his fate",
+          "Effect": "None",
+          "Value": 0
+        },
+        {
+          "Text": "Try to negotiate for information",
+          "Effect": "GainGold",
+          "Value": 25
+        }
+      ]
+    },
+    {
+      "Type": "Choice",
+      "Text": "You find a stash of goblin provisions - dried meat, mushrooms, and a waterskin.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Eat the provisions",
+          "Effect": "HealAndRestoreMana",
+          "Value": 30
+        },
+        {
+          "Text": "Don't risk it - could be poisoned",
+          "Effect": "None",
+          "Value": 0
+        },
+        {
+          "Text": "Just drink the water",
+          "Effect": "Heal",
+          "Value": 15
+        },
+        {
+          "Text": "Take it with you for later",
+          "Effect": "RestoreMana",
+          "Value": 20
+        }
+      ]
+    },
+    {
+      "Type": "Choice",
+      "Text": "You spot a glowing crystal embedded in the cave wall.\nIt pulses with strange energy.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Touch the crystal",
+          "Effect": "RestoreManaAndTakeDamage",
+          "Value": 40
+        },
+        {
+          "Text": "Leave it alone",
+          "Effect": "None",
+          "Value": 0
+        },
+        {
+          "Text": "Try to pry it out of the wall",
+          "Effect": "GainGold",
+          "Value": 75
+        },
+        {
+          "Text": "Study it from a safe distance",
+          "Effect": "RestoreMana",
+          "Value": 25
+        }
+      ]
+    },
+    {
+      "Type": "Choice",
+      "Text": "A narrow chasm blocks your path. You could try to jump across or find another way.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Jump across",
+          "Effect": "TakeDamage",
+          "Value": 15
+        },
+        {
+          "Text": "Climb down and around (slow but safe)",
+          "Effect": "None",
+          "Value": 0
+        },
+        {
+          "Text": "Look for a rope or bridge",
+          "Effect": "GainGold",
+          "Value": 20
+        }
+      ]
+    }
+  ],
+  "Rewards": {
+    "MinibossGold": 125,
+    "BossGold": 300,
+    "GuaranteedItems": [],
+    "PossibleItems": [],
+    "ItemDropChance": 1.0
+  }
+}

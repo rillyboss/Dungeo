@@ -1,0 +1,76 @@
+{
+  "Id": "void_temple",
+  "Name": "Void Temple",
+  "DisplayName": "The Void Temple",
+  "Description": "Beyond the veil of reality, the Void Temple drifts in eternal darkness.\nHere, the Void Lord seeks to consume all of existence.\nThis is the ultimate challenge - few return from this nightmare realm.",
+  "RecommendedLevel": 12,
+  "RequiredDungeonsCompleted": 4,
+  "RequiredDungeonIds": ["goblin_caves", "haunted_crypt", "dragons_lair", "ancient_ruins"],
+  "MinibossId": "void_harbinger",
+  "BossId": "void_lord",
+  "EncounterConfig": {
+    "MinEncounters": 3,
+    "MaxEncounters": 5,
+    "MinCombatEncounters": 3,
+    "MaxCombatEncounters": 5,
+    "RandomCombatChance": 0.4
+  },
+  "EncounterPool": [
+    {
+      "Type": "Choice",
+      "Text": "Void tendrils reach out to drain your life force. You must act quickly!",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Channel your energy to resist",
+          "Effect": "BoostAllStats",
+          "Value": 3
+        },
+        {
+          "Text": "Run through and take the hit",
+          "Effect": "TakeDamageAndLoseMana",
+          "Value": 40
+        },
+        {
+          "Text": "Cut through the tendrils with your weapon",
+          "Effect": "TakeDamage",
+          "Value": 25
+        }
+      ]
+    },
+    {
+      "Type": "Choice",
+      "Text": "An echo of a fallen hero offers you a choice: power or wisdom.",
+      "RandomChoiceCount": 2,
+      "Choices": [
+        {
+          "Text": "Choose power",
+          "Effect": "BoostAttack",
+          "Value": 5
+        },
+        {
+          "Text": "Choose wisdom",
+          "Effect": "BoostMana",
+          "Value": 50
+        },
+        {
+          "Text": "Reject both and forge your own path",
+          "Effect": "HealAndRestoreMana",
+          "Value": 60
+        },
+        {
+          "Text": "Ask for guidance instead",
+          "Effect": "GainGold",
+          "Value": 200
+        }
+      ]
+    }
+  ],
+  "Rewards": {
+    "MinibossGold": 1250,
+    "BossGold": 4000,
+    "GuaranteedItems": [],
+    "PossibleItems": [],
+    "ItemDropChance": 1.0
+  }
+}

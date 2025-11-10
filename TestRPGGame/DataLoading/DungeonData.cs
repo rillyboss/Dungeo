@@ -6,6 +6,7 @@ namespace TestRPGGame.DataLoading
     {
         public string Id { get; set; } = "";
         public string Name { get; set; } = "";
+        public string DisplayName { get; set; } = ""; // Friendly display name (falls back to Name if empty)
         public string Description { get; set; } = "";
         public int RecommendedLevel { get; set; }
         public int RequiredDungeonsCompleted { get; set; }
