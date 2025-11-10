@@ -255,5 +255,601 @@
         "Multiplier": 5.0
       }
     ]
+  },
+
+  // Boss Abilities (used by dungeon bosses, no class/mana restrictions)
+  "boss_rallying_cry": {
+    "Id": "boss_rallying_cry",
+    "Name": "Rallying Cry",
+    "Description": "Boosts attack for 3 turns",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "StatBoost",
+        "Value": 10,
+        "Duration": 3,
+        "Multiplier": 1.5
+      }
+    ]
+  },
+  "boss_throne_guard": {
+    "Id": "boss_throne_guard",
+    "Name": "Throne Guard",
+    "Description": "Summons thorns for 3 turns",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Thorns",
+        "Value": 15,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_goblin_fury": {
+    "Id": "boss_goblin_fury",
+    "Name": "Goblin Fury",
+    "Description": "Enrages for massive damage",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 6,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Enrage",
+        "Value": 0,
+        "Duration": 3,
+        "Multiplier": 2.0
+      }
+    ]
+  },
+  "boss_dark_regeneration": {
+    "Id": "boss_dark_regeneration",
+    "Name": "Dark Regeneration",
+    "Description": "Heals over time",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "HealOverTime",
+        "Value": 20,
+        "Duration": 4,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_soul_drain": {
+    "Id": "boss_soul_drain",
+    "Name": "Soul Drain",
+    "Description": "Life steal attack",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "LifeSteal",
+        "Value": 30,
+        "Duration": 0,
+        "Multiplier": 1.5
+      }
+    ]
+  },
+  "boss_bone_shield": {
+    "Id": "boss_bone_shield",
+    "Name": "Bone Shield",
+    "Description": "Creates a protective shield",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Shield",
+        "Value": 50,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_cursed_flames": {
+    "Id": "boss_cursed_flames",
+    "Name": "Cursed Flames",
+    "Description": "Burns the player over time",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "DamageOverTime",
+        "Value": 15,
+        "Duration": 4,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_flame_breath": {
+    "Id": "boss_flame_breath",
+    "Name": "Flame Breath",
+    "Description": "Heavy fire damage",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "HeavyStrike",
+        "Value": 40,
+        "Duration": 0,
+        "Multiplier": 1.8
+      }
+    ]
+  },
+  "boss_dragon_scales": {
+    "Id": "boss_dragon_scales",
+    "Name": "Dragon Scales",
+    "Description": "Thorns damage",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Thorns",
+        "Value": 20,
+        "Duration": 4,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_inferno_blast": {
+    "Id": "boss_inferno_blast",
+    "Name": "Inferno Blast",
+    "Description": "Devastating fire strike",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "HeavyStrike",
+        "Value": 60,
+        "Duration": 0,
+        "Multiplier": 2.5
+      }
+    ]
+  },
+  "boss_dragons_rage": {
+    "Id": "boss_dragons_rage",
+    "Name": "Dragon's Rage",
+    "Description": "Enrages when injured",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 7,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Enrage",
+        "Value": 0,
+        "Duration": 4,
+        "Multiplier": 2.5
+      }
+    ]
+  },
+  "boss_molten_armor": {
+    "Id": "boss_molten_armor",
+    "Name": "Molten Armor",
+    "Description": "Thorns + Shield combo",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 6,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Thorns",
+        "Value": 25,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_burning_curse": {
+    "Id": "boss_burning_curse",
+    "Name": "Burning Curse",
+    "Description": "Heavy DoT on player",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "DamageOverTime",
+        "Value": 20,
+        "Duration": 5,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_earthshaker": {
+    "Id": "boss_earthshaker",
+    "Name": "Earthshaker",
+    "Description": "Stunning AoE attack",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "Duration": 1,
+        "Multiplier": 1.5
+      }
+    ]
+  },
+  "boss_stone_skin": {
+    "Id": "boss_stone_skin",
+    "Name": "Stone Skin",
+    "Description": "Massive shield",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 6,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Shield",
+        "Value": 100,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_arcane_missiles": {
+    "Id": "boss_arcane_missiles",
+    "Name": "Arcane Missiles",
+    "Description": "Magical barrage",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "HeavyStrike",
+        "Value": 50,
+        "Duration": 0,
+        "Multiplier": 2.0
+      }
+    ]
+  },
+  "boss_mana_regeneration": {
+    "Id": "boss_mana_regeneration",
+    "Name": "Mana Regeneration",
+    "Description": "Heals continuously",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "HealOverTime",
+        "Value": 30,
+        "Duration": 5,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_temporal_stun": {
+    "Id": "boss_temporal_stun",
+    "Name": "Temporal Stun",
+    "Description": "Freezes player in time",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 6,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "Duration": 2,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_arcane_shield": {
+    "Id": "boss_arcane_shield",
+    "Name": "Arcane Shield",
+    "Description": "Powerful magical barrier",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Shield",
+        "Value": 120,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_void_drain": {
+    "Id": "boss_void_drain",
+    "Name": "Void Drain",
+    "Description": "Life steal + DoT combo",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "LifeSteal",
+        "Value": 40,
+        "Duration": 0,
+        "Multiplier": 1.8
+      },
+      {
+        "Type": "DamageOverTime",
+        "Value": 15,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_shadow_torment": {
+    "Id": "boss_shadow_torment",
+    "Name": "Shadow Torment",
+    "Description": "Severe burning damage",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "DamageOverTime",
+        "Value": 25,
+        "Duration": 4,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_void_thorns": {
+    "Id": "boss_void_thorns",
+    "Name": "Void Thorns",
+    "Description": "Reflects damage",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Thorns",
+        "Value": 30,
+        "Duration": 4,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_void_annihilation": {
+    "Id": "boss_void_annihilation",
+    "Name": "Void Annihilation",
+    "Description": "Devastating strike + severe bleeding",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 6,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Bleed",
+        "Value": 35,
+        "Duration": 5,
+        "Multiplier": 2.5
+      }
+    ]
+  },
+  "boss_eternal_darkness": {
+    "Id": "boss_eternal_darkness",
+    "Name": "Eternal Darkness",
+    "Description": "Massive life drain",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "LifeSteal",
+        "Value": 50,
+        "Duration": 0,
+        "Multiplier": 2.0
+      }
+    ]
+  },
+  "boss_void_regeneration": {
+    "Id": "boss_void_regeneration",
+    "Name": "Void Regeneration",
+    "Description": "Powerful healing",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "HealOverTime",
+        "Value": 40,
+        "Duration": 5,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_reality_tear": {
+    "Id": "boss_reality_tear",
+    "Name": "Reality Tear",
+    "Description": "Stun + damage combo",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 7,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "Duration": 2,
+        "Multiplier": 2.5
+      }
+    ]
+  },
+  "boss_void_barrier": {
+    "Id": "boss_void_barrier",
+    "Name": "Void Barrier",
+    "Description": "Nearly impenetrable shield",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 6,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Shield",
+        "Value": 150,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "boss_consuming_void": {
+    "Id": "boss_consuming_void",
+    "Name": "Consuming Void",
+    "Description": "Extreme DoT",
+    "PlayerClass": "",
+    "ManaCost": 0,
+    "Cooldown": 6,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "DamageOverTime",
+        "Value": 30,
+        "Duration": 6,
+        "Multiplier": 1.0
+      }
+    ]
   }
 }

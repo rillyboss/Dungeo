@@ -79,13 +79,13 @@ namespace TestRPGGame.Tests
         }
 
         [Fact]
-        public void DataLoader_GetBoss_ShouldReturnValidBoss()
+        public void DataLoader_GetEnemy_ShouldReturnValidBoss()
         {
             // Arrange
             DataLoader.LoadAllData();
 
-            // Act
-            var boss = DataLoader.GetBoss("goblin_king");
+            // Act - Bosses are now loaded as regular enemies
+            var boss = DataLoader.GetEnemy("goblin_king");
 
             // Assert
             Assert.NotNull(boss);
@@ -94,24 +94,24 @@ namespace TestRPGGame.Tests
             Assert.Equal(1, boss.Level);
             Assert.Equal("Beast", boss.Type);
             Assert.Equal(350, boss.MaxHP);
-            Assert.Equal(2, boss.BossAbilities.Count);
+            Assert.Equal(2, boss.Abilities.Count); // Now uses Abilities instead of BossAbilities
         }
 
         [Fact]
-        public void DataLoader_GetBoss_ShouldHaveCorrectAbilities()
+        public void DataLoader_GetEnemy_BossShouldHaveCorrectAbilities()
         {
             // Arrange
             DataLoader.LoadAllData();
 
-            // Act
-            var boss = DataLoader.GetBoss("void_lord");
+            // Act - Bosses are now loaded as regular enemies
+            var boss = DataLoader.GetEnemy("void_lord");
 
             // Assert
             Assert.NotNull(boss);
-            Assert.Equal(6, boss.BossAbilities.Count);
-            Assert.Contains(boss.BossAbilities, a => a.Name == "Void Annihilation");
-            Assert.Contains(boss.BossAbilities, a => a.Name == "Eternal Darkness");
-            Assert.Contains(boss.BossAbilities, a => a.Name == "Void Regeneration");
+            Assert.Equal(6, boss.Abilities.Count); // Now uses Abilities instead of BossAbilities
+            Assert.Contains(boss.Abilities, a => a.AbilityId == "boss_void_annihilation");
+            Assert.Contains(boss.Abilities, a => a.AbilityId == "boss_eternal_darkness");
+            Assert.Contains(boss.Abilities, a => a.AbilityId == "boss_void_regeneration");
         }
 
         [Fact]
@@ -187,13 +187,13 @@ namespace TestRPGGame.Tests
         }
 
         [Fact]
-        public void DataLoader_GetBoss_InvalidId_ShouldThrow()
+        public void DataLoader_GetEnemy_InvalidBossId_ShouldThrow()
         {
             // Arrange
             DataLoader.LoadAllData();
 
-            // Act & Assert
-            Assert.Throws<KeyNotFoundException>(() => DataLoader.GetBoss("invalid_boss"));
+            // Act & Assert - Bosses are now in the enemies dictionary
+            Assert.Throws<KeyNotFoundException>(() => DataLoader.GetEnemy("invalid_boss"));
         }
 
         [Fact]
@@ -227,15 +227,16 @@ namespace TestRPGGame.Tests
             // Arrange
             DataLoader.LoadAllData();
 
-            // Act
-            var boss = DataLoader.GetBoss("death_knight");
+            // Act - Bosses are now loaded as regular enemies
+            var boss = DataLoader.GetEnemy("death_knight");
 
-            // Assert
-            var soulDrain = boss.BossAbilities.FirstOrDefault(a => a.Name == "Soul Drain");
-            Assert.NotNull(soulDrain);
-            Assert.Equal("LifeSteal", soulDrain.Effect.Type);
-            Assert.Equal(30, soulDrain.Effect.Value);
-            Assert.Equal(1.5, soulDrain.Effect.Multiplier);
+            // Assert - Abilities now reference IDs from abilities.json
+            Assert.Contains(boss.Abilities, a => a.AbilityId == "boss_soul_drain");
+
+            // Verify the ability can be loaded from abilities.json
+            var soulDrainAbility = DataLoader.GetAbility("boss_soul_drain");
+            Assert.NotNull(soulDrainAbility);
+            Assert.Equal("Soul Drain", soulDrainAbility.Name);
         }
 
         [Fact]
@@ -265,7 +266,7 @@ namespace TestRPGGame.Tests
             // Arrange
             DataLoader.LoadAllData();
 
-            // Act
+            // Act - Bosses are now loaded as regular enemies
             var bosses = new[] { "goblin_champion", "goblin_king", "grave_lich", "death_knight",
                 "dragon_wyrm", "infernus", "stone_colossus", "arcane_guardian",
                 "void_harbinger", "void_lord" };
@@ -273,11 +274,11 @@ namespace TestRPGGame.Tests
             // Assert
             foreach (var bossId in bosses)
             {
-                var boss = DataLoader.GetBoss(bossId);
+                var boss = DataLoader.GetEnemy(bossId); // Now uses GetEnemy
                 Assert.NotNull(boss);
                 Assert.NotEmpty(boss.Name);
                 Assert.NotEmpty(boss.Type);
-                Assert.NotEmpty(boss.BossAbilities);
+                Assert.NotEmpty(boss.Abilities); // Now uses Abilities instead of BossAbilities
             }
         }
 

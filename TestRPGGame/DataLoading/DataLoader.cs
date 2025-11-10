@@ -17,7 +17,6 @@ namespace TestRPGGame.DataLoading
         // Cached data collections
         private static Dictionary<string, AbilityData>? _abilities;
         private static Dictionary<string, EnemyData>? _enemies;
-        private static Dictionary<string, BossData>? _bosses;
         private static Dictionary<string, DungeonData>? _dungeons;
         private static ItemGenerationData? _itemGeneration;
         private static Dictionary<string, EnemyPrefixData>? _enemyPrefixes;
@@ -43,8 +42,16 @@ namespace TestRPGGame.DataLoading
                     _abilities[ability.Key] = ability.Value;
                 }
 
+                // Load enemies and bosses (bosses now use the same format as enemies)
                 _enemies = LoadJsonFile<Dictionary<string, EnemyData>>("enemies.json");
-                _bosses = LoadJsonFile<Dictionary<string, BossData>>("bosses.json");
+                var bossEnemies = LoadJsonFile<Dictionary<string, EnemyData>>("bosses.json");
+
+                // Merge bosses into enemies dictionary
+                foreach (var boss in bossEnemies)
+                {
+                    _enemies[boss.Key] = boss.Value;
+                }
+
                 _dungeons = LoadJsonFile<Dictionary<string, DungeonData>>("dungeons.json");
 
                 // Load item generation data from separate files
@@ -63,8 +70,7 @@ namespace TestRPGGame.DataLoading
                 _enemySuffixes = LoadJsonFile<Dictionary<string, EnemySuffixData>>(Path.Combine("Enemies", "enemy-suffixes.json"));
 
                 Console.WriteLine($"✓ Loaded {_abilities.Count} abilities ({enemyAbilities.Count} enemy abilities)");
-                Console.WriteLine($"✓ Loaded {_enemies.Count} enemies");
-                Console.WriteLine($"✓ Loaded {_bosses.Count} bosses");
+                Console.WriteLine($"✓ Loaded {_enemies.Count} enemies (including {bossEnemies.Count} bosses)");
                 Console.WriteLine($"✓ Loaded {_dungeons.Count} dungeons");
                 Console.WriteLine($"✓ Loaded item generation data ({_itemGeneration.WeaponPrefixes.Count} weapon prefixes, {_itemGeneration.WeaponTypes.Count} weapon types)");
                 Console.WriteLine($"✓ Loaded enemy modifiers ({_enemyPrefixes.Count} prefixes, {_enemySuffixes.Count} suffixes)");
@@ -126,14 +132,7 @@ namespace TestRPGGame.DataLoading
             return _enemies.Values.Where(e => e.Level >= minLevel && e.Level <= maxLevel);
         }
 
-        // Boss queries
-        public static BossData GetBoss(string id)
-        {
-            if (_bosses == null) throw new InvalidOperationException("Data not loaded. Call LoadAllData() first.");
-            if (!_bosses.TryGetValue(id, out var boss))
-                throw new KeyNotFoundException($"Boss not found: {id}");
-            return boss;
-        }
+        // Bosses are now in the enemies dictionary, use GetEnemy() to retrieve them
 
         // Dungeon queries
         public static DungeonData GetDungeon(string id)

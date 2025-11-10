@@ -1,4 +1,7 @@
 {
+  // Dungeon bosses now use the unified enemy format
+  // Abilities reference IDs from abilities.json instead of inline definitions
+
   // Goblin Caves Dungeon Bosses
   "goblin_champion": {
     "Id": "goblin_champion",
@@ -11,20 +14,13 @@
     "Speed": 12,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Rallying Cry",
-        "Description": "Boosts attack for 3 turns",
-        "Cooldown": 4,
-        "Effect": {
-          "Type": "StatBoost",
-          "Value": 10,
-          "Duration": 3,
-          "Multiplier": 1.5
-        }
+        "AbilityId": "boss_rallying_cry",
+        "UseThreshold": 100
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   },
   "goblin_king": {
     "Id": "goblin_king",
@@ -37,31 +33,17 @@
     "Speed": 15,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Throne Guard",
-        "Description": "Summons thorns for 3 turns",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "Thorns",
-          "Value": 15,
-          "Duration": 3,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_throne_guard",
+        "UseThreshold": 100
       },
       {
-        "Name": "Goblin Fury",
-        "Description": "Enrages for massive damage",
-        "Cooldown": 6,
-        "Effect": {
-          "Type": "Enrage",
-          "Value": 0,
-          "Duration": 3,
-          "Multiplier": 2.0
-        }
+        "AbilityId": "boss_goblin_fury",
+        "UseThreshold": 50
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   },
 
   // Haunted Crypt Dungeon Bosses
@@ -76,20 +58,13 @@
     "Speed": 14,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Dark Regeneration",
-        "Description": "Heals over time",
-        "Cooldown": 4,
-        "Effect": {
-          "Type": "HealOverTime",
-          "Value": 20,
-          "Duration": 4,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_dark_regeneration",
+        "UseThreshold": 100
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   },
   "death_knight": {
     "Id": "death_knight",
@@ -102,42 +77,21 @@
     "Speed": 16,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Soul Drain",
-        "Description": "Life steal attack",
-        "Cooldown": 4,
-        "Effect": {
-          "Type": "LifeSteal",
-          "Value": 30,
-          "Duration": 0,
-          "Multiplier": 1.5
-        }
+        "AbilityId": "boss_soul_drain",
+        "UseThreshold": 100
       },
       {
-        "Name": "Bone Shield",
-        "Description": "Creates a protective shield",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "Shield",
-          "Value": 50,
-          "Duration": 3,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_bone_shield",
+        "UseThreshold": 75
       },
       {
-        "Name": "Cursed Flames",
-        "Description": "Burns the player over time",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "DamageOverTime",
-          "Value": 15,
-          "Duration": 4,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_cursed_flames",
+        "UseThreshold": 100
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   },
 
   // Dragon's Lair Dungeon Bosses
@@ -152,31 +106,17 @@
     "Speed": 18,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Flame Breath",
-        "Description": "Heavy fire damage",
-        "Cooldown": 4,
-        "Effect": {
-          "Type": "HeavyStrike",
-          "Value": 40,
-          "Duration": 0,
-          "Multiplier": 1.8
-        }
+        "AbilityId": "boss_flame_breath",
+        "UseThreshold": 100
       },
       {
-        "Name": "Dragon Scales",
-        "Description": "Thorns damage",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "Thorns",
-          "Value": 20,
-          "Duration": 4,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_dragon_scales",
+        "UseThreshold": 100
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   },
   "infernus": {
     "Id": "infernus",
@@ -189,53 +129,25 @@
     "Speed": 20,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Inferno Blast",
-        "Description": "Devastating fire strike",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "HeavyStrike",
-          "Value": 60,
-          "Duration": 0,
-          "Multiplier": 2.5
-        }
+        "AbilityId": "boss_inferno_blast",
+        "UseThreshold": 100
       },
       {
-        "Name": "Dragon's Rage",
-        "Description": "Enrages when injured",
-        "Cooldown": 7,
-        "Effect": {
-          "Type": "Enrage",
-          "Value": 0,
-          "Duration": 4,
-          "Multiplier": 2.5
-        }
+        "AbilityId": "boss_dragons_rage",
+        "UseThreshold": 40
       },
       {
-        "Name": "Molten Armor",
-        "Description": "Thorns + Shield combo",
-        "Cooldown": 6,
-        "Effect": {
-          "Type": "Thorns",
-          "Value": 25,
-          "Duration": 3,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_molten_armor",
+        "UseThreshold": 60
       },
       {
-        "Name": "Burning Curse",
-        "Description": "Heavy DoT on player",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "DamageOverTime",
-          "Value": 20,
-          "Duration": 5,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_burning_curse",
+        "UseThreshold": 100
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   },
 
   // Ancient Ruins Dungeon Bosses
@@ -250,31 +162,17 @@
     "Speed": 10,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Earthshaker",
-        "Description": "Stunning AoE attack",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "Stun",
-          "Value": 0,
-          "Duration": 1,
-          "Multiplier": 1.5
-        }
+        "AbilityId": "boss_earthshaker",
+        "UseThreshold": 100
       },
       {
-        "Name": "Stone Skin",
-        "Description": "Massive shield",
-        "Cooldown": 6,
-        "Effect": {
-          "Type": "Shield",
-          "Value": 100,
-          "Duration": 3,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_stone_skin",
+        "UseThreshold": 75
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   },
   "arcane_guardian": {
     "Id": "arcane_guardian",
@@ -287,53 +185,25 @@
     "Speed": 22,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Arcane Missiles",
-        "Description": "Magical barrage",
-        "Cooldown": 4,
-        "Effect": {
-          "Type": "HeavyStrike",
-          "Value": 50,
-          "Duration": 0,
-          "Multiplier": 2.0
-        }
+        "AbilityId": "boss_arcane_missiles",
+        "UseThreshold": 100
       },
       {
-        "Name": "Mana Regeneration",
-        "Description": "Heals continuously",
-        "Cooldown": 4,
-        "Effect": {
-          "Type": "HealOverTime",
-          "Value": 30,
-          "Duration": 5,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_mana_regeneration",
+        "UseThreshold": 70
       },
       {
-        "Name": "Temporal Stun",
-        "Description": "Freezes player in time",
-        "Cooldown": 6,
-        "Effect": {
-          "Type": "Stun",
-          "Value": 0,
-          "Duration": 2,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_temporal_stun",
+        "UseThreshold": 100
       },
       {
-        "Name": "Arcane Shield",
-        "Description": "Powerful magical barrier",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "Shield",
-          "Value": 120,
-          "Duration": 3,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_arcane_shield",
+        "UseThreshold": 60
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   },
 
   // Void Temple Dungeon Bosses
@@ -348,50 +218,21 @@
     "Speed": 25,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Void Drain",
-        "Description": "Life steal + DoT combo",
-        "Cooldown": 4,
-        "Effects": [
-          {
-            "Type": "LifeSteal",
-            "Value": 40,
-            "Duration": 0,
-            "Multiplier": 1.8
-          },
-          {
-            "Type": "DamageOverTime",
-            "Value": 15,
-            "Duration": 3,
-            "Multiplier": 1.0
-          }
-        ]
+        "AbilityId": "boss_void_drain",
+        "UseThreshold": 100
       },
       {
-        "Name": "Shadow Torment",
-        "Description": "Severe burning damage",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "DamageOverTime",
-          "Value": 25,
-          "Duration": 4,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_shadow_torment",
+        "UseThreshold": 100
       },
       {
-        "Name": "Void Thorns",
-        "Description": "Reflects damage",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "Thorns",
-          "Value": 30,
-          "Duration": 4,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_void_thorns",
+        "UseThreshold": 75
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   },
   "void_lord": {
     "Id": "void_lord",
@@ -404,74 +245,32 @@
     "Speed": 30,
     "GoldReward": 0,
     "ExpReward": 0,
-    "BossAbilities": [
+    "Abilities": [
       {
-        "Name": "Void Annihilation",
-        "Description": "Devastating strike + severe bleeding",
-        "Cooldown": 6,
-        "Effect": {
-          "Type": "Bleed",
-          "Value": 35,
-          "Duration": 5,
-          "Multiplier": 2.5
-        }
+        "AbilityId": "boss_void_annihilation",
+        "UseThreshold": 100
       },
       {
-        "Name": "Eternal Darkness",
-        "Description": "Massive life drain",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "LifeSteal",
-          "Value": 50,
-          "Duration": 0,
-          "Multiplier": 2.0
-        }
+        "AbilityId": "boss_eternal_darkness",
+        "UseThreshold": 100
       },
       {
-        "Name": "Void Regeneration",
-        "Description": "Powerful healing",
-        "Cooldown": 5,
-        "Effect": {
-          "Type": "HealOverTime",
-          "Value": 40,
-          "Duration": 5,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_void_regeneration",
+        "UseThreshold": 50
       },
       {
-        "Name": "Reality Tear",
-        "Description": "Stun + damage combo",
-        "Cooldown": 7,
-        "Effect": {
-          "Type": "Stun",
-          "Value": 0,
-          "Duration": 2,
-          "Multiplier": 2.5
-        }
+        "AbilityId": "boss_reality_tear",
+        "UseThreshold": 100
       },
       {
-        "Name": "Void Barrier",
-        "Description": "Nearly impenetrable shield",
-        "Cooldown": 6,
-        "Effect": {
-          "Type": "Shield",
-          "Value": 150,
-          "Duration": 3,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_void_barrier",
+        "UseThreshold": 40
       },
       {
-        "Name": "Consuming Void",
-        "Description": "Extreme DoT",
-        "Cooldown": 6,
-        "Effect": {
-          "Type": "DamageOverTime",
-          "Value": 30,
-          "Duration": 6,
-          "Multiplier": 1.0
-        }
+        "AbilityId": "boss_consuming_void",
+        "UseThreshold": 100
       }
     ],
-    "GuaranteedDrops": []
+    "PossibleDrops": []
   }
 }

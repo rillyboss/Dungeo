@@ -101,79 +101,6 @@ namespace TestRPGGame.Factories
             return enemy;
         }
 
-        public static Enemy CreateBoss(BossData data)
-        {
-            if (!Enum.TryParse<EnemyType>(data.Type, out var enemyType))
-            {
-                throw new ArgumentException($"Invalid enemy type: {data.Type}");
-            }
-
-            var boss = new Enemy(data.Name, enemyType, data.MaxHP, data.Attack, data.Defense, data.Speed, data.GoldReward, data.ExpReward);
-
-            // Convert boss abilities to regular enemy abilities
-            foreach (var abilityData in data.BossAbilities)
-            {
-                var ability = ConvertBossAbilityToEnemyAbility(abilityData);
-                boss.Abilities.Add(ability);
-            }
-
-            return boss;
-        }
-
-        /// <summary>
-        /// Converts boss ability data to regular enemy ability format.
-        /// Maps BossAbilityEffectType to unified IAbilityEffect system.
-        /// </summary>
-        private static EnemyAbility ConvertBossAbilityToEnemyAbility(BossAbilityData data)
-        {
-            var ability = new Ability(
-                data.Name,
-                manaCost: 0, // Enemies don't use mana
-                data.Cooldown,
-                data.Description,
-                AbilityType.Physical, // Default type for enemy abilities
-                unlockLevel: 1,
-                purchaseCost: 0
-            );
-
-            // Support both single Effect and multiple Effects
-            var effectDataList = data.Effects.Count > 0 ? data.Effects :
-                                 (data.Effect != null ? new List<BossAbilityEffectData> { data.Effect } : new List<BossAbilityEffectData>());
-
-            foreach (var effectData in effectDataList)
-            {
-                var effect = ConvertBossEffectToAbilityEffect(effectData);
-                if (effect != null)
-                {
-                    ability.Effects.Add(effect);
-                }
-            }
-
-            return new EnemyAbility(ability, useThreshold: 100); // Can use anytime by default
-        }
-
-        /// <summary>
-        /// Maps boss effect types to the unified ability effect system.
-        /// </summary>
-        private static IAbilityEffect? ConvertBossEffectToAbilityEffect(BossAbilityEffectData data)
-        {
-            return data.Type.ToLower() switch
-            {
-                "healovertime" => new HealOverTimeEffect(data.Value, data.Duration),
-                "damageovertime" => new PoisonEffect(data.Value, data.Duration, data.Value), // Reuse poison effect
-                "stun" => new StunEffect(data.Duration),
-                "thorns" => new ThornsEffect(data.Value, data.Duration),
-                "lifesteal" => new LifeStealEffect(data.Multiplier, data.Value),
-                "shield" => new ShieldEffect(data.Value, data.Duration),
-                "bleed" => new PoisonEffect(data.Value, data.Duration, data.Value), // Similar to DOT
-                "enrage" => new BuffEffect($"Enrage ({data.Multiplier}x damage)", data.Duration),
-                "statboost" => new BuffEffect($"Stat boost +{data.Value}", data.Duration),
-                "heavystrike" => new DamageEffect(data.Multiplier, usesMagic: false),
-                "damage" => new DamageEffect(data.Multiplier, usesMagic: false),
-                _ => null
-            };
-        }
-
         #endregion
 
         #region Dungeon Factory
@@ -223,12 +150,12 @@ namespace TestRPGGame.Factories
                 dungeon.Encounters.Add(encounter);
             }
 
-            // Load miniboss and boss
-            var minibossData = DataLoader.GetBoss(data.MinibossId);
-            var bossData = DataLoader.GetBoss(data.BossId);
+            // Load miniboss and boss using unified enemy system
+            var minibossData = DataLoader.GetEnemy(data.MinibossId);
+            var bossData = DataLoader.GetEnemy(data.BossId);
 
-            dungeon.Miniboss = CreateBoss(minibossData);
-            dungeon.Boss = CreateBoss(bossData);
+            dungeon.Miniboss = CreateEnemy(minibossData, data.RecommendedLevel);
+            dungeon.Boss = CreateEnemy(bossData, data.RecommendedLevel);
             dungeon.Difficulty = data.RecommendedLevel;
 
             return dungeon;
