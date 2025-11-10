@@ -30,15 +30,19 @@ namespace TestRPGGame.Entities.Enemy
             // Create enemy using EntityFactory (handles scaling and variance)
             Enemy enemy = EntityFactory.CreateEnemy(enemyData, playerLevel);
 
-            // Add abilities to make combat interesting
-            if (random.Next(100) < 50) // 50% chance for special ability
+            // Load abilities from data
+            foreach (var abilityData in enemyData.Abilities)
             {
-                string[] abilityNames = { "Fierce Strike", "Rage", "Heavy Blow", "Quick Attack", "Power Up" };
-                enemy.Abilities.Add(new EnemyAbility(
-                    abilityNames[random.Next(abilityNames.Length)],
-                    1.5 + (random.NextDouble() * 0.5),
-                    3 + random.Next(0, 2)
-                ));
+                try
+                {
+                    var ability = DataLoader.GetAbility(abilityData.AbilityId);
+                    var abilityInstance = EntityFactory.CreateAbility(ability);
+                    enemy.Abilities.Add(new EnemyAbility(abilityInstance, abilityData.UseThreshold));
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Warning: Failed to load ability '{abilityData.AbilityId}' for enemy '{enemyData.Name}': {ex.Message}");
+                }
             }
 
             return enemy;

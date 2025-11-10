@@ -255,5 +255,281 @@
         "Multiplier": 5.0
       }
     ]
+  },
+
+  // Enemy Abilities - Physical Attackers
+  "enemy_fierce_strike": {
+    "Id": "enemy_fierce_strike",
+    "Name": "Fierce Strike",
+    "Description": "A powerful melee attack dealing 2x damage",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.0
+      }
+    ]
+  },
+  "enemy_reckless_charge": {
+    "Id": "enemy_reckless_charge",
+    "Name": "Reckless Charge",
+    "Description": "Charge at the enemy for heavy damage",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.5
+      }
+    ]
+  },
+  "enemy_crushing_blow": {
+    "Id": "enemy_crushing_blow",
+    "Name": "Crushing Blow",
+    "Description": "A devastating attack that deals massive damage",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.0
+      }
+    ]
+  },
+
+  // Enemy Abilities - Magical Attackers
+  "enemy_dark_bolt": {
+    "Id": "enemy_dark_bolt",
+    "Name": "Dark Bolt",
+    "Description": "Fire a bolt of dark energy",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 3,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.2
+      }
+    ]
+  },
+  "enemy_flame_breath": {
+    "Id": "enemy_flame_breath",
+    "Name": "Flame Breath",
+    "Description": "Breathe fire at the enemy",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.8
+      }
+    ]
+  },
+  "enemy_curse": {
+    "Id": "enemy_curse",
+    "Name": "Curse",
+    "Description": "Curse the enemy, reducing their attack",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 1.5
+      },
+      {
+        "Type": "StatMod",
+        "Value": -5,
+        "Duration": 0
+      }
+    ]
+  },
+
+  // Enemy Abilities - Status Effects
+  "enemy_poison_spit": {
+    "Id": "enemy_poison_spit",
+    "Name": "Poison Spit",
+    "Description": "Spit poison that damages over time",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 4,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Poison",
+        "Value": 15,
+        "Duration": 3,
+        "DamagePerTurn": 10
+      }
+    ]
+  },
+  "enemy_venom_strike": {
+    "Id": "enemy_venom_strike",
+    "Name": "Venom Strike",
+    "Description": "A venomous attack that poisons the target",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 1.5
+      },
+      {
+        "Type": "Poison",
+        "Value": 10,
+        "Duration": 4,
+        "DamagePerTurn": 12
+      }
+    ]
+  },
+
+  // Enemy Abilities - Defensive/Buff
+  "enemy_enrage": {
+    "Id": "enemy_enrage",
+    "Name": "Enrage",
+    "Description": "Enter a rage, increasing attack power",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 6,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Enrage",
+        "Duration": 3
+      }
+    ]
+  },
+  "enemy_harden_skin": {
+    "Id": "enemy_harden_skin",
+    "Name": "Harden Skin",
+    "Description": "Harden skin to reduce incoming damage",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Hardened",
+        "Duration": 2
+      }
+    ]
+  },
+
+  // Enemy Abilities - Special/Fast
+  "enemy_quick_strike": {
+    "Id": "enemy_quick_strike",
+    "Name": "Quick Strike",
+    "Description": "A fast strike with moderate damage",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 2,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 1.5
+      }
+    ]
+  },
+  "enemy_life_drain": {
+    "Id": "enemy_life_drain",
+    "Name": "Life Drain",
+    "Description": "Drain life from the enemy (damage + heal)",
+    "PlayerClass": "Enemy",
+    "ManaCost": 0,
+    "Cooldown": 5,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": false,
+    "UnlockLevel": 0,
+    "PurchaseCost": 0,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.0
+      },
+      {
+        "Type": "Restore",
+        "Value": 20,
+        "Duration": 0
+      }
+    ]
   }
 }

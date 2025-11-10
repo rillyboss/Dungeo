@@ -1,36 +1,36 @@
+using TestRPGGame.Abilities;
+
 namespace TestRPGGame.Entities.Enemy
 {
+    /// <summary>
+    /// Wrapper for enemy abilities. Enemies use the same Ability system as players
+    /// but with simpler AI (no mana requirements).
+    /// </summary>
     public class EnemyAbility
     {
-        public string Name { get; set; }
-        public double DamageMultiplier { get; set; }
-        public int Cooldown { get; set; }
-        public int CurrentCooldown { get; set; }
+        public Ability Ability { get; set; }
+        public int UseThreshold { get; set; } // HP% threshold to use this ability (0-100)
 
-        public EnemyAbility(string name, double damageMultiplier, int cooldown)
+        public EnemyAbility(Ability ability, int useThreshold = 100)
         {
-            Name = name;
-            DamageMultiplier = damageMultiplier;
-            Cooldown = cooldown;
-            CurrentCooldown = 0;
+            Ability = ability;
+            UseThreshold = useThreshold;
         }
 
-        public bool CanUse()
+        public bool CanUse(int currentHP, int maxHP)
         {
-            return CurrentCooldown == 0;
+            int hpPercent = (int)((currentHP / (double)maxHP) * 100);
+            return Ability.CurrentCooldown == 0 && hpPercent <= UseThreshold;
         }
 
         public void Use()
         {
-            CurrentCooldown = Cooldown;
+            Ability.Use();
         }
 
         public void ReduceCooldown()
         {
-            if (CurrentCooldown > 0)
-            {
-                CurrentCooldown--;
-            }
+            Ability.ReduceCooldown();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace TestRPGGame.DataLoading
         public int Speed { get; set; }
         public int GoldReward { get; set; }
         public int ExpReward { get; set; }
-        public List<string> Abilities { get; set; } = new();
+        public List<EnemyAbilityData> Abilities { get; set; } = new();
         public List<string> PossibleDrops { get; set; } = new();
     }
 }

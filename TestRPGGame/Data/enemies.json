@@ -2,7 +2,7 @@
   // Random encounter enemies - these scale with player level
   // Formula: HP = 60 + (level * 15), Attack = 8 + (level * 2), Defense = 3 + (level * 1), Speed = 5 + (level * 1)
   // Gold = 30 + (level * 10), Exp = 50 + (level * 20)
-  // 50% chance to have one random ability
+  // Enemies now have thematic abilities based on their type
 
   "goblin": {
     "Id": "goblin",
@@ -15,7 +15,12 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 100
+      }
+    ],
     "PossibleDrops": []
   },
   "orc": {
@@ -29,7 +34,16 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_enrage",
+        "UseThreshold": 50
+      }
+    ],
     "PossibleDrops": []
   },
   "dark_knight": {
@@ -43,7 +57,16 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_crushing_blow",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 70
+      }
+    ],
     "PossibleDrops": []
   },
   "dragon_whelp": {
@@ -57,7 +80,12 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_flame_breath",
+        "UseThreshold": 100
+      }
+    ],
     "PossibleDrops": []
   },
   "shadow_assassin": {
@@ -71,7 +99,16 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_venom_strike",
+        "UseThreshold": 80
+      }
+    ],
     "PossibleDrops": []
   },
   "ice_troll": {
@@ -85,7 +122,16 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_reckless_charge",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_harden_skin",
+        "UseThreshold": 40
+      }
+    ],
     "PossibleDrops": []
   },
   "fire_elemental": {
@@ -99,7 +145,12 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_flame_breath",
+        "UseThreshold": 100
+      }
+    ],
     "PossibleDrops": []
   },
   "skeleton_warrior": {
@@ -113,7 +164,12 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 100
+      }
+    ],
     "PossibleDrops": []
   },
   "bandit": {
@@ -127,7 +183,12 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 100
+      }
+    ],
     "PossibleDrops": []
   },
   "wild_beast": {
@@ -141,7 +202,16 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_reckless_charge",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_enrage",
+        "UseThreshold": 30
+      }
+    ],
     "PossibleDrops": []
   },
   "demon_spawn": {
@@ -155,7 +225,16 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_life_drain",
+        "UseThreshold": 50
+      }
+    ],
     "PossibleDrops": []
   },
   "stone_golem": {
@@ -169,7 +248,16 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_crushing_blow",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_harden_skin",
+        "UseThreshold": 60
+      }
+    ],
     "PossibleDrops": []
   },
   "wraith": {
@@ -183,7 +271,16 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_life_drain",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 75
+      }
+    ],
     "PossibleDrops": []
   },
   "dire_wolf": {
@@ -197,7 +294,16 @@
     "Speed": 5,
     "GoldReward": 30,
     "ExpReward": 50,
-    "Abilities": [],
+    "Abilities": [
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 70
+      }
+    ],
     "PossibleDrops": []
   }
 }

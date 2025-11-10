@@ -415,28 +415,73 @@ namespace TestRPGGame.Combat
             UIHelper.PrintColoredLine($"\n{enemy.Name}'s TURN:", ConsoleColor.Red);
             Thread.Sleep(800);
 
-            // Check if enemy uses ability
-            bool usedAbility = false;
-            foreach (var ability in enemy.Abilities)
+            // Reduce cooldowns on all enemy abilities
+            foreach (var enemyAbility in enemy.Abilities)
             {
-                if (ability.CanUse() && random.Next(100) < 40) // 40% chance to use ability when available
+                enemyAbility.ReduceCooldown();
+            }
+
+            // Check if enemy uses ability (prioritize abilities that meet HP threshold)
+            bool usedAbility = false;
+            foreach (var enemyAbility in enemy.Abilities)
+            {
+                if (enemyAbility.CanUse(enemy.CurrentHP, enemy.MaxHP))
                 {
-                    ability.Use();
-                    int damage = (int)(enemy.Attack * ability.DamageMultiplier);
+                    enemyAbility.Use();
+
+                    // Execute ability effects
+                    UIHelper.PrintColored($"💢 {enemy.Name} uses ", ConsoleColor.Red);
+                    UIHelper.PrintColored($"{enemyAbility.Ability.Name}", ConsoleColor.Yellow);
+                    UIHelper.PrintColoredLine($"!", ConsoleColor.Red);
+                    Thread.Sleep(600);
 
                     if (playerDodgeNext)
                     {
-                        UIHelper.PrintColoredLine($"💨 You dodged {enemy.Name}'s {ability.Name}!", ConsoleColor.Cyan);
+                        UIHelper.PrintColoredLine($"💨 You dodged {enemy.Name}'s {enemyAbility.Ability.Name}!", ConsoleColor.Cyan);
                         playerDodgeNext = false;
                     }
                     else
                     {
-                        int actualDamage = ApplyDamageToPlayer(player, enemy, damage);
-                        UIHelper.PrintColoredLine($"💢 {enemy.Name} uses {ability.Name}! {actualDamage} damage!", ConsoleColor.Red);
+                        // Execute each effect manually (simplified for enemy abilities)
+                        foreach (var effect in enemyAbility.Ability.Effects)
+                        {
+                            if (effect is DamageEffect damageEffect)
+                            {
+                                // Calculate damage based on enemy attack
+                                int baseDamage = (int)(enemy.Attack * damageEffect.Multiplier);
+                                int actualDamage = ApplyDamageToPlayer(player, enemy, baseDamage);
+                                UIHelper.PrintColoredLine($"   💥 {actualDamage} damage dealt!", ConsoleColor.Red);
+                            }
+                            else if (effect is PoisonEffect poisonEffect)
+                            {
+                                poisonDamage = poisonEffect.DamagePerTurn;
+                                poisonTurns = poisonEffect.Duration;
+                                UIHelper.PrintColoredLine($"   💚 You are poisoned! ({poisonEffect.DamagePerTurn} damage/turn for {poisonEffect.Duration} turns)", ConsoleColor.Green);
+                            }
+                            else if (effect is RestoreEffect restoreEffect)
+                            {
+                                // Enemy heals itself
+                                int healAmount = Math.Min(restoreEffect.Amount, enemy.MaxHP - enemy.CurrentHP);
+                                enemy.CurrentHP += healAmount;
+                                UIHelper.PrintColoredLine($"   💚 {enemy.Name} heals for {healAmount} HP!", ConsoleColor.Green);
+                            }
+                            else if (effect is StatModEffect statModEffect)
+                            {
+                                // Reduce player's speed temporarily (simplified - just show message for now)
+                                UIHelper.PrintColoredLine($"   🔻 Your combat effectiveness is reduced!", ConsoleColor.Magenta);
+                            }
+                            else if (effect is BuffEffect buffEffect)
+                            {
+                                // Enemy buffs are simplified for now - just show message
+                                UIHelper.PrintColoredLine($"   ⚡ {enemy.Name} is empowered by {buffEffect.BuffName}!", ConsoleColor.Yellow);
+                            }
+
+                            Thread.Sleep(500);
+                        }
                     }
 
                     usedAbility = true;
-                    break;
+                    break; // Only use one ability per turn
                 }
             }
 
