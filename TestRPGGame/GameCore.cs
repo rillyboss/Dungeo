@@ -31,7 +31,7 @@ namespace TestRPGGame
         {
             this.gameInterface = gameInterface;
             this.combat = new InterfacedCombatSystem(gameInterface);
-            this.shop = new Shop();
+            this.shop = new Shop(gameInterface);
             this.isRunning = true;
             this.lastSaveSlot = null;
             this.dungeons = DungeonFactory.CreateAllDungeons();

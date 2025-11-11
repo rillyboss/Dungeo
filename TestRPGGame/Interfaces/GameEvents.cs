@@ -219,6 +219,7 @@ namespace TestRPGGame.Interfaces
         {
             public string Message { get; set; }
             public MessageType Type { get; set; }
+            public ConsoleColor? Color { get; set; } // Optional explicit color override
         }
 
         public enum MessageType

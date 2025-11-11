@@ -24,16 +24,18 @@ namespace TestRPGGame
         private List<Dungeon> dungeons;
         private DungeonProgress dungeonProgress;
         private DungeonRunner dungeonRunner;
+        private TestRPGGame.Interfaces.ConsoleInterface consoleInterface;
 
         public Game()
         {
-            shop = new Shop();
+            consoleInterface = new TestRPGGame.Interfaces.ConsoleInterface();
+            shop = new Shop(consoleInterface);
             combat = new CombatSystem();
             isRunning = true;
             lastSaveSlot = null;
             dungeons = DungeonFactory.CreateAllDungeons();
             dungeonProgress = new DungeonProgress();
-            dungeonRunner = new DungeonRunner();
+            dungeonRunner = new DungeonRunner(consoleInterface);
         }
 
         public void Start()

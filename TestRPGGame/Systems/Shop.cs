@@ -6,6 +6,7 @@ using TestRPGGame.DataLoading;
 using TestRPGGame.Equipment;
 using TestRPGGame.Abilities;
 using TestRPGGame.UI;
+using TestRPGGame.Interfaces;
 
 
 namespace TestRPGGame.Systems
@@ -14,10 +15,22 @@ namespace TestRPGGame.Systems
     {
         private List<EquipmentItem> shopInventory;
         private Random random = new Random();
+        private IGameInterface gameInterface;
 
-        public Shop()
+        public Shop(IGameInterface gameInterface)
         {
+            this.gameInterface = gameInterface;
             shopInventory = new List<EquipmentItem>();
+        }
+
+        private void SendMessage(string message, ConsoleColor color = ConsoleColor.White)
+        {
+            gameInterface?.OnEvent(new GameEvents.InfoMessageEvent
+            {
+                Message = message,
+                Type = GameEvents.MessageType.Info,
+                Color = color
+            });
         }
 
         public void Enter(Player player)
@@ -31,14 +44,14 @@ namespace TestRPGGame.Systems
             {
                 Console.Clear();
                 AsciiArt.DrawShop();
-                Console.WriteLine();
-                Console.WriteLine($"💰 Your Gold: {player.Gold}\n");
+                SendMessage("");
+                SendMessage($"💰 Your Gold: {player.Gold}\n");
 
-                Console.WriteLine("1. 🛒 Buy Items");
-                Console.WriteLine("2. 💵 Sell Items");
-                Console.WriteLine("3. 🔄 Refresh Shop (costs 50 gold)");
-                Console.WriteLine("4. 🧪 Buy Potions (50 gold each)");
-                Console.WriteLine("5. 🚪 Leave Shop");
+                SendMessage("1. 🛒 Buy Items");
+                SendMessage("2. 💵 Sell Items");
+                SendMessage("3. 🔄 Refresh Shop (costs 50 gold)");
+                SendMessage("4. 🧪 Buy Potions (50 gold each)");
+                SendMessage("5. 🚪 Leave Shop");
 
                 Console.Write("\nWhat would you like to do? ");
                 string choice = Console.ReadLine() ?? "";
@@ -61,7 +74,7 @@ namespace TestRPGGame.Systems
                         shopping = false;
                         break;
                     default:
-                        Console.WriteLine("\n❌ Invalid choice!");
+                        SendMessage("\n❌ Invalid choice!");
                         Thread.Sleep(1000);
                         break;
                 }
@@ -89,12 +102,12 @@ namespace TestRPGGame.Systems
             {
                 player.Gold -= 50;
                 RefreshShopInventory(player.Level);
-                Console.WriteLine("\n✅ Shop inventory refreshed!");
+                SendMessage("\n✅ Shop inventory refreshed!");
                 Thread.Sleep(1500);
             }
             else
             {
-                Console.WriteLine("\n❌ Not enough gold! Need 50 gold.");
+                SendMessage("\n❌ Not enough gold! Need 50 gold.");
                 Thread.Sleep(1500);
             }
         }
@@ -106,12 +119,12 @@ namespace TestRPGGame.Systems
             while (browsing)
             {
                 Console.Clear();
-                Console.WriteLine("═══════════════ SHOP INVENTORY ═══════════════\n");
-                Console.WriteLine($"💰 Your Gold: {player.Gold}\n");
+                SendMessage("═══════════════ SHOP INVENTORY ═══════════════\n");
+                SendMessage($"💰 Your Gold: {player.Gold}\n");
 
                 if (shopInventory.Count == 0)
                 {
-                    Console.WriteLine("Shop is empty! Try refreshing.\n");
+                    SendMessage("Shop is empty! Try refreshing.\n");
                 }
                 else
                 {
@@ -122,7 +135,7 @@ namespace TestRPGGame.Systems
                         Console.Write($"  {i + 1}. ");
                         Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
                         Console.Write($" ({item.Slot.GetDisplayName()})");
-                        Console.WriteLine($" (Lv {item.Level}) - {item.Price} gold");
+                        SendMessage($" (Lv {item.Level}) - {item.Price} gold");
 
                         // Show key stats
                         Console.Write("     ");
@@ -131,12 +144,12 @@ namespace TestRPGGame.Systems
                         if (item.MagicBonus > 0) Console.Write($"🔮 +{item.MagicBonus} ");
                         if (item.HPBonus > 0) Console.Write($"❤️ +{item.HPBonus} ");
                         if (item.SpecialEffects.Count > 0) Console.Write($"✨ x{item.SpecialEffects.Count} ");
-                        Console.WriteLine();
+                        SendMessage("");
                     }
-                    Console.WriteLine();
+                    SendMessage("");
                 }
 
-                Console.WriteLine("0. Back");
+                SendMessage("0. Back");
                 Console.Write("\nSelect item to buy (or 'v' + number to view details): ");
                 string input = Console.ReadLine() ?? "";
 
@@ -147,9 +160,9 @@ namespace TestRPGGame.Systems
                 else if (input.StartsWith("v") && int.TryParse(input.Substring(1), out int viewIndex) && viewIndex > 0 && viewIndex <= shopInventory.Count)
                 {
                     Console.Clear();
-                    Console.WriteLine();
+                    SendMessage("");
                     shopInventory[viewIndex - 1].DisplayDetails();
-                    Console.WriteLine("\nPress any key to continue...");
+                    SendMessage("\nPress any key to continue...");
                     Console.ReadKey(true);
                 }
                 else if (int.TryParse(input, out int buyIndex) && buyIndex > 0 && buyIndex <= shopInventory.Count)
@@ -164,14 +177,14 @@ namespace TestRPGGame.Systems
 
                         Console.Write($"\n✅ Purchased ");
                         Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                        Console.WriteLine("!");
-                        Console.WriteLine($"Item added to your backpack. Remaining gold: {player.Gold}");
+                        SendMessage("!");
+                        SendMessage($"Item added to your backpack. Remaining gold: {player.Gold}");
                         Thread.Sleep(2000);
                     }
                     else
                     {
                         int needed = item.Price - player.Gold;
-                        Console.WriteLine($"\n❌ Not enough gold! You have {player.Gold}, need {needed} more gold.");
+                        SendMessage($"\n❌ Not enough gold! You have {player.Gold}, need {needed} more gold.");
                         Thread.Sleep(1500);
                     }
                 }
@@ -185,18 +198,18 @@ namespace TestRPGGame.Systems
             while (selling)
             {
                 Console.Clear();
-                Console.WriteLine("═══════════════ SELL ITEMS ═══════════════\n");
-                Console.WriteLine($"💰 Your Gold: {player.Gold}\n");
+                SendMessage("═══════════════ SELL ITEMS ═══════════════\n");
+                SendMessage($"💰 Your Gold: {player.Gold}\n");
 
                 if (player.Inventory.BackpackItems.Count == 0)
                 {
-                    Console.WriteLine("Your backpack is empty!\n");
-                    Console.WriteLine("Press any key to go back...");
+                    SendMessage("Your backpack is empty!\n");
+                    SendMessage("Press any key to go back...");
                     Console.ReadKey(true);
                     return;
                 }
 
-                Console.WriteLine("╔═══ BACKPACK ═══╗\n");
+                SendMessage("╔═══ BACKPACK ═══╗\n");
                 for (int i = 0; i < player.Inventory.BackpackItems.Count; i++)
                 {
                     var item = player.Inventory.BackpackItems[i];
@@ -204,11 +217,11 @@ namespace TestRPGGame.Systems
 
                     Console.Write($"  {i + 1}. ");
                     Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                    Console.WriteLine($" - Sell for {sellPrice} gold");
+                    SendMessage($" - Sell for {sellPrice} gold");
                 }
-                Console.WriteLine();
+                SendMessage("");
 
-                Console.WriteLine("0. Back");
+                SendMessage("0. Back");
                 Console.Write("\nSelect item to sell (or 'v' + number to view details): ");
                 string input = Console.ReadLine() ?? "";
 
@@ -219,9 +232,9 @@ namespace TestRPGGame.Systems
                 else if (input.StartsWith("v") && int.TryParse(input.Substring(1), out int viewIndex) && viewIndex > 0 && viewIndex <= player.Inventory.BackpackItems.Count)
                 {
                     Console.Clear();
-                    Console.WriteLine();
+                    SendMessage("");
                     player.Inventory.BackpackItems[viewIndex - 1].DisplayDetails();
-                    Console.WriteLine("\nPress any key to continue...");
+                    SendMessage("\nPress any key to continue...");
                     Console.ReadKey(true);
                 }
                 else if (int.TryParse(input, out int sellIndex) && sellIndex > 0 && sellIndex <= player.Inventory.BackpackItems.Count)
@@ -240,7 +253,7 @@ namespace TestRPGGame.Systems
                         player.Gold += sellPrice;
                         player.Inventory.BackpackItems.RemoveAt(sellIndex - 1);
 
-                        Console.WriteLine($"\n✅ Sold for {sellPrice} gold!");
+                        SendMessage($"\n✅ Sold for {sellPrice} gold!");
                         Thread.Sleep(1500);
                     }
                 }
@@ -250,12 +263,12 @@ namespace TestRPGGame.Systems
         private void BuyPotions(Player player)
         {
             Console.Clear();
-            Console.WriteLine("═══════════════ POTIONS ═══════════════\n");
+            SendMessage("═══════════════ POTIONS ═══════════════\n");
 
-            Console.WriteLine($"🧪 Health Potion - Restores 50% HP");
-            Console.WriteLine($"💰 Price: 50 gold each");
-            Console.WriteLine($"\nYou currently have: {player.PotionCount} potions");
-            Console.WriteLine($"Your gold: {player.Gold}");
+            SendMessage($"🧪 Health Potion - Restores 50% HP");
+            SendMessage($"💰 Price: 50 gold each");
+            SendMessage($"\nYou currently have: {player.PotionCount} potions");
+            SendMessage($"Your gold: {player.Gold}");
 
             Console.Write("\nHow many potions? (0 to cancel): ");
             string input = Console.ReadLine() ?? "";
@@ -267,16 +280,16 @@ namespace TestRPGGame.Systems
                 {
                     player.Gold -= totalCost;
                     player.PotionCount += amount;
-                    Console.WriteLine($"\n✅ Purchased {amount} potion(s)!");
+                    SendMessage($"\n✅ Purchased {amount} potion(s)!");
                 }
                 else
                 {
-                    Console.WriteLine("\n❌ Not enough gold!");
+                    SendMessage("\n❌ Not enough gold!");
                 }
             }
             else if (amount < 0)
             {
-                Console.WriteLine("\n❌ Invalid amount!");
+                SendMessage("\n❌ Invalid amount!");
             }
 
             Thread.Sleep(2000);

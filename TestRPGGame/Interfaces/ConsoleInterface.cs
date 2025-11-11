@@ -170,7 +170,7 @@ namespace TestRPGGame.Interfaces
                     break;
 
                 case GameEvents.InfoMessageEvent e:
-                    var color = e.Type switch
+                    var color = e.Color ?? e.Type switch
                     {
                         GameEvents.MessageType.Success => ConsoleColor.Green,
                         GameEvents.MessageType.Warning => ConsoleColor.Yellow,
