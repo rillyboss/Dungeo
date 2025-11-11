@@ -146,7 +146,50 @@ public class NullLogger : ILogger  // For tests
 
 ---
 
-### 🎯 Phase 5: Refactor PlayerInventory Switch Statements
+### 🎯 Phase 5: Unified Console Color/Formatting Helper
+**Status**: ⏸️ Pending
+**Effort**: 1-2 hours
+**Impact**: MEDIUM - Cleaner, more maintainable console output
+**Priority**: 🟡 High Value
+
+**Problem**: Manual Console.ForegroundColor/Console.ResetColor calls scattered everywhere
+
+**Current Pattern** (tedious and error-prone):
+```csharp
+Console.ForegroundColor = ConsoleColor.Green;
+Console.Write("Success!");
+Console.ResetColor();
+Console.WriteLine();
+```
+
+**Proposed Solution**: Create fluent helper methods
+```csharp
+// Simple colored output
+WriteColored("Success!", ConsoleColor.Green);
+WriteLineColored("Error!", ConsoleColor.Red);
+
+// More advanced (if needed)
+Write("Normal text ")
+    .Colored("highlighted", ConsoleColor.Yellow)
+    .Text(" more normal")
+    .Line();
+```
+
+**Files to modify**:
+- [ ] Create ConsoleInterface helper methods (WriteColored, WriteLineColored, etc.)
+- [ ] Replace ~50+ manual ForegroundColor/ResetColor calls
+- [ ] Consider adding background color support
+- [ ] Ensure consistent color usage throughout
+
+**Acceptance Criteria**:
+- Zero manual Console.ForegroundColor/Console.ResetColor calls in ConsoleInterface
+- All existing colored output still works correctly
+- Code is more readable and maintainable
+- All 226 tests still passing
+
+---
+
+### 🎯 Phase 6: Refactor PlayerInventory Switch Statements
 **Status**: ⏸️ Pending
 **Effort**: 4-6 hours
 **Impact**: HIGH - Eliminates 36 switch cases, easier to extend
@@ -183,7 +226,7 @@ private readonly Dictionary<EquipmentSlot, EquipmentItem?> _slots = new()
 
 ---
 
-### 🎯 Phase 6: Split EquipmentGenerator.GenerateStats()
+### 🎯 Phase 7: Split EquipmentGenerator.GenerateStats()
 **Status**: ⏸️ Pending
 **Effort**: 6-8 hours
 **Impact**: HIGH - Much easier to test and maintain
@@ -211,7 +254,7 @@ private readonly Dictionary<EquipmentSlot, EquipmentItem?> _slots = new()
 
 ## Medium-Term Improvements (Require More Time)
 
-### 🎯 Phase 7: Introduce IDataRepository + Dependency Injection
+### 🎯 Phase 8: Introduce IDataRepository + Dependency Injection
 **Status**: ⏸️ Pending
 **Effort**: 1-2 days
 **Impact**: MASSIVE - Enables all unit testing
@@ -229,7 +272,7 @@ private readonly Dictionary<EquipmentSlot, EquipmentItem?> _slots = new()
 
 ---
 
-### 🎯 Phase 8: Extract GameCore Responsibilities
+### 🎯 Phase 9: Extract GameCore Responsibilities
 **Status**: ⏸️ Pending
 **Effort**: 1-2 days
 **Impact**: MEDIUM - Better organization, easier testing
@@ -254,22 +297,24 @@ private readonly Dictionary<EquipmentSlot, EquipmentItem?> _slots = new()
 | 2 | ⏸️ Pending | 3-4 hrs | MEDIUM | - |
 | 3 | ⏸️ Pending | 2-3 hrs | MEDIUM | - |
 | 4 | ⏸️ Pending | 2-3 hrs | MEDIUM | - |
-| 5 | ⏸️ Pending | 4-6 hrs | HIGH | - |
-| 6 | ⏸️ Pending | 6-8 hrs | HIGH | - |
-| 7 | ⏸️ Pending | 1-2 days | MASSIVE | - |
-| 8 | ⏸️ Pending | 1-2 days | MEDIUM | - |
+| 5 | ⏸️ Pending | 1-2 hrs | MEDIUM | - |
+| 6 | ⏸️ Pending | 4-6 hrs | HIGH | - |
+| 7 | ⏸️ Pending | 6-8 hrs | HIGH | - |
+| 8 | ⏸️ Pending | 1-2 days | MASSIVE | - |
+| 9 | ⏸️ Pending | 1-2 days | MEDIUM | - |
 
-**Quick Wins Progress (Phases 1-4)**: 1/4 complete, ~9.5-14.5 hours remaining
+**Quick Wins Progress (Phases 1-5)**: 1/5 complete, ~10.5-16.5 hours remaining
 
 ---
 
 ## Success Metrics
 
-After completing quick wins (Phases 1-4):
+After completing quick wins (Phases 1-5):
 - ✅ 100% Console-free game logic (including Equipment)
 - ✅ All balance values centralized and configurable
 - ✅ Consistent randomness across codebase
 - ✅ Clean logging abstraction
+- ✅ Clean, maintainable console color/formatting helpers
 - ✅ Foundation laid for comprehensive testing
 
 After completing all phases:
