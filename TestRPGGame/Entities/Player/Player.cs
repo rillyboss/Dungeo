@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using TestRPGGame.Abilities;
 using TestRPGGame.Combat;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Equipment;
 using TestRPGGame.Factories;
+using TestRPGGame.Interfaces;
 using TestRPGGame.Systems;
 
 
@@ -253,51 +255,41 @@ namespace TestRPGGame.Entities.Player
             return false;
         }
 
-        public void DisplayCharacterSheet()
+        public CharacterSheetInfo GetCharacterSheetInfo()
         {
-            Console.Clear();
-            Console.WriteLine("═══════════════════════════════════════════");
-            Console.WriteLine("          CHARACTER SHEET");
-            Console.WriteLine("═══════════════════════════════════════════\n");
-
-            Console.WriteLine($"Name: {Name}");
-            Console.WriteLine($"Class: {Class}");
-            Console.WriteLine($"Level: {Level}");
-            Console.WriteLine($"Experience: {Experience}/{ExperienceToNextLevel}\n");
-
             var equipStats = Inventory.GetTotalStats();
 
-            Console.WriteLine("╔════════════ STATS ════════════╗");
-            Console.WriteLine($"  ❤️  HP: {CurrentHP}/{MaxHP} ({BaseMaxHP} + {equipStats.HP})");
-            Console.WriteLine($"  💙 Mana: {CurrentMana}/{MaxMana} ({BaseMaxMana} + {equipStats.Mana})");
-            Console.WriteLine($"  ⚔️  Attack: {Attack} ({BaseAttack} + {equipStats.Attack})");
-            Console.WriteLine($"  🛡️  Defense: {Defense} ({BaseDefense} + {equipStats.Defense})");
-            Console.WriteLine($"  🔮 Magic: {MagicPower} ({BaseMagicPower} + {equipStats.Magic})");
-            Console.WriteLine($"  ⚡ Speed: {Speed} ({BaseSpeed} + {equipStats.Speed})");
-            Console.WriteLine($"  💥 Crit Chance: {CritChance:P0}");
-            Console.WriteLine("╚═══════════════════════════════╝\n");
-
-            Console.WriteLine("╔════════════ RESOURCES ════════════╗");
-            Console.WriteLine($"  💰 Gold: {Gold}");
-            Console.WriteLine($"  🧪 Potions: {PotionCount}");
-            Console.WriteLine("╚═══════════════════════════════════╝\n");
-
-            Console.WriteLine("╔════════════ ABILITIES ════════════╗");
-            foreach (var ability in Abilities)
+            return new CharacterSheetInfo
             {
-                if (ability.IsUnlocked)
+                Name = Name,
+                Class = Class,
+                Level = Level,
+                Experience = Experience,
+                ExperienceToNextLevel = ExperienceToNextLevel,
+                CurrentHP = CurrentHP,
+                MaxHP = MaxHP,
+                CurrentMana = CurrentMana,
+                MaxMana = MaxMana,
+                Attack = Attack,
+                Defense = Defense,
+                MagicPower = MagicPower,
+                Speed = Speed,
+                CritChance = CritChance,
+                Gold = Gold,
+                Potions = PotionCount,
+                Equipment = Inventory.GetEquippedItems(),
+                Abilities = Abilities.Select(a => new AbilityInfo
                 {
-                    Console.Write($"  ✓ {ability.Name}");
-                    Console.WriteLine($" (Cost: {ability.ManaCost} mana, CD: {ability.Cooldown})");
-                    Console.WriteLine($"    {ability.Description}");
-                }
-                else
-                {
-                    Console.Write($"  🔒 {ability.Name}");
-                    Console.WriteLine($" - Unlock at Level {ability.UnlockLevel} for {ability.PurchaseCost} gold");
-                }
-            }
-            Console.WriteLine("╚═══════════════════════════════════╝");
+                    Name = a.Name,
+                    Description = a.Description,
+                    ManaCost = a.ManaCost,
+                    Cooldown = a.Cooldown,
+                    CurrentCooldown = a.CurrentCooldown,
+                    IsUnlocked = a.IsUnlocked,
+                    UnlockLevel = a.UnlockLevel,
+                    PurchaseCost = a.PurchaseCost
+                }).ToList()
+            };
         }
 
         public void ResetForNewBattle()

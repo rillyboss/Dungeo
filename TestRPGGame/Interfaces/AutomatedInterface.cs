@@ -221,6 +221,11 @@ namespace TestRPGGame.Interfaces
             return new InventoryAction { ActionType = InventoryActionType.Exit };
         }
 
+        public void DisplayCharacterSheet(CharacterSheetInfo info)
+        {
+            Log($"  Character Sheet: {info.Name} (Lv {info.Level} {info.Class}) - {info.CurrentHP}/{info.MaxHP} HP, {info.Gold} gold");
+        }
+
         public int RequestDungeonSelection(List<DungeonSelectionInfo> dungeons)
         {
             var available = dungeons.Where(d => d.CanEnter).ToList();

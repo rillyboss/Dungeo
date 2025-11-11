@@ -69,7 +69,7 @@ namespace TestRPGGame.Entities.Player
             }
         }
 
-        private Dictionary<EquipmentSlot, EquipmentItem?> GetEquippedItems()
+        public Dictionary<EquipmentSlot, EquipmentItem?> GetEquippedItems()
         {
             return new Dictionary<EquipmentSlot, EquipmentItem?>
             {

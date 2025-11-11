@@ -347,9 +347,9 @@ namespace TestRPGGame
         {
             if (player == null) return;
 
-            // Use existing character sheet display
-            player.DisplayCharacterSheet();
-            gameInterface.WaitForAcknowledgment();
+            // Use interface-driven character sheet display
+            var info = player.GetCharacterSheetInfo();
+            gameInterface.DisplayCharacterSheet(info);
         }
 
         private void UnlockAbilities()

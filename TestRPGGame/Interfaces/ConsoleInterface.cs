@@ -882,6 +882,54 @@ namespace TestRPGGame.Interfaces
             return new InventoryAction { ActionType = InventoryActionType.Exit };
         }
 
+        public void DisplayCharacterSheet(CharacterSheetInfo info)
+        {
+            Console.Clear();
+            Console.WriteLine("═══════════════════════════════════════════");
+            Console.WriteLine("          CHARACTER SHEET");
+            Console.WriteLine("═══════════════════════════════════════════\n");
+
+            Console.WriteLine($"Name: {info.Name}");
+            Console.WriteLine($"Class: {info.Class}");
+            Console.WriteLine($"Level: {info.Level}");
+            Console.WriteLine($"Experience: {info.Experience}/{info.ExperienceToNextLevel}\n");
+
+            Console.WriteLine("╔════════════ STATS ════════════╗");
+            Console.WriteLine($"  ❤️  HP: {info.CurrentHP}/{info.MaxHP}");
+            Console.WriteLine($"  💙 Mana: {info.CurrentMana}/{info.MaxMana}");
+            Console.WriteLine($"  ⚔️  Attack: {info.Attack}");
+            Console.WriteLine($"  🛡️  Defense: {info.Defense}");
+            Console.WriteLine($"  🔮 Magic: {info.MagicPower}");
+            Console.WriteLine($"  ⚡ Speed: {info.Speed}");
+            Console.WriteLine($"  💥 Crit Chance: {info.CritChance:P0}");
+            Console.WriteLine("╚═══════════════════════════════╝\n");
+
+            Console.WriteLine("╔════════════ RESOURCES ════════════╗");
+            Console.WriteLine($"  💰 Gold: {info.Gold}");
+            Console.WriteLine($"  🧪 Potions: {info.Potions}");
+            Console.WriteLine("╚═══════════════════════════════════╝\n");
+
+            Console.WriteLine("╔════════════ ABILITIES ════════════╗");
+            foreach (var ability in info.Abilities)
+            {
+                if (ability.IsUnlocked)
+                {
+                    Console.Write($"  ✓ {ability.Name}");
+                    Console.WriteLine($" (Cost: {ability.ManaCost} mana, CD: {ability.Cooldown})");
+                    Console.WriteLine($"    {ability.Description}");
+                }
+                else
+                {
+                    Console.Write($"  🔒 {ability.Name}");
+                    Console.WriteLine($" - Unlock at Level {ability.UnlockLevel} for {ability.PurchaseCost} gold");
+                }
+            }
+            Console.WriteLine("╚═══════════════════════════════════╝");
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey(true);
+        }
+
         public int RequestDungeonSelection(List<DungeonSelectionInfo> dungeons)
         {
             Console.Clear();

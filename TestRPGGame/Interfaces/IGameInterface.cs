@@ -58,6 +58,11 @@ namespace TestRPGGame.Interfaces
         InventoryAction RequestInventoryAction(List<EquipmentItem> backpack, Dictionary<EquipmentSlot, EquipmentItem?> equipped);
 
         /// <summary>
+        /// Display character sheet and wait for acknowledgment
+        /// </summary>
+        void DisplayCharacterSheet(CharacterSheetInfo info);
+
+        /// <summary>
         /// Request dungeon selection
         /// Returns dungeon index or -1 for cancel
         /// </summary>
@@ -154,6 +159,7 @@ namespace TestRPGGame.Interfaces
         public string Name { get; set; }
         public string Description { get; set; }
         public int ManaCost { get; set; }
+        public int Cooldown { get; set; }
         public int CurrentCooldown { get; set; }
         public bool CanUse { get; set; }
         public bool IsUnlocked { get; set; }
