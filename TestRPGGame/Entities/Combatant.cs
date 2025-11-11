@@ -1,0 +1,132 @@
+using System;
+using TestRPGGame.Combat;
+using TestRPGGame.Combat.StatusEffects;
+
+namespace TestRPGGame.Entities
+{
+    /// <summary>
+    /// Base class for all entities that participate in combat (Player, Enemy).
+    /// Provides shared combat properties and methods to eliminate code duplication.
+    /// </summary>
+    public abstract class Combatant
+    {
+        // Identity
+        public string Name { get; set; } = "";
+
+        // Core Combat Stats
+        public int MaxHP { get; set; }
+        public int CurrentHP { get; set; }
+        public int Attack { get; set; }
+        public int Defense { get; set; }
+        public int Speed { get; set; }
+
+        // OLD Status Effect System (DEPRECATED - being migrated to Effects)
+        // TODO: Remove after migration complete
+        public CombatStatusEffects StatusEffects { get; set; }
+
+        // NEW Status Effect System (MMO-style buffs/debuffs)
+        public StatusEffectManager Effects { get; private set; }
+
+        protected Combatant()
+        {
+            StatusEffects = new CombatStatusEffects(); // Legacy - remove after migration
+            Effects = new StatusEffectManager(this);
+        }
+
+        /// <summary>
+        /// Checks if this combatant is still alive.
+        /// </summary>
+        public bool IsAlive()
+        {
+            return CurrentHP > 0;
+        }
+
+        /// <summary>
+        /// Applies damage to this combatant.
+        /// This is the legacy method maintained for backward compatibility.
+        /// New code should use ApplyDamage() instead.
+        /// </summary>
+        public virtual void TakeDamage(int damage)
+        {
+            // Current implementation: Linear defense subtraction (to be refactored)
+            int actualDamage = Math.Max(1, damage - Defense);
+            CurrentHP -= actualDamage;
+        }
+
+        /// <summary>
+        /// Unified damage application method for all combat damage.
+        /// This method will be the single source of truth for damage calculation.
+        /// It handles defense calculation, shield absorption, and HP reduction.
+        /// </summary>
+        /// <param name="rawDamage">The incoming damage before defense/shields</param>
+        /// <param name="applyShieldAbsorption">Whether to check for shield absorption (default: true)</param>
+        /// <returns>The actual damage dealt after defense and shields</returns>
+        public virtual int ApplyDamage(int rawDamage, bool applyShieldAbsorption = true)
+        {
+            // Step 1: Apply defense reduction
+            // Current formula: Linear subtraction (will be refactored to percentage-based)
+            int damageAfterDefense = Math.Max(1, rawDamage - Defense);
+
+            // Step 2: Apply shield absorption using new status effect system
+            int damageAfterShield = damageAfterDefense;
+            if (applyShieldAbsorption)
+            {
+                var shield = Effects.GetActiveShield();
+                if (shield != null && shield.CurrentShieldValue > 0)
+                {
+                    int blocked = shield.AbsorbDamage(damageAfterDefense);
+                    damageAfterShield = damageAfterDefense - blocked;
+
+                    if (blocked > 0)
+                    {
+                        UI.UIHelper.PrintColoredLine($"   🛡️  Shield absorbed {blocked} damage! ({shield.CurrentShieldValue} remaining)", ConsoleColor.Cyan);
+                    }
+                }
+            }
+
+            // Step 3: Apply final damage to HP
+            int actualDamage = Math.Max(0, damageAfterShield);
+            CurrentHP -= actualDamage;
+
+            return actualDamage;
+        }
+
+        /// <summary>
+        /// Heals this combatant by the specified amount, capped at MaxHP.
+        /// </summary>
+        public void Heal(int amount)
+        {
+            CurrentHP = Math.Min(CurrentHP + amount, MaxHP);
+        }
+
+        /// <summary>
+        /// Gets the total attack power for this combatant.
+        /// Virtual to allow Player to override with equipment bonuses.
+        /// </summary>
+        public virtual int GetTotalAttack()
+        {
+            return Attack;
+        }
+
+        /// <summary>
+        /// Gets the total defense for this combatant.
+        /// Virtual to allow Player to override with equipment bonuses.
+        /// </summary>
+        public virtual int GetTotalDefense()
+        {
+            return Defense;
+        }
+
+        /// <summary>
+        /// Ensures StatusEffects is initialized. Useful for lazy initialization.
+        /// DEPRECATED - Legacy method for old system.
+        /// </summary>
+        public void EnsureStatusEffects()
+        {
+            if (StatusEffects == null)
+            {
+                StatusEffects = new CombatStatusEffects();
+            }
+        }
+    }
+}

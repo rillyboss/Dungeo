@@ -10,23 +10,19 @@ using TestRPGGame.UI;
 
 namespace TestRPGGame.Entities.Player
 {
-    public class Player
+    public class Player : Combatant
     {
-        public string Name { get; set; }
+        // Name inherited from Combatant
         public PlayerClass Class { get; set; }
         public int Level { get; set; }
         public int Experience { get; set; }
         public int ExperienceToNextLevel { get; set; }
 
         // Core Stats
-        public int MaxHP { get; set; }
-        public int CurrentHP { get; set; }
+        // MaxHP, CurrentHP, Attack, Defense, Speed inherited from Combatant
         public int MaxMana { get; set; }
         public int CurrentMana { get; set; }
-        public int Attack { get; set; }
-        public int Defense { get; set; }
         public int MagicPower { get; set; }
-        public int Speed { get; set; }
         public double CritChance { get; set; }
 
         // Resources
@@ -39,8 +35,7 @@ namespace TestRPGGame.Entities.Player
         // Abilities
         public List<Ability> Abilities { get; set; }
 
-        // Combat status effects
-        public CombatStatusEffects StatusEffects { get; set; }
+        // StatusEffects (old) and Effects (new) inherited from Combatant
 
         // Base stats (without equipment)
         private int BaseMaxHP { get; set; }
@@ -60,7 +55,7 @@ namespace TestRPGGame.Entities.Player
             ExperienceToNextLevel = 100;
             Inventory = new PlayerInventory();
             Abilities = new List<Ability>();
-            StatusEffects = new CombatStatusEffects();
+            // StatusEffects (old) and Effects (new) initialized by base Combatant constructor
 
             InitializeFromClassData();
             InitializeAbilities();
@@ -222,12 +217,14 @@ namespace TestRPGGame.Entities.Player
             return AttackType.Physical; // Default to physical
         }
 
-        public int GetTotalAttack()
+        // GetTotalAttack and GetTotalDefense inherited from Combatant
+        // Player's stats already include equipment from UpdateStatsFromEquipment
+        public override int GetTotalAttack()
         {
             return Attack; // Already includes equipment from UpdateStatsFromEquipment
         }
 
-        public int GetTotalDefense()
+        public override int GetTotalDefense()
         {
             return Defense; // Already includes equipment from UpdateStatsFromEquipment
         }
@@ -237,10 +234,7 @@ namespace TestRPGGame.Entities.Player
             return MagicPower; // Already includes equipment from UpdateStatsFromEquipment
         }
 
-        public void Heal(int amount)
-        {
-            CurrentHP = Math.Min(CurrentHP + amount, MaxHP);
-        }
+        // Heal method inherited from Combatant base class
 
         public void RestoreMana(int amount)
         {
@@ -313,8 +307,9 @@ namespace TestRPGGame.Entities.Player
                 ability.CurrentCooldown = 0;
             }
 
-            // Reset status effects for new battle
+            // Reset status effects for new battle (both old and new systems during migration)
             StatusEffects = new CombatStatusEffects();
+            Effects.ClearAll();
         }
     }
 }
