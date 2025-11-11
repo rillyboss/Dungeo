@@ -17,13 +17,13 @@ namespace TestRPGGame.Abilities.Effects
 
         public void Execute(AbilityContext context)
         {
-            if (context.Enemy == null) return;
+            if (context.Target == null) return;
 
             switch (StatName.ToLower())
             {
                 case "speed":
-                    context.Enemy.Speed = Math.Max(1, context.Enemy.Speed + Amount);
-                    UIHelper.PrintColoredLine($"⚡ Enemy speed {(Amount > 0 ? "increased" : "decreased")}!", ConsoleColor.Cyan);
+                    context.Target.Speed = Math.Max(1, context.Target.Speed + Amount);
+                    UIHelper.PrintColoredLine($"⚡ {context.Target.Name}'s speed {(Amount > 0 ? "increased" : "decreased")}!", ConsoleColor.Cyan);
                     break;
             }
         }

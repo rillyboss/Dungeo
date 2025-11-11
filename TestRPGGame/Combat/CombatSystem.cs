@@ -281,7 +281,16 @@ namespace TestRPGGame.Combat
                 }
                 else
                 {
-                    ExecuteEnemyAbilityEffects(player, enemy, enemyAbility);
+                    // Create ability context (enemy is source, player is target)
+                    var context = new AbilityContext(source: enemy, target: player)
+                    {
+                        PlayerDodgeNext = playerDodgeNext,
+                        Random = random,
+                        IsPlayerAbility = false
+                    };
+
+                    // Execute all effects
+                    enemyAbility.Ability.Execute(context);
                 }
             }
             else
@@ -344,66 +353,6 @@ namespace TestRPGGame.Combat
             }
         }
 
-        /// <summary>
-        /// Execute enemy ability effects
-        /// </summary>
-        private void ExecuteEnemyAbilityEffects(Player player, Enemy enemy, EnemyAbility enemyAbility)
-        {
-            // Execute each effect manually (simplified for enemy abilities)
-            foreach (var effect in enemyAbility.Ability.Effects)
-            {
-                if (effect is DamageEffect damageEffect)
-                {
-                    // Calculate damage based on enemy attack
-                    int baseDamage = (int)(enemy.Attack * damageEffect.Multiplier);
-                    int actualDamage = ApplyDamageToPlayer(player, enemy, baseDamage);
-                    UIHelper.PrintColoredLine($"   💥 {actualDamage} damage dealt!", ConsoleColor.Red);
-                }
-                else if (effect is PoisonEffect poisonEffect)
-                {
-                    // Enemy applies burning/DOT to player using new status effect system
-                    player.ApplyBurning(enemy, poisonEffect.Duration, poisonEffect.DamagePerTurn);
-                    UIHelper.PrintColoredLine($"   🔥 You are burning! ({poisonEffect.DamagePerTurn} damage/turn for {poisonEffect.Duration} turns)", ConsoleColor.Red);
-                }
-                else if (effect is RestoreEffect restoreEffect)
-                {
-                    // Enemy heals itself
-                    int healAmount = Math.Min(restoreEffect.Amount, enemy.MaxHP - enemy.CurrentHP);
-                    enemy.CurrentHP += healAmount;
-                    UIHelper.PrintColoredLine($"   💚 {enemy.Name} heals for {healAmount} HP!", ConsoleColor.Green);
-
-                    // Notify AI that enemy used a heal ability
-                    if (enemy.AI != null)
-                    {
-                        enemy.AI.RecordHealUsed();
-                    }
-                }
-                else if (effect is RegenerationApplicator hotEffect)
-                {
-                    // Apply heal over time to enemy using new status effect system
-                    enemy.ApplyRegeneration(hotEffect.Duration, hotEffect.HealPerTurn);
-                    UIHelper.PrintColoredLine($"   💚 {enemy.Name} begins regenerating! ({hotEffect.HealPerTurn} HP/turn for {hotEffect.Duration} turns)", ConsoleColor.Green);
-                }
-                else if (effect is StatModEffect statModEffect)
-                {
-                    // Reduce player's speed temporarily (simplified - just show message for now)
-                    UIHelper.PrintColoredLine($"   🔻 Your combat effectiveness is reduced!", ConsoleColor.Magenta);
-                }
-                else if (effect is BuffApplicator buffEffect)
-                {
-                    // Enemy buffs are simplified for now - just show message
-                    UIHelper.PrintColoredLine($"   ⚡ {enemy.Name} is empowered by {buffEffect.BuffName}!", ConsoleColor.Yellow);
-                }
-                else if (effect is ThornsApplicator thornsEffect)
-                {
-                    // Apply Thorns to enemy using new status effect system
-                    enemy.ApplyThorns(thornsEffect.Duration, thornsEffect.ReflectDamage);
-                    UIHelper.PrintColoredLine($"   🌵 {enemy.Name} is surrounded by thorns! ({thornsEffect.ReflectDamage} damage reflection for {thornsEffect.Duration} turns)", ConsoleColor.Yellow);
-                }
-
-                Thread.Sleep(500);
-            }
-        }
 
         public bool StartBossBattle(Player player, Enemy boss, bool isMiniboss = false)
         {
@@ -858,8 +807,8 @@ namespace TestRPGGame.Combat
             UIHelper.PrintColoredLine($"   {ability.Description}", ConsoleColor.Gray);
             Thread.Sleep(600);
 
-            // Create ability context
-            var context = new AbilityContext(player, enemy)
+            // Create ability context (player is source, enemy is target)
+            var context = new AbilityContext(source: player, target: enemy)
             {
                 PlayerDodgeNext = playerDodgeNext,
                 Random = random,

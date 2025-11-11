@@ -19,27 +19,37 @@ namespace TestRPGGame.Abilities.Effects
 
         public void Execute(AbilityContext context)
         {
-            if (context.Enemy == null) return;
+            if (context.Target == null) return;
 
-            int baseDamage = UsesMagic ? context.Player.GetTotalMagicPower() : context.Player.GetTotalAttack();
+            // Calculate base damage from source's stats
+            int baseDamage;
+            if (UsesMagic && context.Source is Entities.Player.Player playerSource)
+            {
+                baseDamage = playerSource.MagicPower;
+            }
+            else
+            {
+                baseDamage = context.Source.Attack;
+            }
             int damage = (int)(baseDamage * Multiplier);
 
-            // Apply buffs
-            if (context.ActiveBuffs != null && context.ActiveBuffs.ContainsKey("Battle Rage") && !UsesMagic)
+            // Apply damage multiplier from status effects (Battle Rage, etc.)
+            double damageMultiplier = context.Source.Effects.GetTotalDamageMultiplier();
+            damage = (int)(damage * damageMultiplier);
+
+            // Apply critical hit (only for players for now)
+            bool isCrit = false;
+            if (context.Source is Entities.Player.Player player)
             {
-                damage = (int)(damage * 1.5);
+                isCrit = GuaranteedCrit || (context.Random.NextDouble() < player.CritChance);
+                if (isCrit)
+                {
+                    damage = (int)(damage * 2);
+                }
             }
 
-            // Apply critical hit
-            bool isCrit = GuaranteedCrit || (context.Random.NextDouble() < context.Player.CritChance);
-            if (isCrit)
-            {
-                damage = (int)(damage * 2);
-            }
-
-            int actualDamage = Math.Max(1, damage - context.Enemy.Defense);
-
-            context.Enemy.CurrentHP -= actualDamage;
+            // Apply damage to target (handles defense, shields, thorns reflection)
+            int actualDamage = context.Target.ApplyDamage(damage, applyShieldAbsorption: true, attacker: context.Source);
 
             if (isCrit)
             {

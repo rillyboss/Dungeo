@@ -17,17 +17,17 @@ namespace TestRPGGame.Abilities.Effects
 
         public void Execute(AbilityContext context)
         {
-            if (context.Enemy == null || context.Player == null) return;
+            if (context.Target == null) return;
 
-            // Deal damage
-            int damage = (int)(context.Enemy.Attack * DamageMultiplier);
-            int actualDamage = Math.Max(1, damage - context.Player.GetTotalDefense());
-            context.Player.CurrentHP -= actualDamage;
+            // Deal damage to target
+            int baseDamage = (int)(context.Source.Attack * DamageMultiplier);
+            int actualDamage = context.Target.ApplyDamage(baseDamage, applyShieldAbsorption: true, attacker: context.Source);
 
-            // Heal caster
-            context.Enemy.CurrentHP = Math.Min(context.Enemy.MaxHP, context.Enemy.CurrentHP + HealAmount);
+            // Heal source (caster)
+            int actualHeal = Math.Min(HealAmount, context.Source.MaxHP - context.Source.CurrentHP);
+            context.Source.CurrentHP += actualHeal;
 
-            UIHelper.PrintColoredLine($"💉 Life Steal! {actualDamage} damage dealt, {HealAmount} HP gained!", ConsoleColor.DarkRed);
+            UIHelper.PrintColoredLine($"💉 Life Steal! {actualDamage} damage dealt, {actualHeal} HP gained!", ConsoleColor.DarkRed);
         }
 
         public string GetDescription()

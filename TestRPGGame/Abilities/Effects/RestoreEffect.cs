@@ -17,15 +17,23 @@ namespace TestRPGGame.Abilities.Effects
 
         public void Execute(AbilityContext context)
         {
-            if (IsMana)
+            // Restore affects the source (caster heals/restores themselves)
+            if (IsMana && context.Source is Entities.Player.Player player)
             {
-                context.Player.RestoreMana(Amount);
-                UIHelper.PrintColoredLine($"💙 Restored {Amount} mana!", ConsoleColor.Blue);
+                player.RestoreMana(Amount);
+                UIHelper.PrintColoredLine($"💙 {context.Source.Name} restored {Amount} mana!", ConsoleColor.Blue);
             }
             else
             {
-                context.Player.Heal(Amount);
-                UIHelper.PrintColoredLine($"❤️  Restored {Amount} HP!", ConsoleColor.Green);
+                int actualHeal = Math.Min(Amount, context.Source.MaxHP - context.Source.CurrentHP);
+                context.Source.CurrentHP += actualHeal;
+                UIHelper.PrintColoredLine($"❤️  {context.Source.Name} restored {actualHeal} HP!", ConsoleColor.Green);
+
+                // Notify AI if enemy healed
+                if (context.Source is Entities.Enemy.Enemy enemy && enemy.AI != null)
+                {
+                    enemy.AI.RecordHealUsed();
+                }
             }
         }
 

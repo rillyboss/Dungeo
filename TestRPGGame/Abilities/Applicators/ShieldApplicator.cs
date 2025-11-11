@@ -1,4 +1,5 @@
 using TestRPGGame.Abilities.Effects;
+using TestRPGGame.Combat.StatusEffects;
 using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
@@ -20,8 +21,9 @@ namespace TestRPGGame.Abilities.Applicators
 
         public void Execute(AbilityContext context)
         {
-            // Shield is handled via StatusEffects in combat
-            UIHelper.PrintColoredLine($"🛡️  Shield active: Absorbs {ShieldAmount} damage for {Duration} turns!", ConsoleColor.Cyan);
+            // Apply shield to source (caster shields themselves)
+            context.Source.ApplyShield(Duration, ShieldAmount);
+            UIHelper.PrintColoredLine($"🛡️  {context.Source.Name} gains a shield: Absorbs {ShieldAmount} damage for {Duration} turns!", ConsoleColor.Cyan);
         }
 
         public string GetDescription()

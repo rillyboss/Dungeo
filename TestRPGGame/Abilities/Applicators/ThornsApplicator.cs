@@ -1,4 +1,5 @@
 using TestRPGGame.Abilities.Effects;
+using TestRPGGame.Combat.StatusEffects;
 using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
@@ -20,8 +21,9 @@ namespace TestRPGGame.Abilities.Applicators
 
         public void Execute(AbilityContext context)
         {
-            // Thorns is handled via StatusEffects in combat
-            UIHelper.PrintColoredLine($"🌵 Thorns active: {ReflectDamage} damage reflection for {Duration} turns!", ConsoleColor.Yellow);
+            // Apply thorns to source (caster protects themselves)
+            context.Source.ApplyThorns(Duration, ReflectDamage);
+            UIHelper.PrintColoredLine($"🌵 {context.Source.Name} is surrounded by thorns! ({ReflectDamage} damage reflection for {Duration} turns)", ConsoleColor.Yellow);
         }
 
         public string GetDescription()

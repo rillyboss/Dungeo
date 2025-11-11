@@ -21,12 +21,9 @@ namespace TestRPGGame.Abilities.Applicators
 
         public void Execute(AbilityContext context)
         {
-            // Speed buff is handled via StatusEffects in combat
-            if (context.Player != null)
-            {
-                context.Player.ApplySpeedBuff(Duration, SpeedBonus);
-                UIHelper.PrintColoredLine($"⚡ Speed increased by {SpeedBonus} for {Duration} turns!", ConsoleColor.Cyan);
-            }
+            // Apply speed buff to source (caster buffs themselves)
+            context.Source.ApplySpeedBuff(Duration, SpeedBonus);
+            UIHelper.PrintColoredLine($"⚡ {context.Source.Name}'s speed increased by {SpeedBonus} for {Duration} turns!", ConsoleColor.Cyan);
         }
 
         public string GetDescription()

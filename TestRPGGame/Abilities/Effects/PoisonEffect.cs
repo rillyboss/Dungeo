@@ -1,9 +1,12 @@
 using System;
+using TestRPGGame.Combat.StatusEffects;
 using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Effects
 {
-    // Poison/DoT effect
+    /// <summary>
+    /// Poison/DoT effect - applies burning status effect to target
+    /// </summary>
     public class PoisonEffect : IAbilityEffect
     {
         public int DamagePerTurn { get; set; }
@@ -19,15 +22,16 @@ namespace TestRPGGame.Abilities.Effects
 
         public void Execute(AbilityContext context)
         {
-            if (context.Enemy == null) return;
+            if (context.Target == null) return;
 
             if (InitialDamage > 0)
             {
-                context.Enemy.CurrentHP -= InitialDamage;
+                context.Target.ApplyDamage(InitialDamage, applyShieldAbsorption: true, attacker: context.Source);
                 UIHelper.PrintColoredLine($"💚 {InitialDamage} poison damage!", ConsoleColor.Green);
             }
 
-            // These need to be set on the context
+            // Apply burning/poison status effect
+            context.Target.ApplyBurning(context.Source, Duration, DamagePerTurn);
             UIHelper.PrintColoredLine($"💚 Poison applied: {DamagePerTurn} damage per turn for {Duration} turns!", ConsoleColor.Green);
         }
 

@@ -21,19 +21,16 @@ namespace TestRPGGame.Abilities.Applicators
 
         public void Execute(AbilityContext context)
         {
-            // Apply buff using new status effect system
-            if (context.Player != null)
+            // Apply buff to source (caster buffs themselves)
+            if (BuffName == "Battle Rage")
             {
-                if (BuffName == "Battle Rage")
-                {
-                    context.Player.ApplyBattleRage(Duration);
-                }
-                else if (BuffName == "Shield Wall")
-                {
-                    context.Player.ApplyShieldWall(Duration);
-                }
-                UIHelper.PrintColoredLine($"✨ {BuffName} active for {Duration} turns!", ConsoleColor.Cyan);
+                context.Source.ApplyBattleRage(Duration);
             }
+            else if (BuffName == "Shield Wall")
+            {
+                context.Source.ApplyShieldWall(Duration);
+            }
+            UIHelper.PrintColoredLine($"✨ {context.Source.Name} empowered by {BuffName} for {Duration} turns!", ConsoleColor.Cyan);
         }
 
         public string GetDescription()

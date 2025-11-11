@@ -1,4 +1,5 @@
 using TestRPGGame.Abilities.Effects;
+using TestRPGGame.Combat.StatusEffects;
 using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
@@ -20,8 +21,9 @@ namespace TestRPGGame.Abilities.Applicators
 
         public void Execute(AbilityContext context)
         {
-            // HoT is handled via StatusEffects in combat
-            UIHelper.PrintColoredLine($"💚 Regeneration active: {HealPerTurn} HP per turn for {Duration} turns!", ConsoleColor.Green);
+            // Apply regeneration to source (caster heals themselves)
+            context.Source.ApplyRegeneration(Duration, HealPerTurn);
+            UIHelper.PrintColoredLine($"💚 {context.Source.Name} begins regenerating! ({HealPerTurn} HP/turn for {Duration} turns)", ConsoleColor.Green);
         }
 
         public string GetDescription()
