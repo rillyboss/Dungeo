@@ -35,14 +35,15 @@ namespace TestRPGGame
 
             if (useOldGame)
             {
-                // Run original game with old interface (for backwards compatibility)
-                Console.WriteLine("Starting original game...\n");
+                // Run original game (DEPRECATED - for backwards compatibility only)
+                Console.WriteLine("⚠️  Starting LEGACY game (deprecated)...");
+                Console.WriteLine("   Use 'dotnet run' without --old flag for the new architecture\n");
                 Game game = new Game();
                 game.Start();
             }
             else if (useAutomated)
             {
-                // Run with automated interface (for AI/testing)
+                // Run with automated AI interface (for testing/analysis)
                 Console.WriteLine("Starting game with AUTOMATED interface...\n");
                 var automatedInterface = new AutomatedInterface(new DefaultStrategy());
                 var gameCore = new GameCore(automatedInterface);
@@ -55,8 +56,7 @@ namespace TestRPGGame
             }
             else
             {
-                // Default: Run with new console interface
-                Console.WriteLine("Starting game with new interface system...\n");
+                // Default: Interface-driven architecture with console UI
                 var consoleInterface = new ConsoleInterface();
                 var gameCore = new GameCore(consoleInterface);
                 gameCore.Start();

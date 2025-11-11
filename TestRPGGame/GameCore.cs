@@ -21,6 +21,7 @@ namespace TestRPGGame
         private readonly IGameInterface gameInterface;
         private Player? player;
         private InterfacedCombatSystem combat;
+        private Shop shop;
         private bool isRunning;
         private int? lastSaveSlot;
         private List<Dungeon> dungeons;
@@ -30,6 +31,7 @@ namespace TestRPGGame
         {
             this.gameInterface = gameInterface;
             this.combat = new InterfacedCombatSystem(gameInterface);
+            this.shop = new Shop();
             this.isRunning = true;
             this.lastSaveSlot = null;
             this.dungeons = DungeonFactory.CreateAllDungeons();
@@ -305,30 +307,26 @@ namespace TestRPGGame
         {
             if (player == null) return;
 
-            // Simplified shop - just exit for now
-            gameInterface.OnEvent(new GameEvents.InfoMessageEvent
-            {
-                Message = "Shop system will be implemented with the new interface",
-                Type = GameEvents.MessageType.Info
-            });
+            // Use existing Shop system (has embedded Console UI)
+            shop.Enter(player);
+
+            // Auto-save after shop visit
+            AutoSave();
         }
 
         private void ManageInventory()
         {
             if (player == null) return;
 
-            gameInterface.OnEvent(new GameEvents.InfoMessageEvent
-            {
-                Message = "Inventory system will be implemented with the new interface",
-                Type = GameEvents.MessageType.Info
-            });
+            // Use existing Inventory system (has embedded Console UI)
+            player.Inventory.DisplayInventory(player);
         }
 
         private void ViewCharacterSheet()
         {
             if (player == null) return;
 
-            // Use existing display
+            // Use existing character sheet display
             player.DisplayCharacterSheet();
             gameInterface.WaitForAcknowledgment();
         }
