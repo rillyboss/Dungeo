@@ -447,9 +447,7 @@ namespace TestRPGGame.Interfaces
                 Console.WriteLine($" ({ability.ManaCost} mana){cdInfo}");
 
                 // Description with indentation
-                Console.ForegroundColor = ConsoleColor.Gray;
-                Console.WriteLine($"   {ability.Description}");
-                Console.ResetColor();
+                UIHelper.PrintColoredLine($"   {ability.Description}", ConsoleColor.Gray);
 
                 if (i < abilities.Count - 1)
                     Console.WriteLine(); // Spacing between abilities
@@ -1084,9 +1082,7 @@ namespace TestRPGGame.Interfaces
             filledLength = Math.Max(0, Math.Min(barLength, filledLength));
 
             Console.Write("❤️  [");
-            Console.ForegroundColor = color;
-            Console.Write(new string('█', filledLength));
-            Console.ResetColor();
+            UIHelper.PrintColored(new string('█', filledLength), color);
             Console.Write(new string('░', barLength - filledLength));
             Console.Write($"] {current}/{max}");
         }
@@ -1098,9 +1094,7 @@ namespace TestRPGGame.Interfaces
             filledLength = Math.Max(0, Math.Min(barLength, filledLength));
 
             Console.Write("💙 [");
-            Console.ForegroundColor = color;
-            Console.Write(new string('█', filledLength));
-            Console.ResetColor();
+            UIHelper.PrintColored(new string('█', filledLength), color);
             Console.Write(new string('░', barLength - filledLength));
             Console.Write($"] {current}/{max}");
         }
@@ -1140,9 +1134,7 @@ namespace TestRPGGame.Interfaces
             Console.WriteLine();
 
             // Display name with rarity color
-            Console.ForegroundColor = item.GetRarityColor();
-            Console.Write($"[{item.Rarity}] {item.Name}");
-            Console.ResetColor();
+            UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
             Console.WriteLine($" (Lv {item.Level})");
             Console.WriteLine($"Slot: {item.Slot.GetDisplayName()}");
 
@@ -1150,9 +1142,9 @@ namespace TestRPGGame.Interfaces
             if (item.WeaponAttackType.HasValue)
             {
                 Console.Write("  Attack Type: ");
-                Console.ForegroundColor = Combat.AttackTypeSystem.GetAttackTypeColor(item.WeaponAttackType.Value);
-                Console.Write($"{Combat.AttackTypeSystem.GetAttackTypeIcon(item.WeaponAttackType.Value)} {item.WeaponAttackType.Value}");
-                Console.ResetColor();
+                UIHelper.PrintColored(
+                    $"{Combat.AttackTypeSystem.GetAttackTypeIcon(item.WeaponAttackType.Value)} {item.WeaponAttackType.Value}",
+                    Combat.AttackTypeSystem.GetAttackTypeColor(item.WeaponAttackType.Value));
                 Console.WriteLine();
             }
 
