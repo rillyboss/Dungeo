@@ -4,12 +4,27 @@ using System.Linq;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Combat;
 using TestRPGGame.Utils;
+using TestRPGGame.Equipment.StatGenerators;
 
 namespace TestRPGGame.Equipment
 {
     public static class EquipmentGenerator
     {
         private static ItemGenerationData? _itemData;
+
+        // Strategy pattern: Dictionary dispatch instead of switch statements
+        private static readonly Dictionary<EquipmentSlot, ISlotStatGenerator> _statGenerators = new()
+        {
+            { EquipmentSlot.Weapon, new WeaponStatGenerator() },
+            { EquipmentSlot.Armor, new ArmorStatGenerator() },
+            { EquipmentSlot.Helmet, new HelmetStatGenerator() },
+            { EquipmentSlot.Boots, new BootsStatGenerator() },
+            { EquipmentSlot.Gloves, new GlovesStatGenerator() },
+            { EquipmentSlot.Ring1, new RingStatGenerator() },
+            { EquipmentSlot.Ring2, new RingStatGenerator() },
+            { EquipmentSlot.Amulet, new AmuletStatGenerator() },
+            { EquipmentSlot.Relic, new RelicStatGenerator() }
+        };
 
         // Legacy arrays for non-weapon/armor slots (Helmet, Boots, Gloves, Rings, Amulets, Relics)
         private static readonly string[] helmetTypes = { "Helmet", "Helm", "Crown", "Circlet", "Hood", "Cap" };
@@ -247,125 +262,10 @@ namespace TestRPGGame.Equipment
 
             int baseStat = item.Level * 2;
 
-            switch (item.Slot)
+            // Strategy pattern: Use dictionary dispatch instead of switch statement
+            if (_statGenerators.TryGetValue(item.Slot, out var generator))
             {
-                case EquipmentSlot.Weapon:
-                    if (weaponPrefix != null && weaponType != null)
-                    {
-                        // Use data-driven weapon stats
-                        double randomVariance = 1.5 + RandomProvider.NextDouble() * 0.5;
-                        item.AttackBonus = (int)(baseStat * rarityMultiplier * weaponPrefix.AttackMultiplier * weaponType.AttackWeight * randomVariance);
-                        item.MagicBonus = (int)(baseStat * rarityMultiplier * weaponPrefix.MagicMultiplier * weaponType.MagicWeight);
-                        item.SpeedBonus = weaponType.SpeedBonus;
-
-                        // Set attack type from weapon type data
-                        if (Enum.TryParse<AttackType>(weaponType.AttackType, out var attackType))
-                        {
-                            item.WeaponAttackType = attackType;
-                        }
-                    }
-                    else
-                    {
-                        // Fallback to legacy generation
-                        item.AttackBonus = (int)(baseStat * rarityMultiplier * (1.5 + RandomProvider.NextDouble() * 0.5));
-                        item.MagicBonus = RandomProvider.Next(2) == 0 ? (int)(baseStat * rarityMultiplier * 0.8) : 0;
-                        Array attackTypes = Enum.GetValues(typeof(AttackType));
-                        item.WeaponAttackType = (AttackType)attackTypes.GetValue(RandomProvider.Next(attackTypes.Length))!;
-                    }
-
-                    if (item.Rarity >= ItemRarity.Rare)
-                        item.CritBonus = 0.05 + (RandomProvider.NextDouble() * 0.15);
-                    break;
-
-                case EquipmentSlot.Armor:
-                    if (armorPrefix != null)
-                    {
-                        // Use data-driven armor stats
-                        double randomVariance = 1.5 + RandomProvider.NextDouble() * 0.5;
-                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * armorPrefix.DefenseMultiplier * randomVariance);
-                        item.HPBonus = (int)(baseStat * rarityMultiplier * armorPrefix.HPMultiplier * 3);
-                    }
-                    else
-                    {
-                        // Fallback to legacy generation
-                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * (1.5 + RandomProvider.NextDouble() * 0.5));
-                        item.HPBonus = (int)(baseStat * rarityMultiplier * 3);
-                    }
-                    break;
-
-                case EquipmentSlot.Helmet:
-                    if (armorPrefix != null)
-                    {
-                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * armorPrefix.DefenseMultiplier * 0.7);
-                        item.HPBonus = (int)(baseStat * rarityMultiplier * armorPrefix.HPMultiplier * 2);
-                    }
-                    else
-                    {
-                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * 0.7);
-                        item.HPBonus = (int)(baseStat * rarityMultiplier * 2);
-                    }
-                    item.ManaBonus = RandomProvider.Next(3) == 0 ? (int)(baseStat * rarityMultiplier * 1.5) : 0;
-                    break;
-
-                case EquipmentSlot.Boots:
-                    if (armorPrefix != null)
-                    {
-                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * armorPrefix.DefenseMultiplier * 0.5);
-                    }
-                    else
-                    {
-                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * 0.5);
-                    }
-                    item.SpeedBonus = (int)(baseStat * rarityMultiplier * 0.6);
-                    break;
-
-                case EquipmentSlot.Gloves:
-                    if (armorPrefix != null)
-                    {
-                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * armorPrefix.DefenseMultiplier * 0.4);
-                    }
-                    else
-                    {
-                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * 0.4);
-                    }
-                    item.AttackBonus = (int)(baseStat * rarityMultiplier * 0.6);
-                    item.SpeedBonus = (int)(baseStat * rarityMultiplier * 0.3);
-                    break;
-
-                case EquipmentSlot.Ring1:
-                case EquipmentSlot.Ring2:
-                    // Rings have varied stats
-                    int statChoice = RandomProvider.Next(4);
-                    switch (statChoice)
-                    {
-                        case 0:
-                            item.AttackBonus = (int)(baseStat * rarityMultiplier * 0.8);
-                            break;
-                        case 1:
-                            item.DefenseBonus = (int)(baseStat * rarityMultiplier * 0.8);
-                            break;
-                        case 2:
-                            item.MagicBonus = (int)(baseStat * rarityMultiplier * 0.8);
-                            break;
-                        case 3:
-                            item.HPBonus = (int)(baseStat * rarityMultiplier * 2.5);
-                            break;
-                    }
-                    break;
-
-                case EquipmentSlot.Amulet:
-                    item.HPBonus = (int)(baseStat * rarityMultiplier * 2);
-                    item.ManaBonus = (int)(baseStat * rarityMultiplier * 2);
-                    if (item.Rarity >= ItemRarity.Rare)
-                        item.CritBonus = 0.03 + (RandomProvider.NextDouble() * 0.1);
-                    break;
-
-                case EquipmentSlot.Relic:
-                    // Relics are magical and provide varied bonuses
-                    item.MagicBonus = (int)(baseStat * rarityMultiplier);
-                    item.ManaBonus = (int)(baseStat * rarityMultiplier * 2.5);
-                    item.AttackBonus = (int)(baseStat * rarityMultiplier * 0.4);
-                    break;
+                generator.GenerateStats(item, baseStat, rarityMultiplier, weaponPrefix, weaponType, armorPrefix);
             }
         }
 
