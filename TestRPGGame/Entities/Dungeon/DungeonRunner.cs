@@ -24,7 +24,7 @@ namespace TestRPGGame.Entities.Dungeon
 
     public class DungeonRunner
     {
-        private CombatSystem combatSystem;
+        private InterfacedCombatSystem combatSystem;
         private Random random;
         private List<EquipmentItem> dungeonLoot;
         private IGameInterface gameInterface;
@@ -32,7 +32,7 @@ namespace TestRPGGame.Entities.Dungeon
         public DungeonRunner(IGameInterface gameInterface)
         {
             this.gameInterface = gameInterface;
-            combatSystem = new CombatSystem();
+            combatSystem = new InterfacedCombatSystem(gameInterface);
             random = new Random();
             dungeonLoot = new List<EquipmentItem>();
         }
@@ -84,7 +84,7 @@ namespace TestRPGGame.Entities.Dungeon
             SendMessage("\n\n⚠️  You've reached the inner sanctum...");
             Thread.Sleep(1500);
 
-            bool minibossVictory = combatSystem.StartBossBattle(player, dungeon.Miniboss, true);
+            bool minibossVictory = combatSystem.StartBattle(player, dungeon.Miniboss, true);
 
             if (!minibossVictory)
             {
@@ -107,7 +107,7 @@ namespace TestRPGGame.Entities.Dungeon
             SendMessage("\n\n💀 You venture deeper into the heart of darkness...");
             Thread.Sleep(2000);
 
-            bool bossVictory = combatSystem.StartBossBattle(player, dungeon.Boss, false);
+            bool bossVictory = combatSystem.StartBattle(player, dungeon.Boss, false);
 
             if (!bossVictory)
             {
@@ -272,7 +272,7 @@ namespace TestRPGGame.Entities.Dungeon
 
                 // Generate random enemy at appropriate level
                 EnemyEntity enemy = Entities.Enemy.EnemyFactory.CreateEnemy(encounter.CombatLevel.Value);
-                CombatSystem normalCombat = new CombatSystem();
+                InterfacedCombatSystem normalCombat = new InterfacedCombatSystem(gameInterface);
                 bool victory = normalCombat.StartBattle(player, enemy);
 
                 if (!victory)
@@ -343,7 +343,7 @@ namespace TestRPGGame.Entities.Dungeon
                 {
                     Thread.Sleep(1000);
                     EnemyEntity enemy = Entities.Enemy.EnemyFactory.CreateEnemy(player.Level + 1); // Slightly harder
-                    CombatSystem normalCombat = new CombatSystem();
+                    InterfacedCombatSystem normalCombat = new InterfacedCombatSystem(gameInterface);
                     bool victory = normalCombat.StartBattle(player, enemy);
 
                     if (!victory)
