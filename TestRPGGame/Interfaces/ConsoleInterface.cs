@@ -548,11 +548,7 @@ namespace TestRPGGame.Interfaces
             else if (input.StartsWith("v") && int.TryParse(input.Substring(1), out int viewIndex) &&
                      viewIndex > 0 && viewIndex <= forSale.Count && forSale[viewIndex - 1].Item != null)
             {
-                Console.Clear();
-                Console.WriteLine();
-                forSale[viewIndex - 1].Item!.DisplayDetails();
-                Console.WriteLine("\nPress any key to continue...");
-                Console.ReadKey(true);
+                DisplayEquipmentDetails(forSale[viewIndex - 1].Item!);
                 return RequestBuyItem(forSale, playerGold); // Recurse
             }
             else if (int.TryParse(input, out int buyIndex) && buyIndex > 0 && buyIndex <= forSale.Count)
@@ -602,11 +598,7 @@ namespace TestRPGGame.Interfaces
             else if (input.StartsWith("v") && int.TryParse(input.Substring(1), out int viewIndex) &&
                      viewIndex > 0 && viewIndex <= inventory.Count)
             {
-                Console.Clear();
-                Console.WriteLine();
-                inventory[viewIndex - 1].DisplayDetails();
-                Console.WriteLine("\nPress any key to continue...");
-                Console.ReadKey(true);
+                DisplayEquipmentDetails(inventory[viewIndex - 1]);
                 return RequestSellItem(inventory); // Recurse
             }
             else if (int.TryParse(input, out int sellIndex) && sellIndex > 0 && sellIndex <= inventory.Count)
@@ -866,11 +858,7 @@ namespace TestRPGGame.Interfaces
 
             if (int.TryParse(input, out int index) && index > 0 && index <= backpack.Count)
             {
-                Console.Clear();
-                Console.WriteLine();
-                backpack[index - 1].DisplayDetails();
-                Console.WriteLine("\nPress any key to continue...");
-                Console.ReadKey(true);
+                DisplayEquipmentDetails(backpack[index - 1]);
 
                 return new InventoryAction
                 {
@@ -1141,6 +1129,72 @@ namespace TestRPGGame.Interfaces
 
             // Invalid choice, default to first option
             return 0;
+        }
+
+        /// <summary>
+        /// Displays detailed information about an equipment item
+        /// </summary>
+        private void DisplayEquipmentDetails(EquipmentItem item)
+        {
+            Console.Clear();
+            Console.WriteLine();
+
+            // Display name with rarity color
+            Console.ForegroundColor = item.GetRarityColor();
+            Console.Write($"[{item.Rarity}] {item.Name}");
+            Console.ResetColor();
+            Console.WriteLine($" (Lv {item.Level})");
+            Console.WriteLine($"Slot: {item.Slot.GetDisplayName()}");
+
+            // Display attack type for weapons
+            if (item.WeaponAttackType.HasValue)
+            {
+                Console.Write("  Attack Type: ");
+                Console.ForegroundColor = Combat.AttackTypeSystem.GetAttackTypeColor(item.WeaponAttackType.Value);
+                Console.Write($"{Combat.AttackTypeSystem.GetAttackTypeIcon(item.WeaponAttackType.Value)} {item.WeaponAttackType.Value}");
+                Console.ResetColor();
+                Console.WriteLine();
+            }
+
+            Console.WriteLine();
+
+            // Display stats - show damage range for weapons (if it's a weapon)
+            if (item.Slot == EquipmentSlot.Weapon && item.MaxDamage > 0)
+            {
+                Console.WriteLine($"  ⚔️  Damage: {item.MinDamage}-{item.MaxDamage}");
+                if (item.Accuracy < 1.0)
+                {
+                    Console.WriteLine($"  🎯 Accuracy: {item.Accuracy:P0}");
+                }
+            }
+            else if (item.AttackBonus > 0)
+            {
+                Console.WriteLine($"  ⚔️  Attack: +{item.AttackBonus}");
+            }
+
+            if (item.DefenseBonus > 0) Console.WriteLine($"  🛡️  Defense: +{item.DefenseBonus}");
+            if (item.MagicBonus > 0) Console.WriteLine($"  🔮 Magic: +{item.MagicBonus}");
+            if (item.HPBonus > 0) Console.WriteLine($"  ❤️  HP: +{item.HPBonus}");
+            if (item.ManaBonus > 0) Console.WriteLine($"  💙 Mana: +{item.ManaBonus}");
+            if (item.AgilityBonus > 0) Console.WriteLine($"  ⚡ Agility: +{item.AgilityBonus}");
+            if (item.CritBonus > 0) Console.WriteLine($"  💥 Crit Chance: +{item.CritBonus:P0}");
+
+            // Display special effects
+            if (item.SpecialEffects.Count > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  ✨ SPECIAL EFFECTS:");
+                foreach (var effect in item.SpecialEffects)
+                {
+                    Console.WriteLine($"    • {effect.Description}");
+                }
+            }
+
+            Console.WriteLine();
+            Console.WriteLine($"  💰 Value: {item.Price} gold");
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey(true);
         }
     }
 }
