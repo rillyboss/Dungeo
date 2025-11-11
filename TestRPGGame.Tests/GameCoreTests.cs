@@ -8,6 +8,7 @@ using System.Linq;
 
 namespace TestRPGGame.Tests
 {
+    [Collection("SaveSystem")]
     public class GameCoreTests : TestBase
     {
         private readonly string saveDirectory;
@@ -141,12 +142,18 @@ namespace TestRPGGame.Tests
         [Fact]
         public void GameCore_LoadsExistingCharacter()
         {
-            // Arrange - Create a save first
-            var player = new Player("ExistingHero", PlayerClass.Mage);
-            player.Level = 5;
-            player.Gold = 1000;
+            // Arrange - Fill all save slots so AutomatedInterface is forced to load
+            var player1 = new Player("ExistingHero", PlayerClass.Mage);
+            player1.Level = 5;
+            player1.Gold = 1000;
             var progress = new Entities.Dungeon.DungeonProgress();
-            SaveSystem.SaveGame(player, 1, progress);
+            SaveSystem.SaveGame(player1, 1, progress);
+
+            // Fill slots 2 and 3 so no empty slots exist
+            var player2 = new Player("Hero2", PlayerClass.Warrior);
+            SaveSystem.SaveGame(player2, 2, progress);
+            var player3 = new Player("Hero3", PlayerClass.Rogue);
+            SaveSystem.SaveGame(player3, 3, progress);
 
             // Create interface that will load existing save
             var autoInterface = new AutomatedInterface();

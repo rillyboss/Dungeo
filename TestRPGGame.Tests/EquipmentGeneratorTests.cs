@@ -84,7 +84,8 @@ namespace TestRPGGame.Tests
             }
 
             // Generate more legendary attempts since they're rare (2% chance)
-            for (int i = 0; i < 200; i++)
+            // 500 attempts = 99.996% chance of getting at least one legendary
+            for (int i = 0; i < 500; i++)
             {
                 var weapon = EquipmentGenerator.GenerateItem(20, EquipmentSlot.Weapon);
                 if (weapon.Rarity == ItemRarity.Legendary)

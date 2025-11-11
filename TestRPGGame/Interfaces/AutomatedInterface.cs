@@ -17,6 +17,7 @@ namespace TestRPGGame.Interfaces
         private readonly StringBuilder log;
         private readonly AutomatedStrategy strategy;
         private int combatCount = 0;
+        private int inventoryActionCount = 0;
 
         public string GetLog() => log.ToString();
 
@@ -201,13 +202,17 @@ namespace TestRPGGame.Interfaces
 
         public InventoryAction RequestInventoryAction(List<EquipmentItem> backpack, Dictionary<EquipmentSlot, EquipmentItem?> equipped)
         {
-            // Equip first unequipped item
-            if (backpack.Any())
+            inventoryActionCount++;
+
+            // Equip first unequipped item, but exit after 3 actions to avoid infinite loops
+            if (backpack.Any() && inventoryActionCount <= 3)
             {
                 Log($"  Inventory: Equip {backpack.First().Name}");
                 return new InventoryAction { ActionType = InventoryActionType.EquipItem, ItemIndex = 0 };
             }
 
+            inventoryActionCount = 0; // Reset for next time
+            Log($"  Inventory: Exit");
             return new InventoryAction { ActionType = InventoryActionType.Exit };
         }
 

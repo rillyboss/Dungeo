@@ -7,6 +7,7 @@ using System.Linq;
 
 namespace TestRPGGame.Tests
 {
+    [Collection("SaveSystem")]
     public class SaveSystemTests : TestBase
     {
         private readonly string saveDirectory;
