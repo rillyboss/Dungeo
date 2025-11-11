@@ -4,6 +4,7 @@ using System.Linq;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Equipment;
+using TestRPGGame.Utils;
 using TestRPGGame.Interfaces;
 
 namespace TestRPGGame.Systems
@@ -11,7 +12,6 @@ namespace TestRPGGame.Systems
     public class Shop
     {
         private List<EquipmentItem> shopInventory;
-        private Random random = new Random();
         private IGameInterface gameInterface;
 
         public Shop(IGameInterface gameInterface)
@@ -86,7 +86,7 @@ namespace TestRPGGame.Systems
 
             // Generate random items based on config
             int itemCount = GameConfig.Config.ShopInventoryMinItems +
-                           random.Next(GameConfig.Config.ShopInventoryMaxItems - GameConfig.Config.ShopInventoryMinItems + 1);
+                           RandomProvider.Next(GameConfig.Config.ShopInventoryMaxItems - GameConfig.Config.ShopInventoryMinItems + 1);
 
             for (int i = 0; i < itemCount; i++)
             {

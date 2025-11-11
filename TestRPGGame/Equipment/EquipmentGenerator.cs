@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Combat;
+using TestRPGGame.Utils;
 
 namespace TestRPGGame.Equipment
 {
     public static class EquipmentGenerator
     {
-        private static Random random = new Random();
         private static ItemGenerationData? _itemData;
 
         // Legacy arrays for non-weapon/armor slots (Helmet, Boots, Gloves, Rings, Amulets, Relics)
@@ -45,11 +45,11 @@ namespace TestRPGGame.Equipment
             else
             {
                 Array slotValues = Enum.GetValues(typeof(EquipmentSlot));
-                item.Slot = (EquipmentSlot)slotValues.GetValue(random.Next(slotValues.Length))!;
+                item.Slot = (EquipmentSlot)slotValues.GetValue(RandomProvider.Next(slotValues.Length))!;
             }
 
             // Determine level (can be +/- 1 from player level)
-            item.Level = Math.Max(1, playerLevel + random.Next(-1, 2));
+            item.Level = Math.Max(1, playerLevel + RandomProvider.Next(-1, 2));
 
             // Determine rarity (higher level = better chance for rare items)
             item.Rarity = forceRarity ?? DetermineRarity(item.Level);
@@ -81,7 +81,7 @@ namespace TestRPGGame.Equipment
                 return ItemRarity.Common;
             }
 
-            int roll = random.Next(100);
+            int roll = RandomProvider.Next(100);
 
             // Check rarities in order from highest to lowest
             // Legendary
@@ -157,14 +157,14 @@ namespace TestRPGGame.Equipment
                     var validWeaponPrefixes = _itemData!.WeaponPrefixes.Values.Where(p => p.MinRarity <= rarityInt).ToList();
                     if (validWeaponPrefixes.Count > 0)
                     {
-                        weaponPrefix = validWeaponPrefixes[random.Next(validWeaponPrefixes.Count)];
+                        weaponPrefix = validWeaponPrefixes[RandomProvider.Next(validWeaponPrefixes.Count)];
                         prefix = weaponPrefix.Name;
                     }
 
                     // Select weapon type
                     if (_itemData!.WeaponTypes.Count > 0)
                     {
-                        weaponType = _itemData.WeaponTypes.Values.ElementAt(random.Next(_itemData.WeaponTypes.Count));
+                        weaponType = _itemData.WeaponTypes.Values.ElementAt(RandomProvider.Next(_itemData.WeaponTypes.Count));
                         baseType = weaponType.Name;
                     }
 
@@ -174,7 +174,7 @@ namespace TestRPGGame.Equipment
                         var validWeaponSuffixes = _itemData.WeaponSuffixes.Values.Where(s => !string.IsNullOrEmpty(s.Name)).ToList();
                         if (validWeaponSuffixes.Count > 0)
                         {
-                            weaponSuffix = validWeaponSuffixes[random.Next(validWeaponSuffixes.Count)];
+                            weaponSuffix = validWeaponSuffixes[RandomProvider.Next(validWeaponSuffixes.Count)];
                             suffix = weaponSuffix.Name;
                         }
                     }
@@ -188,7 +188,7 @@ namespace TestRPGGame.Equipment
                     var validArmorPrefixes = _itemData!.ArmorPrefixes.Values.Where(p => p.MinRarity <= rarityInt).ToList();
                     if (validArmorPrefixes.Count > 0)
                     {
-                        armorPrefix = validArmorPrefixes[random.Next(validArmorPrefixes.Count)];
+                        armorPrefix = validArmorPrefixes[RandomProvider.Next(validArmorPrefixes.Count)];
                         prefix = armorPrefix.Name;
                     }
 
@@ -196,9 +196,9 @@ namespace TestRPGGame.Equipment
                     baseType = slot switch
                     {
                         EquipmentSlot.Armor => "Armor",
-                        EquipmentSlot.Helmet => helmetTypes[random.Next(helmetTypes.Length)],
-                        EquipmentSlot.Boots => bootsTypes[random.Next(bootsTypes.Length)],
-                        EquipmentSlot.Gloves => glovesTypes[random.Next(glovesTypes.Length)],
+                        EquipmentSlot.Helmet => helmetTypes[RandomProvider.Next(helmetTypes.Length)],
+                        EquipmentSlot.Boots => bootsTypes[RandomProvider.Next(bootsTypes.Length)],
+                        EquipmentSlot.Gloves => glovesTypes[RandomProvider.Next(glovesTypes.Length)],
                         _ => ""
                     };
 
@@ -208,7 +208,7 @@ namespace TestRPGGame.Equipment
                         var validArmorSuffixes = _itemData.ArmorSuffixes.Values.Where(s => !string.IsNullOrEmpty(s.Name)).ToList();
                         if (validArmorSuffixes.Count > 0)
                         {
-                            armorSuffix = validArmorSuffixes[random.Next(validArmorSuffixes.Count)];
+                            armorSuffix = validArmorSuffixes[RandomProvider.Next(validArmorSuffixes.Count)];
                             suffix = armorSuffix.Name;
                         }
                     }
@@ -217,17 +217,17 @@ namespace TestRPGGame.Equipment
                 case EquipmentSlot.Ring1:
                 case EquipmentSlot.Ring2:
                     prefix = ringPrefixes[Math.Min(rarityInt, ringPrefixes.Length - 1)];
-                    baseType = ringTypes[random.Next(ringTypes.Length)];
+                    baseType = ringTypes[RandomProvider.Next(ringTypes.Length)];
                     break;
 
                 case EquipmentSlot.Amulet:
                     prefix = amuletPrefixes[Math.Min(rarityInt, amuletPrefixes.Length - 1)];
-                    baseType = amuletTypes[random.Next(amuletTypes.Length)];
+                    baseType = amuletTypes[RandomProvider.Next(amuletTypes.Length)];
                     break;
 
                 case EquipmentSlot.Relic:
                     prefix = rarity >= ItemRarity.Rare ? amuletPrefixes[Math.Min(rarityInt, amuletPrefixes.Length - 1)] : "";
-                    baseType = relicNames[random.Next(relicNames.Length)];
+                    baseType = relicNames[RandomProvider.Next(relicNames.Length)];
                     break;
             }
 
@@ -253,7 +253,7 @@ namespace TestRPGGame.Equipment
                     if (weaponPrefix != null && weaponType != null)
                     {
                         // Use data-driven weapon stats
-                        double randomVariance = 1.5 + random.NextDouble() * 0.5;
+                        double randomVariance = 1.5 + RandomProvider.NextDouble() * 0.5;
                         item.AttackBonus = (int)(baseStat * rarityMultiplier * weaponPrefix.AttackMultiplier * weaponType.AttackWeight * randomVariance);
                         item.MagicBonus = (int)(baseStat * rarityMultiplier * weaponPrefix.MagicMultiplier * weaponType.MagicWeight);
                         item.SpeedBonus = weaponType.SpeedBonus;
@@ -267,28 +267,28 @@ namespace TestRPGGame.Equipment
                     else
                     {
                         // Fallback to legacy generation
-                        item.AttackBonus = (int)(baseStat * rarityMultiplier * (1.5 + random.NextDouble() * 0.5));
-                        item.MagicBonus = random.Next(2) == 0 ? (int)(baseStat * rarityMultiplier * 0.8) : 0;
+                        item.AttackBonus = (int)(baseStat * rarityMultiplier * (1.5 + RandomProvider.NextDouble() * 0.5));
+                        item.MagicBonus = RandomProvider.Next(2) == 0 ? (int)(baseStat * rarityMultiplier * 0.8) : 0;
                         Array attackTypes = Enum.GetValues(typeof(AttackType));
-                        item.WeaponAttackType = (AttackType)attackTypes.GetValue(random.Next(attackTypes.Length))!;
+                        item.WeaponAttackType = (AttackType)attackTypes.GetValue(RandomProvider.Next(attackTypes.Length))!;
                     }
 
                     if (item.Rarity >= ItemRarity.Rare)
-                        item.CritBonus = 0.05 + (random.NextDouble() * 0.15);
+                        item.CritBonus = 0.05 + (RandomProvider.NextDouble() * 0.15);
                     break;
 
                 case EquipmentSlot.Armor:
                     if (armorPrefix != null)
                     {
                         // Use data-driven armor stats
-                        double randomVariance = 1.5 + random.NextDouble() * 0.5;
+                        double randomVariance = 1.5 + RandomProvider.NextDouble() * 0.5;
                         item.DefenseBonus = (int)(baseStat * rarityMultiplier * armorPrefix.DefenseMultiplier * randomVariance);
                         item.HPBonus = (int)(baseStat * rarityMultiplier * armorPrefix.HPMultiplier * 3);
                     }
                     else
                     {
                         // Fallback to legacy generation
-                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * (1.5 + random.NextDouble() * 0.5));
+                        item.DefenseBonus = (int)(baseStat * rarityMultiplier * (1.5 + RandomProvider.NextDouble() * 0.5));
                         item.HPBonus = (int)(baseStat * rarityMultiplier * 3);
                     }
                     break;
@@ -304,7 +304,7 @@ namespace TestRPGGame.Equipment
                         item.DefenseBonus = (int)(baseStat * rarityMultiplier * 0.7);
                         item.HPBonus = (int)(baseStat * rarityMultiplier * 2);
                     }
-                    item.ManaBonus = random.Next(3) == 0 ? (int)(baseStat * rarityMultiplier * 1.5) : 0;
+                    item.ManaBonus = RandomProvider.Next(3) == 0 ? (int)(baseStat * rarityMultiplier * 1.5) : 0;
                     break;
 
                 case EquipmentSlot.Boots:
@@ -335,7 +335,7 @@ namespace TestRPGGame.Equipment
                 case EquipmentSlot.Ring1:
                 case EquipmentSlot.Ring2:
                     // Rings have varied stats
-                    int statChoice = random.Next(4);
+                    int statChoice = RandomProvider.Next(4);
                     switch (statChoice)
                     {
                         case 0:
@@ -357,7 +357,7 @@ namespace TestRPGGame.Equipment
                     item.HPBonus = (int)(baseStat * rarityMultiplier * 2);
                     item.ManaBonus = (int)(baseStat * rarityMultiplier * 2);
                     if (item.Rarity >= ItemRarity.Rare)
-                        item.CritBonus = 0.03 + (random.NextDouble() * 0.1);
+                        item.CritBonus = 0.03 + (RandomProvider.NextDouble() * 0.1);
                     break;
 
                 case EquipmentSlot.Relic:
@@ -406,10 +406,10 @@ namespace TestRPGGame.Equipment
                 int effectCount = item.Rarity switch
                 {
                     ItemRarity.Common => 0,
-                    ItemRarity.Uncommon => random.Next(2) == 0 ? 1 : 0,
-                    ItemRarity.Rare => random.Next(2),
-                    ItemRarity.Epic => 1 + random.Next(2),
-                    ItemRarity.Legendary => 2 + random.Next(2),
+                    ItemRarity.Uncommon => RandomProvider.Next(2) == 0 ? 1 : 0,
+                    ItemRarity.Rare => RandomProvider.Next(2),
+                    ItemRarity.Epic => 1 + RandomProvider.Next(2),
+                    ItemRarity.Legendary => 2 + RandomProvider.Next(2),
                     _ => 0
                 };
 
@@ -525,7 +525,7 @@ namespace TestRPGGame.Equipment
 
         private static SpecialEffect GenerateRandomEffect(int level, ItemRarity rarity)
         {
-            EffectType type = (EffectType)random.Next(Enum.GetValues(typeof(EffectType)).Length);
+            EffectType type = (EffectType)RandomProvider.Next(Enum.GetValues(typeof(EffectType)).Length);
             double rarityBonus = (int)rarity * 0.05;
 
             return type switch

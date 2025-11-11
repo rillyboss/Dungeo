@@ -3,6 +3,7 @@ using TestRPGGame.Entities;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Interfaces;
+using TestRPGGame.Utils;
 
 namespace TestRPGGame.Abilities.Effects
 {
@@ -23,7 +24,9 @@ namespace TestRPGGame.Abilities.Effects
         public Combatant? Target { get; set; }
 
         public bool PlayerDodgeNext { get; set; }
-        public Random Random { get; set; }
+
+        [Obsolete("Use RandomProvider directly instead of context.Random")]
+        public Random Random { get; set; } = null!; // Deprecated - use RandomProvider
 
         /// <summary>
         /// Tracks if this is a player-used ability (true) or enemy-used ability (false)
@@ -43,7 +46,6 @@ namespace TestRPGGame.Abilities.Effects
         {
             Source = source;
             Target = target;
-            Random = new Random();
             CombatInterface = combatInterface;
         }
     }

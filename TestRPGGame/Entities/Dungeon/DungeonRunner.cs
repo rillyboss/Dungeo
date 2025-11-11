@@ -7,6 +7,7 @@ using TestRPGGame.Equipment;
 using TestRPGGame.Systems;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Interfaces;
+using TestRPGGame.Utils;
 using PlayerEntity = TestRPGGame.Entities.Player.Player;
 using EnemyEntity = TestRPGGame.Entities.Enemy.Enemy;
 
@@ -25,7 +26,6 @@ namespace TestRPGGame.Entities.Dungeon
     public class DungeonRunner
     {
         private InterfacedCombatSystem combatSystem;
-        private Random random;
         private List<EquipmentItem> dungeonLoot;
         private IGameInterface gameInterface;
 
@@ -33,7 +33,6 @@ namespace TestRPGGame.Entities.Dungeon
         {
             this.gameInterface = gameInterface;
             combatSystem = new InterfacedCombatSystem(gameInterface);
-            random = new Random();
             dungeonLoot = new List<EquipmentItem>();
         }
 
@@ -145,8 +144,8 @@ namespace TestRPGGame.Entities.Dungeon
             var config = dungeon.EncounterConfig ?? new DungeonEncounterConfig();
 
             // Determine number of encounters
-            int numEncounters = random.Next(config.MinEncounters, config.MaxEncounters + 1);
-            int numCombatEncounters = random.Next(config.MinCombatEncounters, config.MaxCombatEncounters + 1);
+            int numEncounters = RandomProvider.Next(config.MinEncounters, config.MaxEncounters + 1);
+            int numCombatEncounters = RandomProvider.Next(config.MinCombatEncounters, config.MaxCombatEncounters + 1);
 
             // Create a shuffled copy of the encounter pool
             var availableEncounters = dungeon.EncounterPool.ToList();
@@ -160,7 +159,7 @@ namespace TestRPGGame.Entities.Dungeon
                 generatedEncounters.Add(encounterData);
 
                 // Random chance for bonus combat encounter after this
-                if (random.NextDouble() < config.RandomCombatChance)
+                if (RandomProvider.NextDouble() < config.RandomCombatChance)
                 {
                     generatedEncounters.Add(CreateRandomCombatEncounter(playerLevel));
                 }
@@ -198,7 +197,7 @@ namespace TestRPGGame.Entities.Dungeon
             while (n > 1)
             {
                 n--;
-                int k = random.Next(n + 1);
+                int k = RandomProvider.Next(n + 1);
                 T value = list[k];
                 list[k] = list[n];
                 list[n] = value;
@@ -412,7 +411,7 @@ namespace TestRPGGame.Entities.Dungeon
             SendMessage("╔══════════════ REWARDS ══════════════╗");
 
             // Gold
-            int goldReward = random.Next(reward.GoldMin, reward.GoldMax + 1);
+            int goldReward = RandomProvider.Next(reward.GoldMin, reward.GoldMax + 1);
             player.Gold += goldReward;
             SendMessage($"  💰 Gold: +{goldReward} (Total: {player.Gold})");
 

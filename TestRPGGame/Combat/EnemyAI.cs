@@ -6,6 +6,7 @@ using TestRPGGame.Entities.Player;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Abilities.Applicators;
+using TestRPGGame.Utils;
 
 namespace TestRPGGame.Combat
 {
@@ -15,7 +16,6 @@ namespace TestRPGGame.Combat
     /// </summary>
     public class EnemyAI
     {
-        private Random random = new Random();
 
         // Memory system - tracks recent actions
         private Queue<string> recentPlayerActions = new Queue<string>(5);
@@ -74,7 +74,7 @@ namespace TestRPGGame.Combat
 
             // Select ability with weighted randomness (best abilities more likely)
             double totalScore = scoredAbilities.Sum(x => x.Score);
-            double roll = random.NextDouble() * totalScore;
+            double roll = RandomProvider.NextDouble() * totalScore;
             double cumulative = 0;
 
             foreach (var scored in scoredAbilities)
@@ -153,7 +153,7 @@ namespace TestRPGGame.Combat
             }
 
             // Add some randomness (±20%)
-            score *= (0.8 + random.NextDouble() * 0.4);
+            score *= (0.8 + RandomProvider.NextDouble() * 0.4);
 
             return Math.Max(score, 0.1); // Minimum score
         }

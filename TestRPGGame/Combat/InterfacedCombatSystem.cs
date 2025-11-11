@@ -6,6 +6,7 @@ using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Abilities;
 using TestRPGGame.Interfaces;
 using TestRPGGame.Equipment;
+using TestRPGGame.Utils;
 
 namespace TestRPGGame.Combat
 {
@@ -16,7 +17,6 @@ namespace TestRPGGame.Combat
     public class InterfacedCombatSystem
     {
         private readonly IGameInterface gameInterface;
-        private readonly Random random = new Random();
 
         public InterfacedCombatSystem(IGameInterface gameInterface)
         {
@@ -138,7 +138,7 @@ namespace TestRPGGame.Combat
         private void ExecutePlayerAttack(Player player, Enemy enemy)
         {
             int baseDamage = player.Attack;
-            bool isCrit = random.NextDouble() < player.CritChance;
+            bool isCrit = RandomProvider.NextDouble() < player.CritChance;
             if (isCrit) baseDamage = (int)(baseDamage * 2.0);
 
             int finalDamage = Math.Max(1, baseDamage - enemy.Defense / 2);
@@ -223,7 +223,7 @@ namespace TestRPGGame.Combat
                 player.Gold += goldEarned;
 
                 // Check for loot drop
-                if (random.NextDouble() < Systems.GameConfig.Config.CombatLootDropChance)
+                if (RandomProvider.NextDouble() < Systems.GameConfig.Config.CombatLootDropChance)
                 {
                     loot = EquipmentGenerator.GenerateItem(player.Level);
                     player.Inventory.BackpackItems.Add(loot);

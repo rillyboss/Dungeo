@@ -9,6 +9,7 @@ using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Abilities.Applicators;
 using TestRPGGame.Combat;
 using TestRPGGame.Equipment;
+using TestRPGGame.Utils;
 
 namespace TestRPGGame.Factories
 {
@@ -97,12 +98,11 @@ namespace TestRPGGame.Factories
             // Add random variance for regular enemies (scaling enemies)
             if (data.Level == 0) // Level 0 indicates scaling enemy
             {
-                var random = new Random();
-                maxHP += random.Next(-10, 11);
-                attack += random.Next(-2, 4);
-                defense += random.Next(-1, 3);
-                speed += random.Next(-2, 4);
-                goldReward += random.Next(-5, 16);
+                maxHP += RandomProvider.Next(-10, 11);
+                attack += RandomProvider.Next(-2, 4);
+                defense += RandomProvider.Next(-1, 3);
+                speed += RandomProvider.Next(-2, 4);
+                goldReward += RandomProvider.Next(-5, 16);
             }
 
             var enemy = new Enemy(data.Name, enemyType, maxHP, attack, defense, speed, goldReward, expReward);

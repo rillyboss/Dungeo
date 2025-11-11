@@ -1,4 +1,5 @@
 using System;
+using TestRPGGame.Utils;
 
 namespace TestRPGGame.Abilities.Effects
 {
@@ -46,10 +47,10 @@ namespace TestRPGGame.Abilities.Effects
             double dodgeChance = context.Target.GetDodgeChance();
             double hitChance = Accuracy * (1.0 - dodgeChance);
 
-            if (context.Random.NextDouble() >= hitChance)
+            if (RandomProvider.NextDouble() >= hitChance)
             {
                 // MISS! Determine if it was a dodge or miss
-                bool wasDodged = context.Random.NextDouble() < dodgeChance / (1.0 - hitChance);
+                bool wasDodged = RandomProvider.NextDouble() < dodgeChance / (1.0 - hitChance);
 
                 // Publish miss event (combat system will handle display)
                 if (context.CombatInterface != null)
@@ -67,7 +68,7 @@ namespace TestRPGGame.Abilities.Effects
 
             // Step 2: Roll damage multiplier within min/max range
             double rolledMultiplier = MinMultiplier +
-                (context.Random.NextDouble() * (MaxMultiplier - MinMultiplier));
+                (RandomProvider.NextDouble() * (MaxMultiplier - MinMultiplier));
 
             // Step 3: Calculate base damage from source's stats
             int baseDamage;
@@ -91,7 +92,7 @@ namespace TestRPGGame.Abilities.Effects
             if (context.Source is Entities.Player.Player player)
             {
                 double totalCritChance = player.CritChance + (player.Agility / 500.0);
-                isCrit = GuaranteedCrit || (context.Random.NextDouble() < totalCritChance);
+                isCrit = GuaranteedCrit || (RandomProvider.NextDouble() < totalCritChance);
                 if (isCrit)
                 {
                     damage = (int)(damage * 2);

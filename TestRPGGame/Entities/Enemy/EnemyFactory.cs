@@ -4,12 +4,12 @@ using System.Linq;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Factories;
 using TestRPGGame.Combat;
+using TestRPGGame.Utils;
 
 namespace TestRPGGame.Entities.Enemy
 {
     public static class EnemyFactory
     {
-        private static Random random = new Random();
         private static List<EnemyData>? _enemyPool = null;
 
         public static Enemy CreateEnemy(int playerLevel)
@@ -38,7 +38,7 @@ namespace TestRPGGame.Entities.Enemy
             }
 
             // Select random enemy template from available enemies
-            var enemyData = availableEnemies[random.Next(availableEnemies.Count)];
+            var enemyData = availableEnemies[RandomProvider.Next(availableEnemies.Count)];
 
             // Create enemy using EntityFactory (handles scaling and variance)
             Enemy enemy = EntityFactory.CreateEnemy(enemyData, playerLevel);
@@ -91,7 +91,7 @@ namespace TestRPGGame.Entities.Enemy
                 if (availableBehaviors.Count > 0 && modifierCount < maxModifiers)
                 {
                     double totalChance = availableBehaviors.Sum(b => b.SpawnChance);
-                    double roll = random.NextDouble();
+                    double roll = RandomProvider.NextDouble();
 
                     if (roll < totalChance)
                     {
@@ -112,23 +112,23 @@ namespace TestRPGGame.Entities.Enemy
             }
 
             // Roll for prefix
-            if (modifierCount < maxModifiers && random.Next(100) < prefixChance)
+            if (modifierCount < maxModifiers && RandomProvider.Next(100) < prefixChance)
             {
                 var availablePrefixes = DataLoader.GetEnemyPrefixesByLevel(level).ToList();
                 if (availablePrefixes.Count > 0)
                 {
-                    prefix = availablePrefixes[random.Next(availablePrefixes.Count)];
+                    prefix = availablePrefixes[RandomProvider.Next(availablePrefixes.Count)];
                     modifierCount++;
                 }
             }
 
             // Roll for suffix (less likely if already has prefix)
-            if (modifierCount < maxModifiers && random.Next(100) < suffixChance)
+            if (modifierCount < maxModifiers && RandomProvider.Next(100) < suffixChance)
             {
                 var availableSuffixes = DataLoader.GetEnemySuffixesByLevel(level).ToList();
                 if (availableSuffixes.Count > 0)
                 {
-                    suffix = availableSuffixes[random.Next(availableSuffixes.Count)];
+                    suffix = availableSuffixes[RandomProvider.Next(availableSuffixes.Count)];
                     modifierCount++;
                 }
             }
