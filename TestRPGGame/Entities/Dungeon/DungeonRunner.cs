@@ -240,7 +240,6 @@ namespace TestRPGGame.Entities.Dungeon
 
         private void ShowDungeonIntro(Dungeon dungeon)
         {
-            Console.Clear();
             SendMessage("╔══════════════════════════════════════════════════════════╗", ConsoleColor.Cyan);
             SendMessage($"  {dungeon.Name.ToUpper()}", ConsoleColor.Yellow);
             SendMessage("╚══════════════════════════════════════════════════════════╝\n");
@@ -262,7 +261,6 @@ namespace TestRPGGame.Entities.Dungeon
             // Handle random combat encounters (no choices, just fight)
             if (encounter.IsCombat && encounter.CombatLevel.HasValue)
             {
-                Console.Clear();
                 SendMessage("═══════════════════════════════════════════", ConsoleColor.Red);
                 SendMessage("          ENEMY ENCOUNTER!", ConsoleColor.Yellow);
                 SendMessage("═══════════════════════════════════════════\n");
@@ -365,7 +363,6 @@ namespace TestRPGGame.Entities.Dungeon
 
         private void ShowMinibossVictory(PlayerEntity player, Dungeon dungeon)
         {
-            Console.Clear();
             SendMessage("\n╔══════════════════════════════════════════╗");
             SendMessage("║      MINIBOSS DEFEATED!               ║");
             SendMessage("╚══════════════════════════════════════════╝\n");
@@ -381,7 +378,6 @@ namespace TestRPGGame.Entities.Dungeon
 
         private void ShowBossVictory(PlayerEntity player, Dungeon dungeon)
         {
-            Console.Clear();
             SendMessage("\n╔══════════════════════════════════════════╗");
             SendMessage("║      DUNGEON CONQUERED!               ║");
             SendMessage("╚══════════════════════════════════════════╝\n");
@@ -490,7 +486,6 @@ namespace TestRPGGame.Entities.Dungeon
 
         private void HandleDeath(PlayerEntity player)
         {
-            Console.Clear();
             SendMessage("\n╔══════════════════════════════════════════╗");
             SendMessage("║           DEFEAT!                     ║");
             SendMessage("╚══════════════════════════════════════════╝\n");
