@@ -8,16 +8,74 @@ namespace TestRPGGame.Entities.Player
 {
     public class PlayerInventory
     {
-        // Equipment slots
-        public EquipmentItem? Weapon { get; set; }
-        public EquipmentItem? Armor { get; set; }
-        public EquipmentItem? Helmet { get; set; }
-        public EquipmentItem? Boots { get; set; }
-        public EquipmentItem? Gloves { get; set; }
-        public EquipmentItem? Ring1 { get; set; }
-        public EquipmentItem? Ring2 { get; set; }
-        public EquipmentItem? Amulet { get; set; }
-        public EquipmentItem? Relic { get; set; }
+        // Internal dictionary-based slot management
+        private readonly Dictionary<EquipmentSlot, EquipmentItem?> _slots = new()
+        {
+            { EquipmentSlot.Weapon, null },
+            { EquipmentSlot.Armor, null },
+            { EquipmentSlot.Helmet, null },
+            { EquipmentSlot.Boots, null },
+            { EquipmentSlot.Gloves, null },
+            { EquipmentSlot.Ring1, null },
+            { EquipmentSlot.Ring2, null },
+            { EquipmentSlot.Amulet, null },
+            { EquipmentSlot.Relic, null }
+        };
+
+        // Public properties that wrap dictionary access (preserve API compatibility)
+        public EquipmentItem? Weapon
+        {
+            get => _slots[EquipmentSlot.Weapon];
+            set => _slots[EquipmentSlot.Weapon] = value;
+        }
+
+        public EquipmentItem? Armor
+        {
+            get => _slots[EquipmentSlot.Armor];
+            set => _slots[EquipmentSlot.Armor] = value;
+        }
+
+        public EquipmentItem? Helmet
+        {
+            get => _slots[EquipmentSlot.Helmet];
+            set => _slots[EquipmentSlot.Helmet] = value;
+        }
+
+        public EquipmentItem? Boots
+        {
+            get => _slots[EquipmentSlot.Boots];
+            set => _slots[EquipmentSlot.Boots] = value;
+        }
+
+        public EquipmentItem? Gloves
+        {
+            get => _slots[EquipmentSlot.Gloves];
+            set => _slots[EquipmentSlot.Gloves] = value;
+        }
+
+        public EquipmentItem? Ring1
+        {
+            get => _slots[EquipmentSlot.Ring1];
+            set => _slots[EquipmentSlot.Ring1] = value;
+        }
+
+        public EquipmentItem? Ring2
+        {
+            get => _slots[EquipmentSlot.Ring2];
+            set => _slots[EquipmentSlot.Ring2] = value;
+        }
+
+        public EquipmentItem? Amulet
+        {
+            get => _slots[EquipmentSlot.Amulet];
+            set => _slots[EquipmentSlot.Amulet] = value;
+        }
+
+        public EquipmentItem? Relic
+        {
+            get => _slots[EquipmentSlot.Relic];
+            set => _slots[EquipmentSlot.Relic] = value;
+        }
 
         public List<EquipmentItem> BackpackItems { get; set; }
 
@@ -71,18 +129,8 @@ namespace TestRPGGame.Entities.Player
 
         public Dictionary<EquipmentSlot, EquipmentItem?> GetEquippedItems()
         {
-            return new Dictionary<EquipmentSlot, EquipmentItem?>
-            {
-                { EquipmentSlot.Weapon, Weapon },
-                { EquipmentSlot.Armor, Armor },
-                { EquipmentSlot.Helmet, Helmet },
-                { EquipmentSlot.Boots, Boots },
-                { EquipmentSlot.Gloves, Gloves },
-                { EquipmentSlot.Ring1, Ring1 },
-                { EquipmentSlot.Ring2, Ring2 },
-                { EquipmentSlot.Amulet, Amulet },
-                { EquipmentSlot.Relic, Relic }
-            };
+            // Return a copy of the internal dictionary
+            return new Dictionary<EquipmentSlot, EquipmentItem?>(_slots);
         }
 
         private void ProcessEquip(Player player, int itemIndex, IGameInterface gameInterface)
@@ -102,67 +150,48 @@ namespace TestRPGGame.Entities.Player
 
             EquipmentItem? unequipped = null;
 
-            switch (item.Slot)
+            // Special handling for ring slots (can use either Ring1 or Ring2)
+            if (item.Slot == EquipmentSlot.Ring1 || item.Slot == EquipmentSlot.Ring2)
             {
-                case EquipmentSlot.Weapon:
-                    unequipped = Weapon;
-                    Weapon = item;
-                    break;
-                case EquipmentSlot.Armor:
-                    unequipped = Armor;
-                    Armor = item;
-                    break;
-                case EquipmentSlot.Helmet:
-                    unequipped = Helmet;
-                    Helmet = item;
-                    break;
-                case EquipmentSlot.Boots:
-                    unequipped = Boots;
-                    Boots = item;
-                    break;
-                case EquipmentSlot.Gloves:
-                    unequipped = Gloves;
-                    Gloves = item;
-                    break;
-                case EquipmentSlot.Ring1:
-                    if (Ring1 == null)
+                if (_slots[EquipmentSlot.Ring1] == null)
+                {
+                    _slots[EquipmentSlot.Ring1] = item;
+                }
+                else if (_slots[EquipmentSlot.Ring2] == null)
+                {
+                    _slots[EquipmentSlot.Ring2] = item;
+                }
+                else
+                {
+                    // Both ring slots full, replace based on original slot preference
+                    if (item.Slot == EquipmentSlot.Ring1)
                     {
-                        Ring1 = item;
-                    }
-                    else if (Ring2 == null)
-                    {
-                        Ring2 = item;
+                        unequipped = _slots[EquipmentSlot.Ring1];
+                        _slots[EquipmentSlot.Ring1] = item;
                     }
                     else
                     {
-                        // Both slots full, replace Ring1
-                        unequipped = Ring1;
-                        Ring1 = item;
+                        unequipped = _slots[EquipmentSlot.Ring2];
+                        _slots[EquipmentSlot.Ring2] = item;
                     }
-                    break;
-                case EquipmentSlot.Ring2:
-                    if (Ring1 == null)
+                }
+            }
+            else
+            {
+                // For all other slots, simple dictionary-based swap
+                if (!_slots.ContainsKey(item.Slot))
+                {
+                    gameInterface.OnEvent(new GameEvents.InfoMessageEvent
                     {
-                        Ring1 = item;
-                    }
-                    else if (Ring2 == null)
-                    {
-                        Ring2 = item;
-                    }
-                    else
-                    {
-                        unequipped = Ring2;
-                        Ring2 = item;
-                    }
-                    break;
-                case EquipmentSlot.Amulet:
-                    unequipped = Amulet;
-                    Amulet = item;
-                    break;
-                case EquipmentSlot.Relic:
-                    unequipped = Relic;
-                    Relic = item;
-                    break;
+                        Message = "Invalid equipment slot!",
+                        Type = GameEvents.MessageType.Error
+                    });
+                    BackpackItems.Insert(itemIndex, item); // Put item back
+                    return;
+                }
+
+                unequipped = _slots[item.Slot];
+                _slots[item.Slot] = item;
             }
 
             if (unequipped != null)
@@ -182,50 +211,22 @@ namespace TestRPGGame.Entities.Player
 
         private void ProcessUnequip(EquipmentSlot slot, IGameInterface gameInterface)
         {
-            EquipmentItem? item = null;
-
-            switch (slot)
+            // Dictionary-based approach: no switch statement needed
+            if (!_slots.ContainsKey(slot))
             {
-                case EquipmentSlot.Weapon:
-                    item = Weapon;
-                    Weapon = null;
-                    break;
-                case EquipmentSlot.Armor:
-                    item = Armor;
-                    Armor = null;
-                    break;
-                case EquipmentSlot.Helmet:
-                    item = Helmet;
-                    Helmet = null;
-                    break;
-                case EquipmentSlot.Boots:
-                    item = Boots;
-                    Boots = null;
-                    break;
-                case EquipmentSlot.Gloves:
-                    item = Gloves;
-                    Gloves = null;
-                    break;
-                case EquipmentSlot.Ring1:
-                    item = Ring1;
-                    Ring1 = null;
-                    break;
-                case EquipmentSlot.Ring2:
-                    item = Ring2;
-                    Ring2 = null;
-                    break;
-                case EquipmentSlot.Amulet:
-                    item = Amulet;
-                    Amulet = null;
-                    break;
-                case EquipmentSlot.Relic:
-                    item = Relic;
-                    Relic = null;
-                    break;
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+                {
+                    Message = "Invalid equipment slot!",
+                    Type = GameEvents.MessageType.Error
+                });
+                return;
             }
+
+            var item = _slots[slot];
 
             if (item != null)
             {
+                _slots[slot] = null;
                 BackpackItems.Add(item);
                 gameInterface.OnEvent(new GameEvents.InfoMessageEvent
                 {
@@ -257,9 +258,8 @@ namespace TestRPGGame.Entities.Player
             int attack = 0, defense = 0, magic = 0, hp = 0, mana = 0, speed = 0;
             double crit = 0;
 
-            var allEquipment = new[] { Weapon, Armor, Helmet, Boots, Gloves, Ring1, Ring2, Amulet, Relic };
-
-            foreach (var item in allEquipment)
+            // Iterate through all equipped items in dictionary
+            foreach (var item in _slots.Values)
             {
                 if (item != null)
                 {
@@ -292,9 +292,9 @@ namespace TestRPGGame.Entities.Player
         public List<SpecialEffect> GetAllSpecialEffects()
         {
             var effects = new List<SpecialEffect>();
-            var allEquipment = new[] { Weapon, Armor, Helmet, Boots, Gloves, Ring1, Ring2, Amulet, Relic };
 
-            foreach (var item in allEquipment)
+            // Iterate through all equipped items in dictionary
+            foreach (var item in _slots.Values)
             {
                 if (item != null)
                 {
