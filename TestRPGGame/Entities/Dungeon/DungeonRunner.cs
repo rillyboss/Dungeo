@@ -451,7 +451,7 @@ namespace TestRPGGame.Entities.Dungeon
 
             do
             {
-                item = EquipmentGenerator.GenerateItem(playerLevel + 2); // Better loot than regular
+                item = EquipmentGenerator.GenerateItem(playerLevel + GameConfig.Config.DungeonLootLevelBonus);
                 attempts++;
             } while (GetRarityValue(item.Rarity) < minRarity && attempts < 50);
 
@@ -493,9 +493,10 @@ namespace TestRPGGame.Entities.Dungeon
             SendMessage("You have been defeated in the dungeon...");
             SendMessage("You crawl back to safety, but lose all dungeon loot and some gold.");
 
-            int goldLost = Math.Min(player.Gold / 4, 200);
+            int goldLost = Math.Min((int)(player.Gold * GameConfig.Config.DungeonGoldLossPercent),
+                                   GameConfig.Config.DungeonGoldLossMax);
             player.Gold -= goldLost;
-            player.CurrentHP = player.MaxHP / 2;
+            player.CurrentHP = (int)(player.MaxHP * GameConfig.Config.DefeatHPRestorePercent);
 
             SendMessage($"\n💰 Lost {goldLost} gold");
             SendMessage($"❤️  Recovered to {player.CurrentHP} HP");

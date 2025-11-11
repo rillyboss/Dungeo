@@ -84,8 +84,9 @@ namespace TestRPGGame.Systems
         {
             shopInventory.Clear();
 
-            // Generate 8-12 random items
-            int itemCount = 8 + random.Next(5);
+            // Generate random items based on config
+            int itemCount = GameConfig.Config.ShopInventoryMinItems +
+                           random.Next(GameConfig.Config.ShopInventoryMaxItems - GameConfig.Config.ShopInventoryMinItems + 1);
 
             for (int i = 0; i < itemCount; i++)
             {
@@ -171,7 +172,7 @@ namespace TestRPGGame.Systems
             }
 
             var item = player.Inventory.BackpackItems[itemIndex];
-            int sellPrice = (int)(item.Price * 0.6); // Sell for 60% of buy price
+            int sellPrice = (int)(item.Price * GameConfig.Config.ItemSellPriceMultiplier);
 
             player.Gold += sellPrice;
             player.Inventory.BackpackItems.RemoveAt(itemIndex);
@@ -186,11 +187,11 @@ namespace TestRPGGame.Systems
 
         private void ProcessRefresh(Player player)
         {
-            const int REFRESH_COST = 50;
+            int refreshCost = GameConfig.Config.ShopRefreshCost;
 
-            if (player.Gold >= REFRESH_COST)
+            if (player.Gold >= refreshCost)
             {
-                player.Gold -= REFRESH_COST;
+                player.Gold -= refreshCost;
                 RefreshShopInventory(player.Level);
 
                 gameInterface.OnEvent(new GameEvents.InfoMessageEvent
@@ -203,7 +204,7 @@ namespace TestRPGGame.Systems
             {
                 gameInterface.OnEvent(new GameEvents.InfoMessageEvent
                 {
-                    Message = $"Not enough gold! Need {REFRESH_COST} gold.",
+                    Message = $"Not enough gold! Need {refreshCost} gold.",
                     Type = GameEvents.MessageType.Error
                 });
             }
@@ -211,7 +212,7 @@ namespace TestRPGGame.Systems
 
         private void ProcessPotionPurchase(Player player, int quantity)
         {
-            const int POTION_PRICE = 50;
+            int potionPrice = GameConfig.Config.PotionPrice;
 
             if (quantity <= 0)
             {
@@ -223,7 +224,7 @@ namespace TestRPGGame.Systems
                 return;
             }
 
-            int totalCost = quantity * POTION_PRICE;
+            int totalCost = quantity * potionPrice;
 
             if (player.Gold >= totalCost)
             {

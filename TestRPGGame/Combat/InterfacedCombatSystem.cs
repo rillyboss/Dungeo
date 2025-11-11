@@ -37,7 +37,7 @@ namespace TestRPGGame.Combat
             });
 
             int turnNumber = 0;
-            int maxTurns = 100; // Prevent infinite loops
+            int maxTurns = Systems.GameConfig.Config.MaxCombatTurns;
 
             while (player.CurrentHP > 0 && enemy.CurrentHP > 0 && turnNumber < maxTurns)
             {
@@ -76,7 +76,7 @@ namespace TestRPGGame.Combat
                 {
                     if (player.UsePotion())
                     {
-                        int restored = player.MaxHP / 2;
+                        int restored = (int)(player.MaxHP * Systems.GameConfig.Config.PotionHealPercent);
                         gameInterface.OnEvent(new GameEvents.PotionUsedEvent
                         {
                             HPRestored = restored,
@@ -127,7 +127,7 @@ namespace TestRPGGame.Combat
                 // Tick effects and regenerate
                 // player.RegenerateMana(); // This method exists in Player
                 player.CurrentMana = Math.Min(player.MaxMana,
-                    player.CurrentMana + (int)(player.MaxMana * 0.05)); // Simple regen
+                    player.CurrentMana + (int)(player.MaxMana * Systems.GameConfig.Config.ManaRegenRate));
                 TickCooldowns(player);
             }
 
@@ -223,7 +223,7 @@ namespace TestRPGGame.Combat
                 player.Gold += goldEarned;
 
                 // Check for loot drop
-                if (random.Next(100) < 40) // 40% chance
+                if (random.NextDouble() < Systems.GameConfig.Config.CombatLootDropChance)
                 {
                     loot = EquipmentGenerator.GenerateItem(player.Level);
                     player.Inventory.BackpackItems.Add(loot);
@@ -245,9 +245,10 @@ namespace TestRPGGame.Combat
             }
             else
             {
-                goldLost = Math.Min(player.Gold / 4, 100);
+                goldLost = Math.Min((int)(player.Gold * Systems.GameConfig.Config.CombatGoldLossPercent),
+                                   Systems.GameConfig.Config.CombatGoldLossMax);
                 player.Gold -= goldLost;
-                player.CurrentHP = player.MaxHP / 2; // Restore some HP
+                player.CurrentHP = (int)(player.MaxHP * Systems.GameConfig.Config.DefeatHPRestorePercent);
             }
 
             gameInterface.OnEvent(new GameEvents.CombatEndedEvent

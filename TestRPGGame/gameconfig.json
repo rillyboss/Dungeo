@@ -1,9 +1,22 @@
 {
   "ManaRegenRate": 0.05,
   "HealthRegenRate": 0.0,
+  "PotionHealPercent": 0.5,
+  "DefeatHPRestorePercent": 0.5,
+  "ShopRefreshCost": 50,
+  "PotionPrice": 50,
+  "ItemSellPriceMultiplier": 0.6,
+  "ShopInventoryMinItems": 8,
+  "ShopInventoryMaxItems": 12,
+  "MaxCombatTurns": 100,
+  "CombatLootDropChance": 0.4,
+  "CombatGoldLossPercent": 0.25,
+  "CombatGoldLossMax": 100,
+  "DungeonGoldLossPercent": 0.25,
+  "DungeonGoldLossMax": 200,
+  "DungeonLootLevelBonus": 2,
   "RestingCost": 10,
   "AbilityPurchaseCostMultiplier": 100,
   "AbilityUnlockLevel": 5,
-  "PotionHealPercent": 0.5,
   "CombatAutosave": true
 }
