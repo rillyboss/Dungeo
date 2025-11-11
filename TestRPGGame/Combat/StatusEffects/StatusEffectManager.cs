@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using TestRPGGame.Entities;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Combat.StatusEffects
 {
@@ -231,32 +230,6 @@ namespace TestRPGGame.Combat.StatusEffects
                 .Sum(e => e.Value);
         }
 
-        /// <summary>
-        /// Displays all active effects (buffs and debuffs) in UI
-        /// </summary>
-        public void DisplayAllEffects(string combatantName)
-        {
-            var buffs = GetBuffs();
-            var debuffs = GetDebuffs();
-            var controls = GetControlEffects();
-
-            if (buffs.Count > 0)
-            {
-                UIHelper.PrintColored($"\n  [{combatantName} Buffs] ", ConsoleColor.Green);
-                Console.WriteLine(string.Join(", ", buffs.Select(b => b.GetDescription())));
-            }
-
-            if (debuffs.Count > 0)
-            {
-                UIHelper.PrintColored($"  [{combatantName} Debuffs] ", ConsoleColor.Red);
-                Console.WriteLine(string.Join(", ", debuffs.Select(d => d.GetDescription())));
-            }
-
-            if (controls.Count > 0)
-            {
-                UIHelper.PrintColored($"  [{combatantName} CC] ", ConsoleColor.Yellow);
-                Console.WriteLine(string.Join(", ", controls.Select(c => c.GetDescription())));
-            }
-        }
+        // Note: DisplayAllEffects() removed - UI output is handled by the combat system through events
     }
 }

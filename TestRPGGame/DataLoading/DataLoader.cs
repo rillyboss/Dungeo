@@ -79,6 +79,9 @@ namespace TestRPGGame.DataLoading
                 // Load player classes
                 _classes = LoadJsonFile<Dictionary<string, ClassData>>("classes.json");
 
+                // Load class ASCII art (from class data)
+                ClassArtDatabase.LoadClassArt(_classes);
+
                 // Load enemy ASCII art
                 var enemyArt = LoadJsonFile<Dictionary<string, EnemyArtData>>(Path.Combine("Enemies", "enemy-art.json"));
                 EnemyArtDatabase.LoadEnemyArt(enemyArt);

@@ -1,5 +1,4 @@
 using System;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Effects
 {
@@ -9,7 +8,7 @@ namespace TestRPGGame.Abilities.Effects
         public void Execute(AbilityContext context)
         {
             // This needs to be handled specially by the combat system
-            UIHelper.PrintColoredLine("👤 Next attack will be dodged!", ConsoleColor.DarkGray);
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

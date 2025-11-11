@@ -1,5 +1,3 @@
-using TestRPGGame.UI;
-
 namespace TestRPGGame.Combat.StatusEffects
 {
     /// <summary>
@@ -17,7 +15,7 @@ namespace TestRPGGame.Combat.StatusEffects
             if (Target != null && Source != null)
             {
                 int damage = Target.ApplyDamage(Value, applyShieldAbsorption: false);
-                UIHelper.PrintColoredLine($"{Icon} {Target.Name} takes {damage} damage from {Name}!", ConsoleColor.Red);
+                // Note: Output is handled by the combat system through events
             }
         }
 

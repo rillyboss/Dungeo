@@ -5,59 +5,25 @@ namespace TestRPGGame.UI
 {
     public static class AsciiArt
     {
-        public static void DrawWarrior()
+        /// <summary>
+        /// Draw ASCII art for a player class (data-driven from classes.json)
+        /// </summary>
+        public static void DrawClass(string className)
         {
-            UIHelper.PrintColoredLine(@"
-                    /)
-            /\_/\  //
-           /     \//
-          /  o o  /
-         /  ===  /
-        /__________\
-           [====]
-          /[____]\
-         / |    | \
-        /  |    |  \
-       /   |    |   \
-          _|    |_
-         [__][__]
-        /  \    /  \
-", ConsoleColor.Red);
-        }
+            // Get art from data-driven system
+            var (artLines, color) = ClassArtDatabase.GetClassArt(className);
 
-        public static void DrawMage()
-        {
-            UIHelper.PrintColoredLine(@"
-           *    .
-       .    ___    *
-         .  |___|  .
-       *   /\ _ /\   *
-          // ( ) \\
-         //  \_/  \\
-        ||   |||   ||
-             |||
-            // \\
-           //   \\
-          (_)   (_)
-", ConsoleColor.Magenta);
-        }
-
-        public static void DrawRogue()
-        {
-            UIHelper.PrintColoredLine(@"
-              /|
-             / |
-            /  |___
-           |   /o o\
-           |  |  >  |
-           |   \___/
-            \  /||
-             \/|/|
-              / |
-             /| |\
-            / | | \
-           /  | |  \
-", ConsoleColor.Green);
+            if (artLines.Count > 0)
+            {
+                // Combine all art lines into a single string
+                var artString = "\n" + string.Join("\n", artLines) + "\n";
+                UIHelper.PrintColoredLine(artString, color);
+            }
+            else
+            {
+                // Fallback if no art found
+                UIHelper.PrintColoredLine($"\n[{className}]\n", ConsoleColor.White);
+            }
         }
 
         public static void DrawEnemy(string enemyName)

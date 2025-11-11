@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.Entities.Dungeon;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Systems
 {
@@ -30,7 +29,7 @@ namespace TestRPGGame.Systems
             {
                 if (slot < 1 || slot > MaxSaveSlots)
                 {
-                    UIHelper.PrintColoredLine($"\n❌ Invalid save slot! Must be 1-{MaxSaveSlots}.", ConsoleColor.Red);
+                    // Note: Error handling is done by caller, no direct console output
                     return false;
                 }
 
@@ -115,7 +114,7 @@ namespace TestRPGGame.Systems
             {
                 if (slot < 1 || slot > MaxSaveSlots)
                 {
-                    UIHelper.PrintColoredLine($"\n❌ Invalid save slot! Must be 1-{MaxSaveSlots}.", ConsoleColor.Red);
+                    // Note: Error handling is done by caller, no direct console output
                     return (null, null);
                 }
 
@@ -263,31 +262,7 @@ namespace TestRPGGame.Systems
             }
         }
 
-        public static void DisplaySaveSlots()
-        {
-            Console.Clear();
-            UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Cyan);
-            UIHelper.PrintColoredLine("              SAVE SLOTS", ConsoleColor.Yellow);
-            UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Cyan);
-
-            var slots = GetAllSaveSlots();
-
-            foreach (var slot in slots)
-            {
-                Console.Write($"Slot {slot.SlotNumber}: ");
-
-                if (slot.IsEmpty)
-                {
-                    UIHelper.PrintColoredLine("[EMPTY]", ConsoleColor.DarkGray);
-                }
-                else
-                {
-                    UIHelper.PrintColored($"{slot.Name}", ConsoleColor.Yellow);
-                    Console.Write($" - Level {slot.Level} {slot.Class}");
-                    Console.WriteLine($"\n         Saved: {slot.SaveTime:MM/dd/yyyy HH:mm}");
-                }
-                Console.WriteLine();
-            }
-        }
+        // Note: DisplaySaveSlots() method removed - UI display logic should be in interface layer
+        // Use GetAllSaveSlots() to retrieve slot info and display it in your interface implementation
     }
 }

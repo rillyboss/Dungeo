@@ -150,7 +150,7 @@ namespace TestRPGGame.Combat
                 Target = enemy.Name,
                 Damage = finalDamage,
                 IsCritical = isCrit,
-                AttackType = "Physical"
+                AttackType = player.GetWeaponAttackType().ToString()
             });
         }
 
@@ -296,14 +296,46 @@ namespace TestRPGGame.Combat
 
         private List<string> GetActiveEffectNames(Player player)
         {
-            // Return empty list for now - would need to implement effect tracking
-            return new List<string>();
+            var effects = new List<string>();
+
+            // Get all active status effects from the player's StatusEffectManager
+            if (player.Effects != null && player.Effects.ActiveEffects.Count > 0)
+            {
+                foreach (var effect in player.Effects.ActiveEffects)
+                {
+                    // Get effect display name with icon if available
+                    string effectDisplay = !string.IsNullOrEmpty(effect.Icon) ? $"{effect.Icon} {effect.Name}" : effect.Name;
+                    if (effect.RemainingTurns > 0)
+                    {
+                        effectDisplay += $" ({effect.RemainingTurns})";
+                    }
+                    effects.Add(effectDisplay);
+                }
+            }
+
+            return effects;
         }
 
         private List<string> GetActiveEffectNames(Enemy enemy)
         {
-            // Return empty list for now - would need to implement effect tracking
-            return new List<string>();
+            var effects = new List<string>();
+
+            // Get all active status effects from the enemy's StatusEffectManager
+            if (enemy.Effects != null && enemy.Effects.ActiveEffects.Count > 0)
+            {
+                foreach (var effect in enemy.Effects.ActiveEffects)
+                {
+                    // Get effect display name with icon if available
+                    string effectDisplay = !string.IsNullOrEmpty(effect.Icon) ? $"{effect.Icon} {effect.Name}" : effect.Name;
+                    if (effect.RemainingTurns > 0)
+                    {
+                        effectDisplay += $" ({effect.RemainingTurns})";
+                    }
+                    effects.Add(effectDisplay);
+                }
+            }
+
+            return effects;
         }
 
         private void TickCooldowns(Player player)

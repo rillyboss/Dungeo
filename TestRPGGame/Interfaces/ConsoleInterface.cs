@@ -50,19 +50,8 @@ namespace TestRPGGame.Interfaces
                     Console.Clear();
                     UIHelper.PrintColoredLine($"\n⚡ Welcome, {e.Name} the {e.Class}! ⚡\n", ConsoleColor.Yellow);
 
-                    // Show character art based on class
-                    switch (e.Class)
-                    {
-                        case PlayerClass.Warrior:
-                            AsciiArt.DrawWarrior();
-                            break;
-                        case PlayerClass.Mage:
-                            AsciiArt.DrawMage();
-                            break;
-                        case PlayerClass.Rogue:
-                            AsciiArt.DrawRogue();
-                            break;
-                    }
+                    // Show character art based on class (data-driven)
+                    AsciiArt.DrawClass(e.Class.ToString());
 
                     Thread.Sleep(1000);
                     UIHelper.PrintColoredLine("\nYour journey begins now...\n", ConsoleColor.Gray);
@@ -323,10 +312,45 @@ namespace TestRPGGame.Interfaces
 
         public CombatAction RequestCombatAction(CombatState state)
         {
+            // Display combat status
+            Console.WriteLine("\n" + new string('═', 60));
+
+            // Player status
+            UIHelper.PrintColoredLine($"👤 YOU", ConsoleColor.Cyan);
+            Console.Write("   ");
+            DrawHealthBar(state.PlayerCurrentHP, state.PlayerMaxHP, ConsoleColor.Green);
+            Console.Write("   ");
+            DrawManaBar(state.PlayerCurrentMana, state.PlayerMaxMana, ConsoleColor.Blue);
+
+            // Show player buffs/debuffs
+            if (state.PlayerActiveEffects.Count > 0)
+            {
+                Console.Write("   🛡️  ");
+                UIHelper.PrintColored(string.Join(", ", state.PlayerActiveEffects), ConsoleColor.Cyan);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine();
+
+            // Enemy status
+            UIHelper.PrintColoredLine($"👹 {state.EnemyName}", ConsoleColor.Red);
+            Console.Write("   ");
+            DrawHealthBar(state.EnemyCurrentHP, state.EnemyMaxHP, ConsoleColor.Red);
+
+            // Show enemy buffs/debuffs
+            if (state.EnemyActiveEffects.Count > 0)
+            {
+                Console.Write("   💀 ");
+                UIHelper.PrintColored(string.Join(", ", state.EnemyActiveEffects), ConsoleColor.Yellow);
+                Console.WriteLine();
+            }
+
+            Console.WriteLine("\n" + new string('═', 60));
+
             UIHelper.PrintColoredLine("\nYOUR TURN:", ConsoleColor.Yellow);
             Console.WriteLine("1. ⚔️  Attack");
             Console.WriteLine("2. 🎯 Use Ability");
-            Console.WriteLine("3. 🧪 Use Potion");
+            Console.WriteLine($"3. 🧪 Use Potion ({state.PlayerPotions} remaining)");
             if (state.CanFlee)
             {
                 Console.WriteLine("4. 🏃 Flee");
@@ -369,17 +393,29 @@ namespace TestRPGGame.Interfaces
 
         public int RequestAbilitySelection(List<AbilityInfo> abilities)
         {
-            Console.WriteLine("\n╔════ ABILITIES ════╗");
+            Console.WriteLine("\n╔════════════════════ ABILITIES ═══════════════════════╗");
             for (int i = 0; i < abilities.Count; i++)
             {
                 var ability = abilities[i];
                 string status = ability.CanUse ? "✓" : "✗";
                 string cdInfo = ability.CurrentCooldown > 0 ? $" (CD: {ability.CurrentCooldown})" : "";
                 string priorityIcon = ability.Priority ? "⚡" : "";
-                Console.WriteLine($"{i + 1}. {status} {priorityIcon}{ability.Name} ({ability.ManaCost} mana){cdInfo}");
+
+                // Ability name and cost
+                ConsoleColor nameColor = ability.CanUse ? ConsoleColor.White : ConsoleColor.DarkGray;
+                UIHelper.PrintColored($"{i + 1}. {status} {priorityIcon}{ability.Name}", nameColor);
+                Console.WriteLine($" ({ability.ManaCost} mana){cdInfo}");
+
+                // Description with indentation
+                Console.ForegroundColor = ConsoleColor.Gray;
+                Console.WriteLine($"   {ability.Description}");
+                Console.ResetColor();
+
+                if (i < abilities.Count - 1)
+                    Console.WriteLine(); // Spacing between abilities
             }
-            Console.WriteLine("0. Cancel");
-            Console.WriteLine("╚═══════════════════╝");
+            Console.WriteLine("\n0. Cancel");
+            Console.WriteLine("╚═══════════════════════════════════════════════════════╝");
 
             Console.Write("\nChoose ability: ");
             string choice = Console.ReadLine() ?? "";
@@ -560,6 +596,35 @@ namespace TestRPGGame.Interfaces
         {
             Console.WriteLine("\nPress any key to continue...");
             Console.ReadKey(true);
+        }
+
+        // Helper methods for visual displays
+        private void DrawHealthBar(int current, int max, ConsoleColor color)
+        {
+            int barLength = 20;
+            int filledLength = (int)((double)current / max * barLength);
+            filledLength = Math.Max(0, Math.Min(barLength, filledLength));
+
+            Console.Write("❤️  [");
+            Console.ForegroundColor = color;
+            Console.Write(new string('█', filledLength));
+            Console.ResetColor();
+            Console.Write(new string('░', barLength - filledLength));
+            Console.Write($"] {current}/{max}");
+        }
+
+        private void DrawManaBar(int current, int max, ConsoleColor color)
+        {
+            int barLength = 20;
+            int filledLength = (int)((double)current / max * barLength);
+            filledLength = Math.Max(0, Math.Min(barLength, filledLength));
+
+            Console.Write("💙 [");
+            Console.ForegroundColor = color;
+            Console.Write(new string('█', filledLength));
+            Console.ResetColor();
+            Console.Write(new string('░', barLength - filledLength));
+            Console.Write($"] {current}/{max}");
         }
     }
 }

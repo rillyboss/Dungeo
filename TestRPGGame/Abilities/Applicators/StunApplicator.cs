@@ -1,6 +1,5 @@
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Combat.StatusEffects;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
 {
@@ -23,7 +22,8 @@ namespace TestRPGGame.Abilities.Applicators
 
             // Apply stun to target
             context.Target.ApplyStun(Duration);
-            UIHelper.PrintColoredLine($"⚡ {context.Target.Name} is stunned for {Duration} turns!", ConsoleColor.Yellow);
+
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using TestRPGGame.Combat;
-using TestRPGGame.UI;
+
 
 namespace TestRPGGame.Equipment
 {
@@ -61,7 +61,7 @@ namespace TestRPGGame.Equipment
 
         public void DisplayDetails()
         {
-            UIHelper.PrintColored($"[{Rarity}] {Name}", GetRarityColor());
+            Console.Write($"[{Rarity}] {Name}", GetRarityColor());
             Console.WriteLine($" (Lv {Level})");
             Console.WriteLine($"Slot: {Slot.GetDisplayName()}");
 
@@ -69,7 +69,7 @@ namespace TestRPGGame.Equipment
             if (WeaponAttackType.HasValue)
             {
                 Console.Write("  Attack Type: ");
-                UIHelper.PrintColored($"{AttackTypeSystem.GetAttackTypeIcon(WeaponAttackType.Value)} {WeaponAttackType.Value}",
+                Console.Write($"{AttackTypeSystem.GetAttackTypeIcon(WeaponAttackType.Value)} {WeaponAttackType.Value}",
                     AttackTypeSystem.GetAttackTypeColor(WeaponAttackType.Value));
                 Console.WriteLine();
             }
@@ -77,27 +77,27 @@ namespace TestRPGGame.Equipment
             Console.WriteLine();
 
             // Display stats
-            if (AttackBonus > 0) UIHelper.PrintColoredLine($"  ⚔️  Attack: +{AttackBonus}", ConsoleColor.White);
-            if (DefenseBonus > 0) UIHelper.PrintColoredLine($"  🛡️  Defense: +{DefenseBonus}", ConsoleColor.White);
-            if (MagicBonus > 0) UIHelper.PrintColoredLine($"  🔮 Magic: +{MagicBonus}", ConsoleColor.White);
-            if (HPBonus > 0) UIHelper.PrintColoredLine($"  ❤️  HP: +{HPBonus}", ConsoleColor.Green);
-            if (ManaBonus > 0) UIHelper.PrintColoredLine($"  💙 Mana: +{ManaBonus}", ConsoleColor.Cyan);
-            if (SpeedBonus > 0) UIHelper.PrintColoredLine($"  ⚡ Speed: +{SpeedBonus}", ConsoleColor.Yellow);
-            if (CritBonus > 0) UIHelper.PrintColoredLine($"  💥 Crit Chance: +{CritBonus:P0}", ConsoleColor.Magenta);
+            if (AttackBonus > 0) Console.WriteLine($"  ⚔️  Attack: +{AttackBonus}");
+            if (DefenseBonus > 0) Console.WriteLine($"  🛡️  Defense: +{DefenseBonus}");
+            if (MagicBonus > 0) Console.WriteLine($"  🔮 Magic: +{MagicBonus}");
+            if (HPBonus > 0) Console.WriteLine($"  ❤️  HP: +{HPBonus}");
+            if (ManaBonus > 0) Console.WriteLine($"  💙 Mana: +{ManaBonus}");
+            if (SpeedBonus > 0) Console.WriteLine($"  ⚡ Speed: +{SpeedBonus}");
+            if (CritBonus > 0) Console.WriteLine($"  💥 Crit Chance: +{CritBonus:P0}");
 
             // Display special effects
             if (SpecialEffects.Count > 0)
             {
                 Console.WriteLine();
-                UIHelper.PrintColoredLine("  ✨ SPECIAL EFFECTS:", ConsoleColor.Yellow);
+                Console.WriteLine("  ✨ SPECIAL EFFECTS:");
                 foreach (var effect in SpecialEffects)
                 {
-                    UIHelper.PrintColoredLine($"    • {effect.Description}", ConsoleColor.Cyan);
+                    Console.WriteLine($"    • {effect.Description}");
                 }
             }
 
             Console.WriteLine();
-            UIHelper.PrintColoredLine($"  💰 Value: {Price} gold", ConsoleColor.Yellow);
+            Console.WriteLine($"  💰 Value: {Price} gold");
         }
     }
 }

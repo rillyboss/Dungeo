@@ -1,5 +1,4 @@
 using System;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Effects
 {
@@ -51,14 +50,7 @@ namespace TestRPGGame.Abilities.Effects
             // Apply damage to target (handles defense, shields, thorns reflection)
             int actualDamage = context.Target.ApplyDamage(damage, applyShieldAbsorption: true, attacker: context.Source);
 
-            if (isCrit)
-            {
-                UIHelper.PrintColoredLine($"💥 CRITICAL! {actualDamage} damage!", ConsoleColor.Yellow);
-            }
-            else
-            {
-                UIHelper.PrintColoredLine($"⚔️  {actualDamage} damage!", ConsoleColor.White);
-            }
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

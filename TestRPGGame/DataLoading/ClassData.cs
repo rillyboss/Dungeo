@@ -28,5 +28,9 @@ namespace TestRPGGame.DataLoading
         public int StartingGold { get; set; }
         public int StartingPotions { get; set; }
         public List<string> StartingEquipment { get; set; } = new List<string>();
+
+        // Visual representation
+        public List<string> Art { get; set; } = new List<string>();
+        public string ArtColor { get; set; } = "White";
     }
 }

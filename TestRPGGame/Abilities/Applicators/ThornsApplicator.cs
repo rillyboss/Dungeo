@@ -1,6 +1,5 @@
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Combat.StatusEffects;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
 {
@@ -23,7 +22,8 @@ namespace TestRPGGame.Abilities.Applicators
         {
             // Apply thorns to source (caster protects themselves)
             context.Source.ApplyThorns(Duration, ReflectDamage);
-            UIHelper.PrintColoredLine($"🌵 {context.Source.Name} is surrounded by thorns! ({ReflectDamage} damage reflection for {Duration} turns)", ConsoleColor.Yellow);
+
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

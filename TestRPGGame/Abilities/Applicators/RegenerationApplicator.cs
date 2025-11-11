@@ -1,6 +1,5 @@
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Combat.StatusEffects;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
 {
@@ -23,7 +22,8 @@ namespace TestRPGGame.Abilities.Applicators
         {
             // Apply regeneration to source (caster heals themselves)
             context.Source.ApplyRegeneration(Duration, HealPerTurn);
-            UIHelper.PrintColoredLine($"💚 {context.Source.Name} begins regenerating! ({HealPerTurn} HP/turn for {Duration} turns)", ConsoleColor.Green);
+
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

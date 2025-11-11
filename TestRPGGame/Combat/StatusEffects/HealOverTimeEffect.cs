@@ -1,5 +1,4 @@
 using System;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Combat.StatusEffects
 {
@@ -19,7 +18,7 @@ namespace TestRPGGame.Combat.StatusEffects
             {
                 int healAmount = Math.Min(Value, Target.MaxHP - Target.CurrentHP);
                 Target.Heal(Value);
-                UIHelper.PrintColoredLine($"{Icon} {Target.Name} regenerates {healAmount} HP!", ConsoleColor.Green);
+                // Note: Output is handled by the combat system through events
             }
         }
 

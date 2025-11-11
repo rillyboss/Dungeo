@@ -192,7 +192,7 @@ namespace TestRPGGame.Interfaces
             {
                 var bestItem = affordableItems.OrderByDescending(i => i.Level).First();
                 Log($"  Shop: Buy {bestItem.Name} for {bestItem.Price} gold");
-                return new ShopAction { ActionType = ShopActionType.Buy, ItemIndex = bestItem.Index };
+                return new ShopAction { ActionType = ShopActionType.BuyItem, ItemIndex = bestItem.Index };
             }
 
             Log($"  Shop: Exit (nothing affordable)");
@@ -205,7 +205,7 @@ namespace TestRPGGame.Interfaces
             if (backpack.Any())
             {
                 Log($"  Inventory: Equip {backpack.First().Name}");
-                return new InventoryAction { ActionType = InventoryActionType.Equip, ItemIndex = 0 };
+                return new InventoryAction { ActionType = InventoryActionType.EquipItem, ItemIndex = 0 };
             }
 
             return new InventoryAction { ActionType = InventoryActionType.Exit };

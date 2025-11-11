@@ -1,6 +1,5 @@
 using System;
 using TestRPGGame.Constants;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Effects
 {
@@ -34,18 +33,17 @@ namespace TestRPGGame.Abilities.Effects
             {
                 case Constants.StatType.Speed:
                     context.Target.Speed = Math.Max(1, context.Target.Speed + Amount);
-                    UIHelper.PrintColoredLine($"⚡ {context.Target.Name}'s speed {(Amount > 0 ? "increased" : "decreased")}!", ConsoleColor.Cyan);
                     break;
                 case Constants.StatType.Attack:
                     context.Target.Attack = Math.Max(1, context.Target.Attack + Amount);
-                    UIHelper.PrintColoredLine($"⚔️  {context.Target.Name}'s attack {(Amount > 0 ? "increased" : "decreased")}!", ConsoleColor.Red);
                     break;
                 case Constants.StatType.Defense:
                     context.Target.Defense = Math.Max(0, context.Target.Defense + Amount);
-                    UIHelper.PrintColoredLine($"🛡️  {context.Target.Name}'s defense {(Amount > 0 ? "increased" : "decreased")}!", ConsoleColor.Blue);
                     break;
                 // HP and MagicPower typically modified through other systems, not direct stat mods
             }
+
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

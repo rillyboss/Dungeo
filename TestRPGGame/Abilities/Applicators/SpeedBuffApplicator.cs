@@ -1,6 +1,5 @@
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Combat.StatusEffects;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
 {
@@ -23,7 +22,8 @@ namespace TestRPGGame.Abilities.Applicators
         {
             // Apply speed buff to source (caster buffs themselves)
             context.Source.ApplySpeedBuff(Duration, SpeedBonus);
-            UIHelper.PrintColoredLine($"⚡ {context.Source.Name}'s speed increased by {SpeedBonus} for {Duration} turns!", ConsoleColor.Cyan);
+
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

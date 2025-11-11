@@ -1,7 +1,6 @@
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Combat.StatusEffects;
 using TestRPGGame.Constants;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
 {
@@ -40,7 +39,8 @@ namespace TestRPGGame.Abilities.Applicators
                     context.Source.ApplyShieldWall(Duration);
                     break;
             }
-            UIHelper.PrintColoredLine($"✨ {context.Source.Name} empowered by {BuffType.GetDisplayName()} for {Duration} turns!", ConsoleColor.Cyan);
+
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

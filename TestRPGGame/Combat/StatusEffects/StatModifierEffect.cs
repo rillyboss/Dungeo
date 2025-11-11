@@ -1,5 +1,3 @@
-using TestRPGGame.UI;
-
 namespace TestRPGGame.Combat.StatusEffects
 {
     /// <summary>
@@ -44,10 +42,7 @@ namespace TestRPGGame.Combat.StatusEffects
 
         public override void OnExpire()
         {
-            if (Target != null)
-            {
-                UIHelper.PrintColoredLine($"{Icon} {Target.Name}'s {Name} fades!", ConsoleColor.Gray);
-            }
+            // Note: Output is handled by the combat system through events
         }
 
         public override string GetDescription()

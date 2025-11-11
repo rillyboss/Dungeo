@@ -1,5 +1,4 @@
 using TestRPGGame.Abilities.Effects;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
 {
@@ -27,11 +26,10 @@ namespace TestRPGGame.Abilities.Applicators
             if (InitialDamage > 0)
             {
                 context.Enemy.CurrentHP -= InitialDamage;
-                UIHelper.PrintColoredLine($"💚 {InitialDamage} poison damage!", ConsoleColor.Green);
             }
 
             // Status effect applied by CombatSystem
-            UIHelper.PrintColoredLine($"💚 Poison applied: {DamagePerTurn} damage per turn for {Duration} turns!", ConsoleColor.Green);
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

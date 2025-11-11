@@ -1,5 +1,5 @@
 using System;
-using TestRPGGame.UI;
+
 using PlayerEntity = TestRPGGame.Entities.Player.Player;
 using EnemyEntity = TestRPGGame.Entities.Enemy.Enemy;
 
@@ -72,7 +72,7 @@ namespace TestRPGGame.Combat
             if (HealOverTimeTurns > 0)
             {
                 enemy.CurrentHP = Math.Min(enemy.MaxHP, enemy.CurrentHP + HealOverTimeAmount);
-                UIHelper.PrintColoredLine($"💚 {enemy.Name} regenerates {HealOverTimeAmount} HP!", ConsoleColor.Green);
+                Console.WriteLine($"💚 {enemy.Name} regenerates {HealOverTimeAmount} HP!");
                 HealOverTimeTurns--;
             }
 
@@ -80,7 +80,7 @@ namespace TestRPGGame.Combat
             if (DamageOverTimeTurns > 0)
             {
                 player.CurrentHP -= DamageOverTimeAmount;
-                UIHelper.PrintColoredLine($"🔥 You take {DamageOverTimeAmount} damage from burning!", ConsoleColor.Red);
+                Console.WriteLine($"🔥 You take {DamageOverTimeAmount} damage from burning!");
                 DamageOverTimeTurns--;
             }
 
@@ -88,11 +88,11 @@ namespace TestRPGGame.Combat
             if (BleedTurns > 0)
             {
                 player.CurrentHP -= BleedAmount;
-                UIHelper.PrintColoredLine($"🩸 You take {BleedAmount} bleed damage!", ConsoleColor.DarkRed);
+                Console.WriteLine($"🩸 You take {BleedAmount} bleed damage!");
                 BleedTurns--;
                 if (BleedTurns == 0)
                 {
-                    UIHelper.PrintColoredLine($"🩹 The bleeding stops.", ConsoleColor.Gray);
+                    Console.WriteLine($"🩹 The bleeding stops.");
                 }
             }
 
@@ -103,7 +103,7 @@ namespace TestRPGGame.Combat
                 if (ThornsTurns == 0)
                 {
                     ThornsValue = 0;
-                    UIHelper.PrintColoredLine($"🌵 {enemy.Name}'s thorns fade away!", ConsoleColor.Gray);
+                    Console.WriteLine($"🌵 {enemy.Name}'s thorns fade away!");
                 }
             }
 
@@ -114,7 +114,7 @@ namespace TestRPGGame.Combat
                 if (ShieldTurns == 0)
                 {
                     ShieldValue = 0;
-                    UIHelper.PrintColoredLine($"🛡️  {enemy.Name}'s shield shatters!", ConsoleColor.Gray);
+                    Console.WriteLine($"🛡️  {enemy.Name}'s shield shatters!");
                 }
             }
 
@@ -126,7 +126,7 @@ namespace TestRPGGame.Combat
                 {
                     IsEnraged = false;
                     EnrageDamageMultiplier = 1.0;
-                    UIHelper.PrintColoredLine($"😤 {enemy.Name}'s rage subsides!", ConsoleColor.Gray);
+                    Console.WriteLine($"😤 {enemy.Name}'s rage subsides!");
                 }
             }
 
@@ -143,7 +143,7 @@ namespace TestRPGGame.Combat
                 if (SpeedBuffTurns == 0)
                 {
                     SpeedBuffValue = 0;
-                    UIHelper.PrintColoredLine($"⚡ {enemy.Name}'s speed buff fades!", ConsoleColor.Gray);
+                    Console.WriteLine($"⚡ {enemy.Name}'s speed buff fades!");
                 }
             }
         }
@@ -157,7 +157,7 @@ namespace TestRPGGame.Combat
             if (HealOverTimeTurns > 0)
             {
                 player.Heal(HealOverTimeAmount);
-                UIHelper.PrintColoredLine($"💚 You regenerate {HealOverTimeAmount} HP!", ConsoleColor.Green);
+                Console.WriteLine($"💚 You regenerate {HealOverTimeAmount} HP!");
                 HealOverTimeTurns--;
             }
 
@@ -165,7 +165,7 @@ namespace TestRPGGame.Combat
             if (DamageOverTimeTurns > 0)
             {
                 enemy.CurrentHP -= DamageOverTimeAmount;
-                UIHelper.PrintColoredLine($"🔥 {enemy.Name} takes {DamageOverTimeAmount} damage from burning!", ConsoleColor.Red);
+                Console.WriteLine($"🔥 {enemy.Name} takes {DamageOverTimeAmount} damage from burning!");
                 DamageOverTimeTurns--;
             }
 
@@ -173,11 +173,11 @@ namespace TestRPGGame.Combat
             if (BleedTurns > 0)
             {
                 enemy.CurrentHP -= BleedAmount;
-                UIHelper.PrintColoredLine($"🩸 {enemy.Name} takes {BleedAmount} bleed damage!", ConsoleColor.DarkRed);
+                Console.WriteLine($"🩸 {enemy.Name} takes {BleedAmount} bleed damage!");
                 BleedTurns--;
                 if (BleedTurns == 0)
                 {
-                    UIHelper.PrintColoredLine($"🩹 The bleeding stops.", ConsoleColor.Gray);
+                    Console.WriteLine($"🩹 The bleeding stops.");
                 }
             }
 
@@ -207,7 +207,7 @@ namespace TestRPGGame.Combat
                 if (SpeedBuffTurns == 0)
                 {
                     SpeedBuffValue = 0;
-                    UIHelper.PrintColoredLine($"⚡ Your speed buff fades!", ConsoleColor.Gray);
+                    Console.WriteLine($"⚡ Your speed buff fades!");
                 }
             }
         }

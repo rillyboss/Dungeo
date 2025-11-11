@@ -1,5 +1,3 @@
-using TestRPGGame.UI;
-
 namespace TestRPGGame.Combat.StatusEffects
 {
     /// <summary>
@@ -24,10 +22,7 @@ namespace TestRPGGame.Combat.StatusEffects
         public override void OnExpire()
         {
             CurrentShieldValue = 0;
-            if (Target != null)
-            {
-                UIHelper.PrintColoredLine($"🛡️  {Target.Name}'s shield shatters!", ConsoleColor.Gray);
-            }
+            // Note: Output is handled by the combat system through events
         }
 
         public override string GetDescription()

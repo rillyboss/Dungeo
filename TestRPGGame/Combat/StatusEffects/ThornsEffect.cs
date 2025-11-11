@@ -1,5 +1,3 @@
-using TestRPGGame.UI;
-
 namespace TestRPGGame.Combat.StatusEffects
 {
     /// <summary>
@@ -17,16 +15,13 @@ namespace TestRPGGame.Combat.StatusEffects
             if (attacker != null && Value > 0)
             {
                 int reflected = attacker.ApplyDamage(Value, applyShieldAbsorption: false);
-                UIHelper.PrintColoredLine($"   🌵 THORNS! {attacker.Name} takes {reflected} reflected damage!", ConsoleColor.Yellow);
+                // Note: Output is handled by the combat system through events
             }
         }
 
         public override void OnExpire()
         {
-            if (Target != null)
-            {
-                UIHelper.PrintColoredLine($"🌵 {Target.Name}'s thorns fade away!", ConsoleColor.Gray);
-            }
+            // Note: Output is handled by the combat system through events
         }
 
         public override string GetDescription()

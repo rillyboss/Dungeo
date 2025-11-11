@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using TestRPGGame.Equipment;
-using TestRPGGame.UI;
+
 
 namespace TestRPGGame.Entities.Player
 {
@@ -34,9 +34,9 @@ namespace TestRPGGame.Entities.Player
             while (managing)
             {
                 Console.Clear();
-                UIHelper.PrintColoredLine("╔════════════════════════════════════════════════════════╗", ConsoleColor.Cyan);
-                UIHelper.PrintColoredLine("║                    INVENTORY                           ║", ConsoleColor.Yellow);
-                UIHelper.PrintColoredLine("╚════════════════════════════════════════════════════════╝\n", ConsoleColor.Cyan);
+                Console.WriteLine("╔════════════════════════════════════════════════════════╗");
+                Console.WriteLine("║                    INVENTORY                           ║");
+                Console.WriteLine("╚════════════════════════════════════════════════════════╝\n");
 
                 // Display equipped items
                 Console.WriteLine("═══ EQUIPPED ITEMS ═══\n");
@@ -61,7 +61,7 @@ namespace TestRPGGame.Entities.Player
                     {
                         var item = BackpackItems[i];
                         Console.Write($"  {i + 1}. ");
-                        UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                        Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
                         Console.WriteLine($" (Lv {item.Level}) - {item.Slot.GetDisplayName()}");
                     }
                     Console.WriteLine();
@@ -97,7 +97,7 @@ namespace TestRPGGame.Entities.Player
                         managing = false;
                         break;
                     default:
-                        UIHelper.PrintColoredLine("\n❌ Invalid choice!", ConsoleColor.Red);
+                        Console.WriteLine("\n❌ Invalid choice!");
                         Thread.Sleep(1000);
                         break;
                 }
@@ -109,11 +109,11 @@ namespace TestRPGGame.Entities.Player
             Console.Write($"  {slotName,-10}: ");
             if (item != null)
             {
-                UIHelper.PrintColoredLine($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                Console.WriteLine($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
             }
             else
             {
-                UIHelper.PrintColoredLine("(Empty)", ConsoleColor.DarkGray);
+                Console.WriteLine("(Empty)");
             }
         }
 
@@ -135,10 +135,10 @@ namespace TestRPGGame.Entities.Player
             if (allEffects.Count > 0)
             {
                 Console.WriteLine();
-                UIHelper.PrintColoredLine("  ✨ ACTIVE SPECIAL EFFECTS:", ConsoleColor.Yellow);
+                Console.WriteLine("  ✨ ACTIVE SPECIAL EFFECTS:");
                 foreach (var effect in allEffects)
                 {
-                    UIHelper.PrintColoredLine($"    • {effect.Description}", ConsoleColor.Cyan);
+                    Console.WriteLine($"    • {effect.Description}");
                 }
             }
         }
@@ -200,7 +200,7 @@ namespace TestRPGGame.Entities.Player
         {
             if (BackpackItems.Count == 0)
             {
-                UIHelper.PrintColoredLine("\n❌ No items in backpack!", ConsoleColor.Red);
+                Console.WriteLine("\n❌ No items in backpack!");
                 Thread.Sleep(1500);
                 return;
             }
@@ -299,7 +299,7 @@ namespace TestRPGGame.Entities.Player
                 // Update player stats
                 player.UpdateStatsFromEquipment();
 
-                UIHelper.PrintColoredLine($"\n✅ Equipped {item.Name}!", ConsoleColor.Green);
+                Console.WriteLine($"\n✅ Equipped {item.Name}!");
                 Thread.Sleep(1500);
             }
         }
@@ -368,12 +368,12 @@ namespace TestRPGGame.Entities.Player
             if (item != null)
             {
                 BackpackItems.Add(item);
-                UIHelper.PrintColoredLine($"\n✅ Unequipped {item.Name}!", ConsoleColor.Green);
+                Console.WriteLine($"\n✅ Unequipped {item.Name}!");
                 Thread.Sleep(1500);
             }
             else
             {
-                UIHelper.PrintColoredLine("\n❌ No item equipped in that slot!", ConsoleColor.Red);
+                Console.WriteLine("\n❌ No item equipped in that slot!");
                 Thread.Sleep(1500);
             }
         }
@@ -382,7 +382,7 @@ namespace TestRPGGame.Entities.Player
         {
             if (BackpackItems.Count == 0)
             {
-                UIHelper.PrintColoredLine("\n❌ No items in backpack!", ConsoleColor.Red);
+                Console.WriteLine("\n❌ No items in backpack!");
                 Thread.Sleep(1500);
                 return;
             }
@@ -404,7 +404,7 @@ namespace TestRPGGame.Entities.Player
         {
             if (BackpackItems.Count == 0)
             {
-                UIHelper.PrintColoredLine("\n❌ No items in backpack!", ConsoleColor.Red);
+                Console.WriteLine("\n❌ No items in backpack!");
                 Thread.Sleep(1500);
                 return;
             }
@@ -421,7 +421,7 @@ namespace TestRPGGame.Entities.Player
                 if (confirm.ToLower() == "y")
                 {
                     BackpackItems.RemoveAt(index - 1);
-                    UIHelper.PrintColoredLine($"\n✅ Dropped {item.Name}!", ConsoleColor.Green);
+                    Console.WriteLine($"\n✅ Dropped {item.Name}!");
                     Thread.Sleep(1500);
                 }
             }

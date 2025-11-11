@@ -1,5 +1,4 @@
 using System;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Effects
 {
@@ -27,7 +26,7 @@ namespace TestRPGGame.Abilities.Effects
             int actualHeal = Math.Min(HealAmount, context.Source.MaxHP - context.Source.CurrentHP);
             context.Source.CurrentHP += actualHeal;
 
-            UIHelper.PrintColoredLine($"💉 Life Steal! {actualDamage} damage dealt, {actualHeal} HP gained!", ConsoleColor.DarkRed);
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

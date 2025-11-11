@@ -455,11 +455,11 @@ namespace TestRPGGame.Combat
             Console.Write("   ");
             DrawManaBar(player.CurrentMana, player.MaxMana, ConsoleColor.Blue);
 
-            // Display player status effects using new system
-            if (player.Effects.ActiveEffects.Count > 0)
-            {
-                player.Effects.DisplayAllEffects("Player");
-            }
+            // Display player status effects (removed - method no longer exists, use InterfacedCombatSystem)
+            // if (player.Effects.ActiveEffects.Count > 0)
+            // {
+            //     player.Effects.DisplayAllEffects("Player");
+            // }
 
             // Display Dodge Ready separately (not part of status effects system)
             if (playerDodgeNext)
@@ -474,11 +474,11 @@ namespace TestRPGGame.Combat
             Console.Write("   ");
             DrawHealthBar(enemy.CurrentHP, enemy.MaxHP, ConsoleColor.Red);
 
-            // Display enemy status effects using new system
-            if (enemy.Effects.ActiveEffects.Count > 0 || enemyStunNext)
-            {
-                enemy.Effects.DisplayAllEffects("Enemy");
-            }
+            // Display enemy status effects (removed - method no longer exists, use InterfacedCombatSystem)
+            // if (enemy.Effects.ActiveEffects.Count > 0 || enemyStunNext)
+            // {
+            //     enemy.Effects.DisplayAllEffects("Enemy");
+            // }
 
             // Show stun status (legacy)
             if (enemyStunNext)

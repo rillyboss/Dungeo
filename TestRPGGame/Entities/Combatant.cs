@@ -75,7 +75,7 @@ namespace TestRPGGame.Entities
 
                     if (blocked > 0)
                     {
-                        UI.UIHelper.PrintColoredLine($"   🛡️  Shield absorbed {blocked} damage! ({shield.CurrentShieldValue} remaining)", ConsoleColor.Cyan);
+                        Console.WriteLine($"   🛡️  Shield absorbed {blocked} damage! ({shield.CurrentShieldValue} remaining)");
                     }
 
                     // Remove shield if depleted

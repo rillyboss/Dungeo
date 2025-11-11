@@ -223,19 +223,8 @@ namespace TestRPGGame
             Console.Clear();
             UIHelper.PrintColoredLine($"\n⚡ Welcome, {name} the {playerClass}! ⚡\n", ConsoleColor.Yellow);
 
-            // Show character art
-            switch (playerClass)
-            {
-                case PlayerClass.Warrior:
-                    AsciiArt.DrawWarrior();
-                    break;
-                case PlayerClass.Mage:
-                    AsciiArt.DrawMage();
-                    break;
-                case PlayerClass.Rogue:
-                    AsciiArt.DrawRogue();
-                    break;
-            }
+            // Show character art (data-driven)
+            AsciiArt.DrawClass(playerClass.ToString());
 
             Thread.Sleep(1000);
             UIHelper.PrintColoredLine("\nYour journey begins now...\n", ConsoleColor.Gray);
@@ -426,7 +415,27 @@ namespace TestRPGGame
 
             while (true)
             {
-                SaveSystem.DisplaySaveSlots();
+                // Display save slots inline (DisplaySaveSlots method removed from SaveSystem)
+                Console.Clear();
+                Console.WriteLine("═══════════════════════════════════════════");
+                Console.WriteLine("              SAVE SLOTS");
+                Console.WriteLine("═══════════════════════════════════════════\n");
+
+                var allSlots = SaveSystem.GetAllSaveSlots();
+                foreach (var slotInfo in allSlots)
+                {
+                    Console.Write($"Slot {slotInfo.SlotNumber}: ");
+                    if (slotInfo.IsEmpty)
+                    {
+                        Console.WriteLine("[EMPTY]");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{slotInfo.Name} - Level {slotInfo.Level} {slotInfo.Class}");
+                        Console.WriteLine($"         Saved: {slotInfo.SaveTime:MM/dd/yyyy HH:mm}");
+                    }
+                    Console.WriteLine();
+                }
 
                 Console.WriteLine("0. Cancel");
                 Console.Write("\nSelect save slot (1-3): ");

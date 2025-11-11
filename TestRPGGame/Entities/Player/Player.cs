@@ -6,7 +6,7 @@ using TestRPGGame.DataLoading;
 using TestRPGGame.Equipment;
 using TestRPGGame.Factories;
 using TestRPGGame.Systems;
-using TestRPGGame.UI;
+
 
 namespace TestRPGGame.Entities.Player
 {
@@ -256,9 +256,9 @@ namespace TestRPGGame.Entities.Player
         public void DisplayCharacterSheet()
         {
             Console.Clear();
-            UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Cyan);
-            UIHelper.PrintColoredLine("          CHARACTER SHEET", ConsoleColor.Yellow);
-            UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Cyan);
+            Console.WriteLine("═══════════════════════════════════════════");
+            Console.WriteLine("          CHARACTER SHEET");
+            Console.WriteLine("═══════════════════════════════════════════\n");
 
             Console.WriteLine($"Name: {Name}");
             Console.WriteLine($"Class: {Class}");
@@ -287,13 +287,13 @@ namespace TestRPGGame.Entities.Player
             {
                 if (ability.IsUnlocked)
                 {
-                    UIHelper.PrintColored($"  ✓ {ability.Name}", ConsoleColor.Green);
+                    Console.Write($"  ✓ {ability.Name}");
                     Console.WriteLine($" (Cost: {ability.ManaCost} mana, CD: {ability.Cooldown})");
                     Console.WriteLine($"    {ability.Description}");
                 }
                 else
                 {
-                    UIHelper.PrintColored($"  🔒 {ability.Name}", ConsoleColor.DarkGray);
+                    Console.Write($"  🔒 {ability.Name}");
                     Console.WriteLine($" - Unlock at Level {ability.UnlockLevel} for {ability.PurchaseCost} gold");
                 }
             }

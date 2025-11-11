@@ -1,6 +1,5 @@
 using System;
 using TestRPGGame.Combat.StatusEffects;
-using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Effects
 {
@@ -27,12 +26,12 @@ namespace TestRPGGame.Abilities.Effects
             if (InitialDamage > 0)
             {
                 context.Target.ApplyDamage(InitialDamage, applyShieldAbsorption: true, attacker: context.Source);
-                UIHelper.PrintColoredLine($"💚 {InitialDamage} poison damage!", ConsoleColor.Green);
             }
 
             // Apply burning/poison status effect
             context.Target.ApplyBurning(context.Source, Duration, DamagePerTurn);
-            UIHelper.PrintColoredLine($"💚 Poison applied: {DamagePerTurn} damage per turn for {Duration} turns!", ConsoleColor.Green);
+
+            // Note: Output is handled by the combat system through events
         }
 
         public string GetDescription()

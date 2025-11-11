@@ -73,4 +73,58 @@ namespace TestRPGGame.DataLoading
             };
         }
     }
+
+    /// <summary>
+    /// Database for player class ASCII art
+    /// </summary>
+    public class ClassArtDatabase
+    {
+        private static Dictionary<string, ClassData>? _classData;
+
+        public static void LoadClassArt(Dictionary<string, ClassData> classData)
+        {
+            _classData = classData;
+        }
+
+        public static (List<string> art, ConsoleColor color) GetClassArt(string className)
+        {
+            if (_classData == null)
+            {
+                return (new List<string>(), ConsoleColor.White);
+            }
+
+            // Try to find the class by exact name match
+            if (_classData.TryGetValue(className, out var classInfo))
+            {
+                var color = ParseColor(classInfo.ArtColor);
+                return (classInfo.Art, color);
+            }
+
+            // Fallback if not found
+            return (new List<string>(), ConsoleColor.White);
+        }
+
+        private static ConsoleColor ParseColor(string colorName)
+        {
+            return colorName switch
+            {
+                "Red" => ConsoleColor.Red,
+                "DarkRed" => ConsoleColor.DarkRed,
+                "Green" => ConsoleColor.Green,
+                "DarkGreen" => ConsoleColor.DarkGreen,
+                "Blue" => ConsoleColor.Blue,
+                "DarkBlue" => ConsoleColor.DarkBlue,
+                "Yellow" => ConsoleColor.Yellow,
+                "DarkYellow" => ConsoleColor.DarkYellow,
+                "Cyan" => ConsoleColor.Cyan,
+                "DarkCyan" => ConsoleColor.DarkCyan,
+                "Magenta" => ConsoleColor.Magenta,
+                "DarkMagenta" => ConsoleColor.DarkMagenta,
+                "Gray" => ConsoleColor.Gray,
+                "DarkGray" => ConsoleColor.DarkGray,
+                "White" => ConsoleColor.White,
+                _ => ConsoleColor.White
+            };
+        }
+    }
 }

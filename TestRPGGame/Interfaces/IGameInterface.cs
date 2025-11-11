@@ -169,21 +169,25 @@ namespace TestRPGGame.Interfaces
 
     public enum ShopActionType
     {
-        Buy,
-        Sell,
+        BuyItem,
+        SellItem,
+        RefreshShop,
+        BuyPotion,
         Exit
     }
 
     public class ShopAction
     {
         public ShopActionType ActionType { get; set; }
-        public int? ItemIndex { get; set; }
+        public int? ItemIndex { get; set; } // For BuyItem or SellItem
+        public int? Quantity { get; set; } // For BuyPotion
     }
 
     public enum InventoryActionType
     {
-        Equip,
-        View,
+        EquipItem,
+        UnequipItem,
+        ViewDetails,
         Exit
     }
 
@@ -191,6 +195,29 @@ namespace TestRPGGame.Interfaces
     {
         public InventoryActionType ActionType { get; set; }
         public int? ItemIndex { get; set; }
+        public EquipmentSlot? Slot { get; set; } // For UnequipItem
+    }
+
+    public class CharacterSheetInfo
+    {
+        public string Name { get; set; } = "";
+        public int Level { get; set; }
+        public int Experience { get; set; }
+        public int ExperienceToNextLevel { get; set; }
+        public PlayerClass Class { get; set; }
+        public int CurrentHP { get; set; }
+        public int MaxHP { get; set; }
+        public int CurrentMana { get; set; }
+        public int MaxMana { get; set; }
+        public int Attack { get; set; }
+        public int Defense { get; set; }
+        public int MagicPower { get; set; }
+        public int Speed { get; set; }
+        public double CritChance { get; set; }
+        public int Gold { get; set; }
+        public int Potions { get; set; }
+        public Dictionary<EquipmentSlot, EquipmentItem?> Equipment { get; set; } = new();
+        public List<AbilityInfo> Abilities { get; set; } = new();
     }
 
     public class DungeonSelectionInfo
