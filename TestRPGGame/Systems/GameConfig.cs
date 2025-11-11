@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using System.Text.Json;
+using TestRPGGame.Interfaces;
 
 namespace TestRPGGame.Systems
 {
@@ -43,6 +44,15 @@ namespace TestRPGGame.Systems
     {
         private static GameConfiguration? _config;
         private static readonly string ConfigFileName = "gameconfig.json";
+        private static ILogger _logger = new ConsoleLogger(); // Default to console logging
+
+        /// <summary>
+        /// Sets the logger for GameConfig. Use NullLogger for tests to suppress output.
+        /// </summary>
+        public static void SetLogger(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         public static GameConfiguration Config
         {
@@ -76,7 +86,7 @@ namespace TestRPGGame.Systems
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Warning: Could not load config file. Using defaults. Error: {ex.Message}");
+                _logger.LogWarning($"Could not load config file. Using defaults. Error: {ex.Message}");
             }
 
             // Fallback to default configuration
@@ -99,7 +109,7 @@ namespace TestRPGGame.Systems
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error saving config: {ex.Message}");
+                _logger.LogError($"Error saving config: {ex.Message}");
             }
         }
     }

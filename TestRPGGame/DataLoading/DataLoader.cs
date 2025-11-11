@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
+using TestRPGGame.Interfaces;
 
 namespace TestRPGGame.DataLoading
 {
@@ -13,6 +14,7 @@ namespace TestRPGGame.DataLoading
     public static class DataLoader
     {
         private static string DataPath => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data");
+        private static ILogger _logger = new ConsoleLogger(); // Default to console logging
 
         // Cached data collections
         private static Dictionary<string, AbilityData>? _abilities;
@@ -23,6 +25,14 @@ namespace TestRPGGame.DataLoading
         private static Dictionary<string, EnemySuffixData>? _enemySuffixes;
         private static Dictionary<string, EnemyBehaviorData>? _behaviors;
         private static Dictionary<string, ClassData>? _classes;
+
+        /// <summary>
+        /// Sets the logger for DataLoader. Use NullLogger for tests to suppress output.
+        /// </summary>
+        public static void SetLogger(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         /// <summary>
         /// Load all game data from JSON files.
@@ -86,18 +96,18 @@ namespace TestRPGGame.DataLoading
                 var enemyArt = LoadJsonFile<Dictionary<string, EnemyArtData>>(Path.Combine("Enemies", "enemy-art.json"));
                 EnemyArtDatabase.LoadEnemyArt(enemyArt);
 
-                Console.WriteLine($"✓ Loaded {_abilities.Count} abilities ({enemyAbilities.Count} enemy abilities)");
-                Console.WriteLine($"✓ Loaded {_enemies.Count} enemies (including {bossEnemies.Count} bosses)");
-                Console.WriteLine($"✓ Loaded {_classes.Count} player classes");
-                Console.WriteLine($"✓ Loaded {_dungeons.Count} dungeons");
-                Console.WriteLine($"✓ Loaded item generation data ({_itemGeneration.WeaponPrefixes.Count} weapon prefixes, {_itemGeneration.WeaponTypes.Count} weapon types)");
-                Console.WriteLine($"✓ Loaded enemy modifiers ({_enemyPrefixes.Count} prefixes, {_enemySuffixes.Count} suffixes)");
-                Console.WriteLine($"✓ Loaded {_behaviors.Count} enemy behaviors");
-                Console.WriteLine($"✓ Loaded {enemyArt.Count} enemy art templates");
+                _logger.LogInfo($"✓Loaded {_abilities.Count} abilities ({enemyAbilities.Count} enemy abilities)");
+                _logger.LogInfo($"✓Loaded {_enemies.Count} enemies (including {bossEnemies.Count} bosses)");
+                _logger.LogInfo($"✓Loaded {_classes.Count} player classes");
+                _logger.LogInfo($"✓Loaded {_dungeons.Count} dungeons");
+                _logger.LogInfo($"✓Loaded item generation data ({_itemGeneration.WeaponPrefixes.Count} weapon prefixes, {_itemGeneration.WeaponTypes.Count} weapon types)");
+                _logger.LogInfo($"✓Loaded enemy modifiers ({_enemyPrefixes.Count} prefixes, {_enemySuffixes.Count} suffixes)");
+                _logger.LogInfo($"✓Loaded {_behaviors.Count} enemy behaviors");
+                _logger.LogInfo($"✓Loaded {enemyArt.Count} enemy art templates");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"ERROR loading game data: {ex.Message}");
+                _logger.LogError($"loading game data: {ex.Message}");
                 throw;
             }
         }
@@ -159,7 +169,7 @@ namespace TestRPGGame.DataLoading
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Warning: Failed to load dungeon from {Path.GetFileName(filePath)}: {ex.Message}");
+                    _logger.LogWarning($"Failed to load dungeon from {Path.GetFileName(filePath)}: {ex.Message}");
                 }
             }
 

@@ -5,12 +5,22 @@ using TestRPGGame.DataLoading;
 using TestRPGGame.Factories;
 using TestRPGGame.Combat;
 using TestRPGGame.Utils;
+using TestRPGGame.Interfaces;
 
 namespace TestRPGGame.Entities.Enemy
 {
     public static class EnemyFactory
     {
         private static List<EnemyData>? _enemyPool = null;
+        private static ILogger _logger = new ConsoleLogger(); // Default to console logging
+
+        /// <summary>
+        /// Sets the logger for EnemyFactory. Use NullLogger for tests to suppress output.
+        /// </summary>
+        public static void SetLogger(ILogger logger)
+        {
+            _logger = logger;
+        }
 
         public static Enemy CreateEnemy(int playerLevel)
         {
@@ -57,7 +67,7 @@ namespace TestRPGGame.Entities.Enemy
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Warning: Failed to load ability '{abilityData.AbilityId}' for enemy '{enemyData.Name}': {ex.Message}");
+                    _logger.LogWarning($"Failed to load ability '{abilityData.AbilityId}' for enemy '{enemyData.Name}': {ex.Message}");
                 }
             }
 
@@ -185,7 +195,7 @@ namespace TestRPGGame.Entities.Enemy
                     }
                     catch (Exception ex)
                     {
-                        Console.WriteLine($"Warning: Failed to load suffix ability '{abilityId}': {ex.Message}");
+                        _logger.LogWarning($"Failed to load suffix ability '{abilityId}': {ex.Message}");
                     }
                 }
             }
