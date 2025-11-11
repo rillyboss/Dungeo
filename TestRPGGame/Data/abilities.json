@@ -3,7 +3,7 @@
   "warrior_power_strike": {
     "Id": "warrior_power_strike",
     "Name": "Power Strike",
-    "Description": "Deal 2.5x damage",
+    "Description": "Deal 2.2x-2.8x damage (90% accuracy)",
     "PlayerClass": "Warrior",
     "ManaCost": 20,
     "Cooldown": 3,
@@ -17,7 +17,10 @@
         "Type": "Damage",
         "Value": 0,
         "Duration": 0,
-        "Multiplier": 2.5
+        "Multiplier": 2.5,
+        "MinMultiplier": 2.2,
+        "MaxMultiplier": 2.8,
+        "Accuracy": 0.90
       }
     ]
   },
@@ -64,7 +67,7 @@
   "warrior_whirlwind": {
     "Id": "warrior_whirlwind",
     "Name": "Whirlwind",
-    "Description": "Devastating spinning strike for 3.5x damage",
+    "Description": "Wild spinning strike for 3.0x-4.0x damage (85% accuracy)",
     "PlayerClass": "Warrior",
     "ManaCost": 40,
     "Cooldown": 6,
@@ -78,7 +81,10 @@
         "Type": "Damage",
         "Value": 0,
         "Duration": 0,
-        "Multiplier": 3.5
+        "Multiplier": 3.5,
+        "MinMultiplier": 3.0,
+        "MaxMultiplier": 4.0,
+        "Accuracy": 0.85
       }
     ]
   },
@@ -87,7 +93,7 @@
   "mage_fireball": {
     "Id": "mage_fireball",
     "Name": "Fireball",
-    "Description": "Deal 3x magic damage",
+    "Description": "Deal 2.5x-3.5x magic damage (85% accuracy)",
     "PlayerClass": "Mage",
     "ManaCost": 25,
     "Cooldown": 3,
@@ -101,14 +107,17 @@
         "Type": "Damage",
         "Value": 0,
         "Duration": 0,
-        "Multiplier": 3.0
+        "Multiplier": 3.0,
+        "MinMultiplier": 2.5,
+        "MaxMultiplier": 3.5,
+        "Accuracy": 0.85
       }
     ]
   },
   "mage_ice_lance": {
     "Id": "mage_ice_lance",
     "Name": "Ice Lance",
-    "Description": "Deal 2.5x magic damage + slow enemy",
+    "Description": "Deal 2.2x-2.8x magic damage + slow enemy (90% accuracy)",
     "PlayerClass": "Mage",
     "ManaCost": 35,
     "Cooldown": 4,
@@ -122,7 +131,10 @@
         "Type": "Damage",
         "Value": 0,
         "Duration": 0,
-        "Multiplier": 2.5
+        "Multiplier": 2.5,
+        "MinMultiplier": 2.2,
+        "MaxMultiplier": 2.8,
+        "Accuracy": 0.90
       },
       {
         "Type": "StatMod",
@@ -154,7 +166,7 @@
   "mage_meteor_strike": {
     "Id": "mage_meteor_strike",
     "Name": "Meteor Strike",
-    "Description": "Deal 4x magic damage",
+    "Description": "Deal 3.5x-4.5x magic damage (80% accuracy - high risk, high reward!)",
     "PlayerClass": "Mage",
     "ManaCost": 50,
     "Cooldown": 7,
@@ -168,7 +180,10 @@
         "Type": "Damage",
         "Value": 0,
         "Duration": 0,
-        "Multiplier": 4.0
+        "Multiplier": 4.0,
+        "MinMultiplier": 3.5,
+        "MaxMultiplier": 4.5,
+        "Accuracy": 0.80
       }
     ]
   },
@@ -177,7 +192,7 @@
   "rogue_backstab": {
     "Id": "rogue_backstab",
     "Name": "Backstab",
-    "Description": "Strike from the shadows - guaranteed crit and goes first!",
+    "Description": "Strike from shadows for 2.5x-3.5x damage - guaranteed crit and goes first! (90% accuracy)",
     "PlayerClass": "Rogue",
     "ManaCost": 25,
     "Cooldown": 3,
@@ -193,6 +208,9 @@
         "Value": 0,
         "Duration": 0,
         "Multiplier": 3.0,
+        "MinMultiplier": 2.5,
+        "MaxMultiplier": 3.5,
+        "Accuracy": 0.90,
         "GuaranteedCrit": true
       }
     ]
@@ -240,7 +258,7 @@
   "rogue_assassinate": {
     "Id": "rogue_assassinate",
     "Name": "Assassinate",
-    "Description": "Deal 5x damage, guaranteed crit",
+    "Description": "Deal 4.5x-5.5x damage - huge variance, devastating when it lands! (85% accuracy)",
     "PlayerClass": "Rogue",
     "ManaCost": 45,
     "Cooldown": 6,
@@ -254,12 +272,16 @@
         "Type": "Damage",
         "Value": 0,
         "Duration": 0,
-        "Multiplier": 5.0
+        "Multiplier": 5.0,
+        "MinMultiplier": 4.5,
+        "MaxMultiplier": 5.5,
+        "Accuracy": 0.85
       }
     ]
   },
 
   // Boss Abilities (used by dungeon bosses, no class/mana restrictions)
+  // Most boss abilities use 95% accuracy since they're designed challenges
   "boss_rallying_cry": {
     "Id": "boss_rallying_cry",
     "Name": "Rallying Cry",
@@ -361,7 +383,10 @@
         "Type": "LifeSteal",
         "Value": 30,
         "Duration": 0,
-        "Multiplier": 1.5
+        "Multiplier": 1.5,
+        "MinMultiplier": 1.4,
+        "MaxMultiplier": 1.6,
+        "Accuracy": 0.95
       }
     ]
   },
@@ -424,7 +449,10 @@
         "Type": "HeavyStrike",
         "Value": 40,
         "Duration": 0,
-        "Multiplier": 1.8
+        "Multiplier": 1.8,
+        "MinMultiplier": 1.6,
+        "MaxMultiplier": 2.0,
+        "Accuracy": 0.90
       }
     ]
   },
@@ -466,7 +494,10 @@
         "Type": "HeavyStrike",
         "Value": 60,
         "Duration": 0,
-        "Multiplier": 2.5
+        "Multiplier": 2.5,
+        "MinMultiplier": 2.2,
+        "MaxMultiplier": 2.8,
+        "Accuracy": 0.90
       }
     ]
   },
@@ -550,7 +581,10 @@
         "Type": "Stun",
         "Value": 0,
         "Duration": 1,
-        "Multiplier": 1.5
+        "Multiplier": 1.5,
+        "MinMultiplier": 1.4,
+        "MaxMultiplier": 1.6,
+        "Accuracy": 0.95
       }
     ]
   },
@@ -592,7 +626,10 @@
         "Type": "HeavyStrike",
         "Value": 50,
         "Duration": 0,
-        "Multiplier": 2.0
+        "Multiplier": 2.0,
+        "MinMultiplier": 1.8,
+        "MaxMultiplier": 2.2,
+        "Accuracy": 0.90
       }
     ]
   },
@@ -676,7 +713,10 @@
         "Type": "LifeSteal",
         "Value": 40,
         "Duration": 0,
-        "Multiplier": 1.8
+        "Multiplier": 1.8,
+        "MinMultiplier": 1.6,
+        "MaxMultiplier": 2.0,
+        "Accuracy": 0.95
       },
       {
         "Type": "DamageOverTime",
@@ -745,7 +785,10 @@
         "Type": "Bleed",
         "Value": 35,
         "Duration": 5,
-        "Multiplier": 2.5
+        "Multiplier": 2.5,
+        "MinMultiplier": 2.3,
+        "MaxMultiplier": 2.7,
+        "Accuracy": 0.92
       }
     ]
   },
@@ -766,7 +809,10 @@
         "Type": "LifeSteal",
         "Value": 50,
         "Duration": 0,
-        "Multiplier": 2.0
+        "Multiplier": 2.0,
+        "MinMultiplier": 1.8,
+        "MaxMultiplier": 2.2,
+        "Accuracy": 0.93
       }
     ]
   },
@@ -808,7 +854,10 @@
         "Type": "Stun",
         "Value": 0,
         "Duration": 2,
-        "Multiplier": 2.5
+        "Multiplier": 2.5,
+        "MinMultiplier": 2.3,
+        "MaxMultiplier": 2.7,
+        "Accuracy": 0.90
       }
     ]
   },

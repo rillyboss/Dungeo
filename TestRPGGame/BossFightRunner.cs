@@ -26,7 +26,9 @@ namespace TestRPGGame
             "SavesBackup"
         );
 
-        public static void Main(string[] args)
+        // Commented out to avoid conflicts with main entry point
+        // Uncomment and run with: dotnet run --project TestRPGGame --property:StartupObject=TestRPGGame.BossFightRunner
+        /*public static void Main(string[] args)
         {
             Console.WriteLine("╔════════════════════════════════════════════════════════════╗");
             Console.WriteLine("║        RPG BOSS FIGHT TESTER - Damage Formula Test        ║");
@@ -64,7 +66,7 @@ namespace TestRPGGame
                 Console.ResetColor();
                 RestoreSaves();
             }
-        }
+        }*/
 
         private static void BackupSaves()
         {

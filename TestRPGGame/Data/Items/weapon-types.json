@@ -5,6 +5,9 @@
     "AttackType": "Physical",
     "AttackWeight": 1.0,
     "MagicWeight": 0.0,
+    "AgilityBonus": 0,
+    "DamageVariance": 0.20,
+    "Accuracy": 0.90,
     "SpeedBonus": 0
   },
   "Axe": {
@@ -13,6 +16,9 @@
     "AttackType": "Physical",
     "AttackWeight": 1.3,
     "MagicWeight": 0.0,
+    "AgilityBonus": -2,
+    "DamageVariance": 0.40,
+    "Accuracy": 0.80,
     "SpeedBonus": -2
   },
   "Dagger": {
@@ -21,6 +27,9 @@
     "AttackType": "Physical",
     "AttackWeight": 0.7,
     "MagicWeight": 0.0,
+    "AgilityBonus": 5,
+    "DamageVariance": 0.10,
+    "Accuracy": 0.95,
     "SpeedBonus": 5
   },
   "Staff": {
@@ -29,6 +38,9 @@
     "AttackType": "Arcane",
     "AttackWeight": 0.5,
     "MagicWeight": 1.5,
+    "AgilityBonus": 0,
+    "DamageVariance": 0.08,
+    "Accuracy": 0.95,
     "SpeedBonus": 0
   },
   "Bow": {
@@ -37,6 +49,9 @@
     "AttackType": "Physical",
     "AttackWeight": 1.1,
     "MagicWeight": 0.0,
+    "AgilityBonus": 3,
+    "DamageVariance": 0.25,
+    "Accuracy": 0.85,
     "SpeedBonus": 3
   },
   "Spear": {
@@ -45,6 +60,9 @@
     "AttackType": "Physical",
     "AttackWeight": 1.2,
     "MagicWeight": 0.0,
+    "AgilityBonus": 1,
+    "DamageVariance": 0.15,
+    "Accuracy": 0.92,
     "SpeedBonus": 1
   },
   "Mace": {
@@ -53,6 +71,9 @@
     "AttackType": "Holy",
     "AttackWeight": 1.1,
     "MagicWeight": 0.3,
+    "AgilityBonus": -1,
+    "DamageVariance": 0.18,
+    "Accuracy": 0.88,
     "SpeedBonus": -1
   },
   "Wand": {
@@ -61,6 +82,9 @@
     "AttackType": "Arcane",
     "AttackWeight": 0.3,
     "MagicWeight": 1.3,
+    "AgilityBonus": 2,
+    "DamageVariance": 0.12,
+    "Accuracy": 0.93,
     "SpeedBonus": 2
   },
   "Halberd": {
@@ -69,6 +93,9 @@
     "AttackType": "Physical",
     "AttackWeight": 1.4,
     "MagicWeight": 0.0,
+    "AgilityBonus": -3,
+    "DamageVariance": 0.30,
+    "Accuracy": 0.85,
     "SpeedBonus": -3
   },
   "Scythe": {
@@ -77,6 +104,9 @@
     "AttackType": "Dark",
     "AttackWeight": 1.2,
     "MagicWeight": 0.5,
+    "AgilityBonus": 0,
+    "DamageVariance": 0.22,
+    "Accuracy": 0.87,
     "SpeedBonus": 0
   },
   "Katana": {
@@ -85,6 +115,9 @@
     "AttackType": "Physical",
     "AttackWeight": 1.0,
     "MagicWeight": 0.0,
+    "AgilityBonus": 4,
+    "DamageVariance": 0.12,
+    "Accuracy": 0.93,
     "SpeedBonus": 4
   },
   "Claymore": {
@@ -93,6 +126,9 @@
     "AttackType": "Physical",
     "AttackWeight": 1.5,
     "MagicWeight": 0.0,
+    "AgilityBonus": -4,
+    "DamageVariance": 0.35,
+    "Accuracy": 0.82,
     "SpeedBonus": -4
   }
 }

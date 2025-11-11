@@ -26,8 +26,12 @@ namespace TestRPGGame.Equipment
         public int MaxDamage { get; set; }
         public double Accuracy { get; set; } = 1.0;  // 1.0 = 100% accuracy
 
-        // Backwards compatibility for existing code
-        public int SpeedBonus => AgilityBonus;
+        // Backwards compatibility for existing code (with setter)
+        public int SpeedBonus
+        {
+            get => AgilityBonus;
+            set => AgilityBonus = value;
+        }
 
         // Attack type for weapons
         public AttackType? WeaponAttackType { get; set; }
