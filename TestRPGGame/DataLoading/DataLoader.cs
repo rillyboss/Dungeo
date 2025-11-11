@@ -79,6 +79,10 @@ namespace TestRPGGame.DataLoading
                 // Load player classes
                 _classes = LoadJsonFile<Dictionary<string, ClassData>>("classes.json");
 
+                // Load enemy ASCII art
+                var enemyArt = LoadJsonFile<Dictionary<string, EnemyArtData>>(Path.Combine("Enemies", "enemy-art.json"));
+                EnemyArtDatabase.LoadEnemyArt(enemyArt);
+
                 Console.WriteLine($"✓ Loaded {_abilities.Count} abilities ({enemyAbilities.Count} enemy abilities)");
                 Console.WriteLine($"✓ Loaded {_enemies.Count} enemies (including {bossEnemies.Count} bosses)");
                 Console.WriteLine($"✓ Loaded {_classes.Count} player classes");
@@ -86,6 +90,7 @@ namespace TestRPGGame.DataLoading
                 Console.WriteLine($"✓ Loaded item generation data ({_itemGeneration.WeaponPrefixes.Count} weapon prefixes, {_itemGeneration.WeaponTypes.Count} weapon types)");
                 Console.WriteLine($"✓ Loaded enemy modifiers ({_enemyPrefixes.Count} prefixes, {_enemySuffixes.Count} suffixes)");
                 Console.WriteLine($"✓ Loaded {_behaviors.Count} enemy behaviors");
+                Console.WriteLine($"✓ Loaded {enemyArt.Count} enemy art templates");
             }
             catch (Exception ex)
             {

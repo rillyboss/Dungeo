@@ -1,4 +1,5 @@
 using System;
+using TestRPGGame.DataLoading;
 
 namespace TestRPGGame.UI
 {
@@ -61,55 +62,18 @@ namespace TestRPGGame.UI
 
         public static void DrawEnemy(string enemyName)
         {
-            if (enemyName.Contains("Dragon") || enemyName.Contains("Whelp"))
+            // Get art from data-driven system
+            var (artLines, color) = EnemyArtDatabase.GetEnemyArt(enemyName);
+
+            if (artLines.Count > 0)
             {
-                UIHelper.PrintColoredLine(@"
-              __====-_
-             /         \
-            |           |
-            |           |
-             \  (o) (o) /
-              |  < >   |
-              |  ~~~   |
-             /|   W    |\
-            / | /| |\ | \
-           |  |/ | | \|  |
-            \_|  | |  |_/
-", ConsoleColor.Red);
-            }
-            else if (enemyName.Contains("Skeleton"))
-            {
-                UIHelper.PrintColoredLine(@"
-            .-.
-           (o.o)
-            |=|
-           __|__
-          //.=|=.\\
-         // .=|=. \\
-         \\ .=|=. //
-          \\(_=_)//
-           (:| |:)
-            || ||
-            () ()
-           ooO Ooo
-", ConsoleColor.Gray);
-            }
-            else if (enemyName.Contains("Goblin") || enemyName.Contains("Orc"))
-            {
-                UIHelper.PrintColoredLine(@"
-             ,      ,
-            /( .  . )\
-           /' |_\/\_| `\
-          /   ||o|o||   \
-         | \  _\:::/_  / |
-          \/'___===___'\/
-            | \_____/ |
-            |  /\ /\  |
-             \/  Y  \/
-", ConsoleColor.DarkGreen);
+                // Combine all art lines into a single string
+                var artString = "\n" + string.Join("\n", artLines) + "\n";
+                UIHelper.PrintColoredLine(artString, color);
             }
             else
             {
+                // Fallback if no art found
                 UIHelper.PrintColoredLine(@"
             .--.
            |o_o |

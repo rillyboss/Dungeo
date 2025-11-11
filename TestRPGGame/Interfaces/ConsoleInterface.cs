@@ -71,7 +71,11 @@ namespace TestRPGGame.Interfaces
 
                 case GameEvents.CombatStartedEvent e:
                     Console.Clear();
-                    UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Red);
+
+                    // Display enemy ASCII art
+                    AsciiArt.DrawEnemy(e.EnemyName);
+
+                    UIHelper.PrintColoredLine("\n═══════════════════════════════════════════", ConsoleColor.Red);
                     UIHelper.PrintColoredLine($"      BATTLE: {e.EnemyName}", ConsoleColor.Yellow);
                     UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Red);
                     UIHelper.PrintColoredLine($"Level {e.EnemyLevel} | HP: {e.EnemyMaxHP} | ATK: {e.EnemyAttack} | DEF: {e.EnemyDefense}", ConsoleColor.Gray);
@@ -331,14 +335,36 @@ namespace TestRPGGame.Interfaces
             Console.Write("\nChoose action: ");
             string choice = Console.ReadLine() ?? "";
 
-            return choice switch
+            switch (choice)
             {
-                "1" => new CombatAction { ActionType = CombatActionType.Attack },
-                "2" => new CombatAction { ActionType = CombatActionType.UseAbility },
-                "3" => new CombatAction { ActionType = CombatActionType.UsePotion },
-                "4" when state.CanFlee => new CombatAction { ActionType = CombatActionType.Flee },
-                _ => new CombatAction { ActionType = CombatActionType.Attack }
-            };
+                case "1":
+                    return new CombatAction { ActionType = CombatActionType.Attack };
+
+                case "2":
+                    // Show ability list and get selection
+                    int abilityIndex = RequestAbilitySelection(state.AvailableAbilities);
+                    if (abilityIndex >= 0)
+                    {
+                        return new CombatAction
+                        {
+                            ActionType = CombatActionType.UseAbility,
+                            AbilityIndex = abilityIndex
+                        };
+                    }
+                    // If cancelled, ask again
+                    return RequestCombatAction(state);
+
+                case "3":
+                    return new CombatAction { ActionType = CombatActionType.UsePotion };
+
+                case "4" when state.CanFlee:
+                    return new CombatAction { ActionType = CombatActionType.Flee };
+
+                default:
+                    UIHelper.PrintColoredLine("\n❌ Invalid choice!", ConsoleColor.Red);
+                    System.Threading.Thread.Sleep(1000);
+                    return RequestCombatAction(state);
+            }
         }
 
         public int RequestAbilitySelection(List<AbilityInfo> abilities)
