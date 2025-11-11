@@ -285,6 +285,11 @@ namespace TestRPGGame.Interfaces
         public abstract (string name, PlayerClass playerClass) ChooseCharacterClass();
         public abstract MainMenuChoice ChooseMainMenuAction(int combatCount, int level, int gold, int hp, int maxHp);
         public abstract CombatAction ChooseCombatAction(CombatState state);
+
+        /// <summary>
+        /// Override to specify a preferred save slot. Return null for default behavior.
+        /// </summary>
+        public virtual int? GetPreferredSaveSlot() => null;
     }
 
     /// <summary>

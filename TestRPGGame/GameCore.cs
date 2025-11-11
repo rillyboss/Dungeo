@@ -252,7 +252,7 @@ namespace TestRPGGame
 
         private bool RunSimplifiedDungeon(Player player, Dungeon dungeon)
         {
-            // Simple version: 3 combats, no flee
+            // Run 3 random encounters
             int combats = 3;
             int goldEarned = 0;
             int expEarned = 0;
@@ -273,6 +273,27 @@ namespace TestRPGGame
                     });
                     return false;
                 }
+            }
+
+            // Boss fight!
+            gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+            {
+                Message = $"\n💀 The {dungeon.Boss.Name} awaits!",
+                Type = GameEvents.MessageType.Info
+            });
+
+            bool bossVictory = combat.StartBattle(player, dungeon.Boss, canFlee: false);
+
+            if (!bossVictory)
+            {
+                gameInterface.OnEvent(new GameEvents.DungeonCompletedEvent
+                {
+                    DungeonName = dungeon.Name,
+                    Success = false,
+                    TotalGoldEarned = goldEarned,
+                    TotalExperienceEarned = expEarned
+                });
+                return false;
             }
 
             gameInterface.OnEvent(new GameEvents.DungeonCompletedEvent
