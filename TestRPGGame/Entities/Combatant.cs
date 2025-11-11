@@ -43,8 +43,9 @@ namespace TestRPGGame.Entities
         /// </summary>
         public virtual void TakeDamage(int damage)
         {
-            // Current implementation: Linear defense subtraction (to be refactored)
-            int actualDamage = Math.Max(1, damage - Defense);
+            // Use percentage-based defense reduction
+            double defenseReduction = Defense / (double)(Defense + 100);
+            int actualDamage = Math.Max(1, (int)(damage * (1 - defenseReduction)));
             CurrentHP -= actualDamage;
         }
 
@@ -59,9 +60,11 @@ namespace TestRPGGame.Entities
         /// <returns>The actual damage dealt after defense and shields</returns>
         public virtual int ApplyDamage(int rawDamage, bool applyShieldAbsorption = true, Combatant? attacker = null)
         {
-            // Step 1: Apply defense reduction
-            // Current formula: Linear subtraction (will be refactored to percentage-based)
-            int damageAfterDefense = Math.Max(1, rawDamage - Defense);
+            // Step 1: Apply defense reduction using percentage-based formula
+            // Formula: defense reduces damage by Defense/(Defense+100) percentage
+            // This provides diminishing returns and ensures multipliers scale properly
+            double defenseReduction = Defense / (double)(Defense + 100);
+            int damageAfterDefense = Math.Max(1, (int)(rawDamage * (1 - defenseReduction)));
 
             // Step 2: Apply shield absorption using new status effect system
             int damageAfterShield = damageAfterDefense;

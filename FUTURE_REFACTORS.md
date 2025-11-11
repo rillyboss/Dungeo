@@ -1,5 +1,26 @@
 # Future Refactoring Tasks
 
+## ✅ COMPLETED REFACTORS
+
+### Damage Calculation System (Completed 2025-01-11)
+**Problem:** Linear defense subtraction caused 1-damage hits on bosses, making combat grindy and unrewarding.
+
+**Solution Implemented:** Percentage-based defense reduction with diminishing returns
+```csharp
+defenseReduction = defense / (defense + 100)
+damage = max(1, rawDamage * (1 - defenseReduction))
+```
+
+**Results:**
+- Boss fights reduced from 350 hits → ~21 hits
+- 2x damage abilities properly deal ~2x damage
+- All 226 tests passing
+- Combat feels impactful and rewarding
+
+See `DAMAGE_FORMULA_UPDATE.md` for detailed analysis and examples.
+
+---
+
 ## Damage and Balance System
 
 ### 4. Evaluate and Rebalance Damage Calculation System
@@ -142,7 +163,7 @@ public class CombatStatusEffects
 ## Implementation Priority
 1. ~~Add Priority flags to abilities~~ ✅ **COMPLETED**
 2. ~~Test current speed-based turn order system~~ ✅ **COMPLETED**
-3. **Evaluate and rebalance damage calculation system** ⚠️ **HIGH PRIORITY - BLOCKING GAMEPLAY**
+3. ~~Evaluate and rebalance damage calculation system~~ ✅ **COMPLETED** (See DAMAGE_FORMULA_UPDATE.md)
 4. Plan Effect List Pattern refactor (design phase)
 5. Implement base Combatant pattern
 6. Migrate to Effect List Pattern

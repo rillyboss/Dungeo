@@ -18,6 +18,13 @@ namespace TestRPGGame.Tests
             return EnemyFactory.CreateEnemy(1);
         }
 
+        // Helper to calculate damage with percentage-based defense formula
+        private int CalculateExpectedDamage(int rawDamage, int defense)
+        {
+            double defenseReduction = defense / (double)(defense + 100);
+            return Math.Max(1, (int)(rawDamage * (1 - defenseReduction)));
+        }
+
         #region StatusEffectManager Tests
 
         [Fact]
@@ -173,9 +180,8 @@ namespace TestRPGGame.Tests
             player.ApplyBurning(enemy, 3, 10);
             player.Effects.ProcessTurnStart();
 
-            // DOT bypasses shields but still applies defense
-            // Damage = max(1, 10 - player.Defense)
-            int expectedDamage = Math.Max(1, 10 - player.Defense);
+            // DOT bypasses shields but still applies defense (percentage-based)
+            int expectedDamage = CalculateExpectedDamage(10, player.Defense);
             Assert.Equal(initialHP - expectedDamage, player.CurrentHP);
         }
 
@@ -315,8 +321,8 @@ namespace TestRPGGame.Tests
             Assert.Equal(initialHP, player.CurrentHP); // No HP damage
             var shield = player.Effects.GetActiveShield();
             Assert.NotNull(shield);
-            // Damage after defense = max(1, 30 - Defense), then shield absorbs that
-            int damageAfterDefense = Math.Max(1, 30 - player.Defense);
+            // Damage after defense (percentage-based), then shield absorbs that
+            int damageAfterDefense = CalculateExpectedDamage(30, player.Defense);
             Assert.Equal(50 - damageAfterDefense, shield.CurrentShieldValue);
         }
 
@@ -329,8 +335,8 @@ namespace TestRPGGame.Tests
             player.ApplyShield(3, 30);
             player.ApplyDamage(50);
 
-            // Damage after defense = max(1, 50 - Defense)
-            int damageAfterDefense = Math.Max(1, 50 - player.Defense);
+            // Damage after defense (percentage-based)
+            int damageAfterDefense = CalculateExpectedDamage(50, player.Defense);
             // Shield blocks 30, overflow = damageAfterDefense - 30
             int overflowDamage = Math.Max(0, damageAfterDefense - 30);
             Assert.Equal(initialHP - overflowDamage, player.CurrentHP);
@@ -539,9 +545,9 @@ namespace TestRPGGame.Tests
 
             player.Effects.ProcessTurnStart();
 
-            // DOT damage after defense = max(1, 10 - Defense)
+            // DOT damage after defense (percentage-based)
             // Healing = 15
-            int dotDamage = Math.Max(1, 10 - player.Defense);
+            int dotDamage = CalculateExpectedDamage(10, player.Defense);
             Assert.Equal(damagedHP - dotDamage + 15, player.CurrentHP);
         }
 
@@ -583,10 +589,10 @@ namespace TestRPGGame.Tests
 
             player.Effects.ProcessTurnStart();
 
-            // Each DOT applies defense separately
-            int totalDamage = Math.Max(1, 10 - player.Defense) +
-                             Math.Max(1, 5 - player.Defense) +
-                             Math.Max(1, 8 - player.Defense);
+            // Each DOT applies defense separately (percentage-based)
+            int totalDamage = CalculateExpectedDamage(10, player.Defense) +
+                             CalculateExpectedDamage(5, player.Defense) +
+                             CalculateExpectedDamage(8, player.Defense);
             Assert.Equal(initialHP - totalDamage, player.CurrentHP);
         }
 
