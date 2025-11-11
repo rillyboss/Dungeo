@@ -83,6 +83,12 @@ namespace TestRPGGame.Interfaces
         /// Wait for user to acknowledge a message (like "press any key")
         /// </summary>
         void WaitForAcknowledgment();
+
+        /// <summary>
+        /// Request player to choose from dungeon encounter options
+        /// Returns the index of the chosen option (0-based)
+        /// </summary>
+        int RequestEncounterChoice(string description, List<string> choices);
     }
 
     // Data structures for interface communication

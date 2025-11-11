@@ -618,7 +618,227 @@ namespace TestRPGGame.Interfaces
 
         public InventoryAction RequestInventoryAction(List<EquipmentItem> backpack, Dictionary<EquipmentSlot, EquipmentItem?> equipped)
         {
-            // For now, just exit inventory - full inventory UI would be implemented here
+            Console.Clear();
+            Console.WriteLine("╔════════════════════════════════════════════════════════╗");
+            Console.WriteLine("║                    INVENTORY                           ║");
+            Console.WriteLine("╚════════════════════════════════════════════════════════╝\n");
+
+            // Display equipped items
+            UIHelper.PrintColoredLine("═══ EQUIPPED ITEMS ═══\n", ConsoleColor.Cyan);
+            DisplayInventorySlot("Weapon", equipped.GetValueOrDefault(EquipmentSlot.Weapon));
+            DisplayInventorySlot("Armor", equipped.GetValueOrDefault(EquipmentSlot.Armor));
+            DisplayInventorySlot("Helmet", equipped.GetValueOrDefault(EquipmentSlot.Helmet));
+            DisplayInventorySlot("Boots", equipped.GetValueOrDefault(EquipmentSlot.Boots));
+            DisplayInventorySlot("Gloves", equipped.GetValueOrDefault(EquipmentSlot.Gloves));
+            DisplayInventorySlot("Ring 1", equipped.GetValueOrDefault(EquipmentSlot.Ring1));
+            DisplayInventorySlot("Ring 2", equipped.GetValueOrDefault(EquipmentSlot.Ring2));
+            DisplayInventorySlot("Amulet", equipped.GetValueOrDefault(EquipmentSlot.Amulet));
+            DisplayInventorySlot("Relic", equipped.GetValueOrDefault(EquipmentSlot.Relic));
+
+            // Display backpack
+            UIHelper.PrintColoredLine("\n═══ BACKPACK ═══\n", ConsoleColor.Cyan);
+            if (backpack.Count == 0)
+            {
+                Console.WriteLine("  (Empty)\n");
+            }
+            else
+            {
+                for (int i = 0; i < backpack.Count; i++)
+                {
+                    var item = backpack[i];
+                    Console.Write($"  {i + 1}. ");
+                    UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                    Console.WriteLine($" (Lv {item.Level}) - {item.Slot.GetDisplayName()}");
+                }
+                Console.WriteLine();
+            }
+
+            // Display total stats
+            DisplayInventoryStats(equipped);
+
+            // Menu
+            Console.WriteLine("\n1. Equip item from backpack");
+            Console.WriteLine("2. Unequip item");
+            Console.WriteLine("3. View item details");
+            Console.WriteLine("4. Back to main menu");
+
+            Console.Write("\nChoose option: ");
+            string choice = Console.ReadLine() ?? "";
+
+            switch (choice)
+            {
+                case "1":
+                    return RequestEquipItem(backpack);
+                case "2":
+                    return RequestUnequipItem(equipped);
+                case "3":
+                    return RequestViewItemDetails(backpack);
+                case "4":
+                    return new InventoryAction { ActionType = InventoryActionType.Exit };
+                default:
+                    UIHelper.PrintColoredLine("\n❌ Invalid choice!", ConsoleColor.Red);
+                    Thread.Sleep(1000);
+                    return RequestInventoryAction(backpack, equipped); // Recurse
+            }
+        }
+
+        private void DisplayInventorySlot(string slotName, EquipmentItem? item)
+        {
+            Console.Write($"  {slotName,-10}: ");
+            if (item != null)
+            {
+                UIHelper.PrintColoredLine($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+            }
+            else
+            {
+                Console.WriteLine("(Empty)");
+            }
+        }
+
+        private void DisplayInventoryStats(Dictionary<EquipmentSlot, EquipmentItem?> equipped)
+        {
+            UIHelper.PrintColoredLine("═══ TOTAL STATS FROM EQUIPMENT ═══\n", ConsoleColor.Cyan);
+
+            int attack = 0, defense = 0, magic = 0, hp = 0, mana = 0, speed = 0;
+            double crit = 0;
+
+            foreach (var item in equipped.Values)
+            {
+                if (item != null)
+                {
+                    attack += item.AttackBonus;
+                    defense += item.DefenseBonus;
+                    magic += item.MagicBonus;
+                    hp += item.HPBonus;
+                    mana += item.ManaBonus;
+                    speed += item.SpeedBonus;
+                    crit += item.CritBonus;
+                }
+            }
+
+            if (attack > 0) UIHelper.PrintColoredLine($"  ⚔️  Attack: +{attack}", ConsoleColor.Red);
+            if (defense > 0) UIHelper.PrintColoredLine($"  🛡️  Defense: +{defense}", ConsoleColor.Blue);
+            if (magic > 0) UIHelper.PrintColoredLine($"  🔮 Magic: +{magic}", ConsoleColor.Magenta);
+            if (hp > 0) UIHelper.PrintColoredLine($"  ❤️  HP: +{hp}", ConsoleColor.Green);
+            if (mana > 0) UIHelper.PrintColoredLine($"  💙 Mana: +{mana}", ConsoleColor.Cyan);
+            if (speed > 0) UIHelper.PrintColoredLine($"  ⚡ Speed: +{speed}", ConsoleColor.Yellow);
+            if (crit > 0) UIHelper.PrintColoredLine($"  💥 Crit: +{crit:P0}", ConsoleColor.Yellow);
+
+            // Show special effects
+            var allEffects = new List<SpecialEffect>();
+            foreach (var item in equipped.Values)
+            {
+                if (item != null)
+                {
+                    allEffects.AddRange(item.SpecialEffects);
+                }
+            }
+
+            if (allEffects.Count > 0)
+            {
+                Console.WriteLine();
+                UIHelper.PrintColoredLine("  ✨ ACTIVE SPECIAL EFFECTS:", ConsoleColor.Magenta);
+                foreach (var effect in allEffects)
+                {
+                    Console.WriteLine($"    • {effect.Description}");
+                }
+            }
+        }
+
+        private InventoryAction RequestEquipItem(List<EquipmentItem> backpack)
+        {
+            if (backpack.Count == 0)
+            {
+                UIHelper.PrintColoredLine("\n❌ No items in backpack!", ConsoleColor.Red);
+                Thread.Sleep(1500);
+                return new InventoryAction { ActionType = InventoryActionType.Exit };
+            }
+
+            Console.Write("\nEnter item number to equip (0 to cancel): ");
+            string input = Console.ReadLine() ?? "";
+
+            if (int.TryParse(input, out int index) && index > 0 && index <= backpack.Count)
+            {
+                return new InventoryAction
+                {
+                    ActionType = InventoryActionType.EquipItem,
+                    ItemIndex = index - 1
+                };
+            }
+
+            return new InventoryAction { ActionType = InventoryActionType.Exit };
+        }
+
+        private InventoryAction RequestUnequipItem(Dictionary<EquipmentSlot, EquipmentItem?> equipped)
+        {
+            Console.WriteLine("\nWhich item to unequip?");
+            Console.WriteLine("1. Weapon");
+            Console.WriteLine("2. Armor");
+            Console.WriteLine("3. Helmet");
+            Console.WriteLine("4. Boots");
+            Console.WriteLine("5. Gloves");
+            Console.WriteLine("6. Ring 1");
+            Console.WriteLine("7. Ring 2");
+            Console.WriteLine("8. Amulet");
+            Console.WriteLine("9. Relic");
+            Console.WriteLine("0. Cancel");
+
+            Console.Write("\nChoice: ");
+            string choice = Console.ReadLine() ?? "";
+
+            EquipmentSlot? slot = choice switch
+            {
+                "1" => EquipmentSlot.Weapon,
+                "2" => EquipmentSlot.Armor,
+                "3" => EquipmentSlot.Helmet,
+                "4" => EquipmentSlot.Boots,
+                "5" => EquipmentSlot.Gloves,
+                "6" => EquipmentSlot.Ring1,
+                "7" => EquipmentSlot.Ring2,
+                "8" => EquipmentSlot.Amulet,
+                "9" => EquipmentSlot.Relic,
+                _ => null
+            };
+
+            if (slot.HasValue)
+            {
+                return new InventoryAction
+                {
+                    ActionType = InventoryActionType.UnequipItem,
+                    Slot = slot.Value
+                };
+            }
+
+            return new InventoryAction { ActionType = InventoryActionType.Exit };
+        }
+
+        private InventoryAction RequestViewItemDetails(List<EquipmentItem> backpack)
+        {
+            if (backpack.Count == 0)
+            {
+                UIHelper.PrintColoredLine("\n❌ No items in backpack!", ConsoleColor.Red);
+                Thread.Sleep(1500);
+                return new InventoryAction { ActionType = InventoryActionType.Exit };
+            }
+
+            Console.Write("\nEnter item number to view (0 to cancel): ");
+            string input = Console.ReadLine() ?? "";
+
+            if (int.TryParse(input, out int index) && index > 0 && index <= backpack.Count)
+            {
+                Console.Clear();
+                Console.WriteLine();
+                backpack[index - 1].DisplayDetails();
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey(true);
+
+                return new InventoryAction
+                {
+                    ActionType = InventoryActionType.ViewDetails,
+                    ItemIndex = index - 1
+                };
+            }
+
             return new InventoryAction { ActionType = InventoryActionType.Exit };
         }
 
@@ -807,6 +1027,32 @@ namespace TestRPGGame.Interfaces
             Console.ResetColor();
             Console.Write(new string('░', barLength - filledLength));
             Console.Write($"] {current}/{max}");
+        }
+
+        public int RequestEncounterChoice(string description, List<string> choices)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine("          DUNGEON ENCOUNTER", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Cyan);
+
+            UIHelper.PrintColoredLine(description + "\n", ConsoleColor.White);
+
+            for (int i = 0; i < choices.Count; i++)
+            {
+                Console.WriteLine($"{i + 1}. {choices[i]}");
+            }
+
+            Console.Write("\nYour choice: ");
+            string input = Console.ReadLine() ?? "";
+
+            if (int.TryParse(input, out int choice) && choice > 0 && choice <= choices.Count)
+            {
+                return choice - 1; // Return 0-based index
+            }
+
+            // Invalid choice, default to first option
+            return 0;
         }
     }
 }

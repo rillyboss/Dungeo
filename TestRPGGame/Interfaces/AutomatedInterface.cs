@@ -256,6 +256,14 @@ namespace TestRPGGame.Interfaces
             // No-op for automated interface
         }
 
+        public int RequestEncounterChoice(string description, List<string> choices)
+        {
+            // AI strategy: Choose first option (typically the "safe" choice)
+            Log($"  Encounter: {description}");
+            Log($"  Choice: {choices[0]}");
+            return 0;
+        }
+
         private void Log(string message)
         {
             log.AppendLine(message);

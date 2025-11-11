@@ -254,7 +254,7 @@ namespace TestRPGGame.Entities.Dungeon
 
             SendMessage("\n");
             SendMessage("Press any key to enter the dungeon...", ConsoleColor.DarkGray);
-            Console.ReadKey(true);
+            gameInterface?.WaitForAcknowledgment();
         }
 
         private bool RunEncounter(PlayerEntity player, DungeonEncounter encounter)
@@ -282,34 +282,29 @@ namespace TestRPGGame.Entities.Dungeon
 
                 SendMessage("\n✓ Enemy defeated!");
                 SendMessage("\nPress any key to continue...");
-                Console.ReadKey(true);
+                gameInterface?.WaitForAcknowledgment();
                 return true;
             }
 
             // Handle choice-based encounters
-            Console.Clear();
-            SendMessage("═══════════════════════════════════════════", ConsoleColor.Red);
-            SendMessage("          DUNGEON ENCOUNTER");
-            SendMessage("═══════════════════════════════════════════\n");
-
-            SendMessage(encounter.Description + "\n");
-
             // Randomize choices if configured
             List<int> selectedChoiceIndices = GetRandomizedChoiceIndices(encounter);
 
+            // Build choice list
+            List<string> choices = new List<string>();
             for (int i = 0; i < selectedChoiceIndices.Count; i++)
             {
                 int actualIndex = selectedChoiceIndices[i];
-                SendMessage($"{i + 1}. {encounter.Choices[actualIndex]}");
+                choices.Add(encounter.Choices[actualIndex]);
             }
 
-            Console.Write("\nYour choice: ");
-            string choice = Console.ReadLine() ?? "";
+            // REQUEST choice from interface
+            int selectedIndex = gameInterface?.RequestEncounterChoice(encounter.Description, choices) ?? 0;
 
-            if (int.TryParse(choice, out int choiceIndex) && choiceIndex > 0 && choiceIndex <= selectedChoiceIndices.Count)
+            if (selectedIndex >= 0 && selectedIndex < selectedChoiceIndices.Count)
             {
                 // Map the user's choice to the actual choice index
-                int index = selectedChoiceIndices[choiceIndex - 1];
+                int index = selectedChoiceIndices[selectedIndex];
                 SendMessage("");
                 SendMessage(encounter.ChoiceResults[index]);
                 Thread.Sleep(1500);
@@ -361,7 +356,7 @@ namespace TestRPGGame.Entities.Dungeon
                 }
 
                 SendMessage("\nPress any key to continue...");
-                Console.ReadKey(true);
+                gameInterface?.WaitForAcknowledgment();
                 return true;
             }
 
@@ -397,22 +392,22 @@ namespace TestRPGGame.Entities.Dungeon
 
         private bool OfferContinueChoice()
         {
-            SendMessage("\n");
-            SendMessage("═══════════════════════════════════════════", ConsoleColor.Red);
-            SendMessage("      CHOICE: LEAVE OR CONTINUE?");
-            SendMessage("═══════════════════════════════════════════\n");
+            // Build description
+            string description = "You can leave now with the miniboss rewards...\n" +
+                                "Or press on to face the final boss for greater treasures!\n\n" +
+                                "⚠️  WARNING: If you die to the final boss, you lose ALL loot!";
 
-            SendMessage("You can leave now with the miniboss rewards...");
-            SendMessage("Or press on to face the final boss for greater treasures!");
-            SendMessage("\n⚠️  WARNING: If you die to the final boss, you lose ALL loot!");
+            // Build choices
+            List<string> choices = new List<string>
+            {
+                "Leave the dungeon (safe, keep miniboss rewards)",
+                "Continue to the final boss (risky, greater rewards)"
+            };
 
-            SendMessage("\n1. Leave the dungeon (safe, keep miniboss rewards)");
-            SendMessage("2. Continue to the final boss (risky, greater rewards)");
+            // REQUEST choice from interface
+            int selectedIndex = gameInterface?.RequestEncounterChoice(description, choices) ?? 0;
 
-            Console.Write("\nYour choice: ");
-            string choice = Console.ReadLine() ?? "";
-
-            return choice == "2";
+            return selectedIndex == 1; // Return true if continue to boss
         }
 
         private void GiveRewards(PlayerEntity player, DungeonReward reward, bool isBossReward)
@@ -449,7 +444,7 @@ namespace TestRPGGame.Entities.Dungeon
             SendMessage("╚═════════════════════════════════════╝");
 
             SendMessage("\nPress any key to continue...");
-            Console.ReadKey(true);
+            gameInterface?.WaitForAcknowledgment();
         }
 
         private EquipmentItem GenerateDungeonLoot(int playerLevel, int minRarity)
@@ -511,7 +506,7 @@ namespace TestRPGGame.Entities.Dungeon
             SendMessage($"❤️  Recovered to {player.CurrentHP} HP");
 
             SendMessage("\nPress any key to continue...");
-            Console.ReadKey(true);
+            gameInterface?.WaitForAcknowledgment();
         }
     }
 }
