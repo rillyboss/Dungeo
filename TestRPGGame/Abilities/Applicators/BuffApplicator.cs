@@ -1,5 +1,6 @@
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Combat.StatusEffects;
+using TestRPGGame.Constants;
 using TestRPGGame.UI;
 
 namespace TestRPGGame.Abilities.Applicators
@@ -10,32 +11,51 @@ namespace TestRPGGame.Abilities.Applicators
     /// </summary>
     public class BuffApplicator : IAbilityEffect
     {
-        public string BuffName { get; set; }
+        public BuffType BuffType { get; set; }
         public int Duration { get; set; }
 
+        // Constructor accepting enum
+        public BuffApplicator(BuffType buffType, int duration)
+        {
+            BuffType = buffType;
+            Duration = duration;
+        }
+
+        // Constructor accepting string for backward compatibility with JSON deserialization
         public BuffApplicator(string buffName, int duration)
         {
-            BuffName = buffName;
+            BuffType = ParseBuffName(buffName);
             Duration = duration;
         }
 
         public void Execute(AbilityContext context)
         {
             // Apply buff to source (caster buffs themselves)
-            if (BuffName == "Battle Rage")
+            switch (BuffType)
             {
-                context.Source.ApplyBattleRage(Duration);
+                case Constants.BuffType.BattleRage:
+                    context.Source.ApplyBattleRage(Duration);
+                    break;
+                case Constants.BuffType.ShieldWall:
+                    context.Source.ApplyShieldWall(Duration);
+                    break;
             }
-            else if (BuffName == "Shield Wall")
-            {
-                context.Source.ApplyShieldWall(Duration);
-            }
-            UIHelper.PrintColoredLine($"✨ {context.Source.Name} empowered by {BuffName} for {Duration} turns!", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine($"✨ {context.Source.Name} empowered by {BuffType.GetDisplayName()} for {Duration} turns!", ConsoleColor.Cyan);
         }
 
         public string GetDescription()
         {
-            return $"Apply {BuffName} for {Duration} turns";
+            return $"Apply {BuffType.GetDisplayName()} for {Duration} turns";
+        }
+
+        private static BuffType ParseBuffName(string buffName)
+        {
+            return buffName switch
+            {
+                "Battle Rage" => Constants.BuffType.BattleRage,
+                "Shield Wall" => Constants.BuffType.ShieldWall,
+                _ => throw new System.ArgumentException($"Unknown buff name: {buffName}")
+            };
         }
     }
 }

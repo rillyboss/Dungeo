@@ -1,3 +1,4 @@
+using TestRPGGame.Constants;
 using TestRPGGame.Entities;
 
 namespace TestRPGGame.Combat.StatusEffects
@@ -11,41 +12,41 @@ namespace TestRPGGame.Combat.StatusEffects
         // DOT Effects
         public static DamageOverTimeEffect CreateBurning(int duration, int damagePerTurn)
         {
-            return new DamageOverTimeEffect("burning", "Burning", "🔥", duration, damagePerTurn);
+            return new DamageOverTimeEffect(StatusEffectId.Burning.GetIdentifier(), "Burning", "🔥", duration, damagePerTurn);
         }
 
         public static DamageOverTimeEffect CreatePoison(int duration, int damagePerTurn)
         {
-            return new DamageOverTimeEffect("poison", "Poisoned", "☠️", duration, damagePerTurn);
+            return new DamageOverTimeEffect(StatusEffectId.Poison.GetIdentifier(), "Poisoned", "☠️", duration, damagePerTurn);
         }
 
         public static DamageOverTimeEffect CreateBleed(int duration, int damagePerTurn)
         {
-            return new DamageOverTimeEffect("bleed", "Bleeding", "🩸", duration, damagePerTurn);
+            return new DamageOverTimeEffect(StatusEffectId.Bleed.GetIdentifier(), "Bleeding", "🩸", duration, damagePerTurn);
         }
 
         // HOT Effects
         public static HealOverTimeEffect CreateRegeneration(int duration, int healPerTurn)
         {
-            return new HealOverTimeEffect("regeneration", "Regeneration", "💚", duration, healPerTurn);
+            return new HealOverTimeEffect(StatusEffectId.Regeneration.GetIdentifier(), "Regeneration", "💚", duration, healPerTurn);
         }
 
         // Defensive Effects
         public static ShieldEffect CreateShield(int duration, int shieldAmount)
         {
-            return new ShieldEffect("shield", "Shield", "🛡️", duration, shieldAmount);
+            return new ShieldEffect(StatusEffectId.Shield.GetIdentifier(), "Shield", "🛡️", duration, shieldAmount);
         }
 
         public static ThornsEffect CreateThorns(int duration, int reflectDamage)
         {
-            return new ThornsEffect("thorns", "Thorns", "🌵", duration, reflectDamage);
+            return new ThornsEffect(StatusEffectId.Thorns.GetIdentifier(), "Thorns", "🌵", duration, reflectDamage);
         }
 
         // Stat Buff Effects
         public static StatModifierEffect CreateBattleRage(int duration)
         {
             return new StatModifierEffect(
-                "battle_rage",
+                StatusEffectId.BattleRage.GetIdentifier(),
                 "Battle Rage",
                 "😤",
                 StatusEffectType.Buff,
@@ -59,7 +60,7 @@ namespace TestRPGGame.Combat.StatusEffects
         public static StatModifierEffect CreateEnrage(int duration, double damageMultiplier)
         {
             return new StatModifierEffect(
-                "enrage",
+                StatusEffectId.Enrage.GetIdentifier(),
                 "Enraged",
                 "💢",
                 StatusEffectType.Buff,
@@ -73,7 +74,7 @@ namespace TestRPGGame.Combat.StatusEffects
         public static StatModifierEffect CreateSpeedBuff(int duration, int speedBonus)
         {
             return new StatModifierEffect(
-                "speed_buff",
+                StatusEffectId.SpeedBuff.GetIdentifier(),
                 "Speed Boost",
                 "⚡",
                 StatusEffectType.Buff,
@@ -87,7 +88,7 @@ namespace TestRPGGame.Combat.StatusEffects
         public static StatModifierEffect CreateShieldWall(int duration)
         {
             return new StatModifierEffect(
-                "shield_wall",
+                StatusEffectId.ShieldWall.GetIdentifier(),
                 "Shield Wall",
                 "🛡️",
                 StatusEffectType.Buff,
@@ -101,7 +102,7 @@ namespace TestRPGGame.Combat.StatusEffects
         // Control Effects
         public static StunEffect CreateStun(int duration)
         {
-            return new StunEffect("stun", "Stunned", "⚡", duration);
+            return new StunEffect(StatusEffectId.Stun.GetIdentifier(), "Stunned", "⚡", duration);
         }
 
         // Extension method for easy application

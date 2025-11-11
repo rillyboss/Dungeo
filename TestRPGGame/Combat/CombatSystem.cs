@@ -8,6 +8,7 @@ using TestRPGGame.Abilities;
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Abilities.Applicators;
 using TestRPGGame.Combat.StatusEffects;
+using TestRPGGame.Constants;
 using TestRPGGame.Systems;
 using TestRPGGame.UI;
 
@@ -834,7 +835,7 @@ namespace TestRPGGame.Combat
             int damage = baseDamage;
 
             // Apply Shield Wall damage reduction from status effects
-            if (player.Effects.HasEffect("shield_wall"))
+            if (player.Effects.HasEffect(StatusEffectId.ShieldWall.GetIdentifier()))
             {
                 damage = damage / 2;
             }
