@@ -18,8 +18,16 @@ namespace TestRPGGame.Equipment
         public int MagicBonus { get; set; }
         public int HPBonus { get; set; }
         public int ManaBonus { get; set; }
-        public int SpeedBonus { get; set; }
+        public int AgilityBonus { get; set; }  // Renamed from SpeedBonus
         public double CritBonus { get; set; }
+
+        // New: Min/Max damage system for weapons
+        public int MinDamage { get; set; }
+        public int MaxDamage { get; set; }
+        public double Accuracy { get; set; } = 1.0;  // 1.0 = 100% accuracy
+
+        // Backwards compatibility for existing code
+        public int SpeedBonus => AgilityBonus;
 
         // Attack type for weapons
         public AttackType? WeaponAttackType { get; set; }
@@ -77,12 +85,25 @@ namespace TestRPGGame.Equipment
             Console.WriteLine();
 
             // Display stats
-            if (AttackBonus > 0) Console.WriteLine($"  ⚔️  Attack: +{AttackBonus}");
+            // Show damage range for weapons (if it's a weapon)
+            if (Slot == EquipmentSlot.Weapon && MaxDamage > 0)
+            {
+                Console.WriteLine($"  ⚔️  Damage: {MinDamage}-{MaxDamage}");
+                if (Accuracy < 1.0)
+                {
+                    Console.WriteLine($"  🎯 Accuracy: {Accuracy:P0}");
+                }
+            }
+            else if (AttackBonus > 0)
+            {
+                Console.WriteLine($"  ⚔️  Attack: +{AttackBonus}");
+            }
+
             if (DefenseBonus > 0) Console.WriteLine($"  🛡️  Defense: +{DefenseBonus}");
             if (MagicBonus > 0) Console.WriteLine($"  🔮 Magic: +{MagicBonus}");
             if (HPBonus > 0) Console.WriteLine($"  ❤️  HP: +{HPBonus}");
             if (ManaBonus > 0) Console.WriteLine($"  💙 Mana: +{ManaBonus}");
-            if (SpeedBonus > 0) Console.WriteLine($"  ⚡ Speed: +{SpeedBonus}");
+            if (AgilityBonus > 0) Console.WriteLine($"  ⚡ Agility: +{AgilityBonus}");
             if (CritBonus > 0) Console.WriteLine($"  💥 Crit Chance: +{CritBonus:P0}");
 
             // Display special effects

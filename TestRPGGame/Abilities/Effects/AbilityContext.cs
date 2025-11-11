@@ -2,6 +2,7 @@ using System;
 using TestRPGGame.Entities;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.Entities.Enemy;
+using TestRPGGame.Interfaces;
 
 namespace TestRPGGame.Abilities.Effects
 {
@@ -29,15 +30,21 @@ namespace TestRPGGame.Abilities.Effects
         /// </summary>
         public bool IsPlayerAbility { get; set; }
 
+        /// <summary>
+        /// Interface for publishing combat events (damage, misses, etc.)
+        /// </summary>
+        public IGameInterface? CombatInterface { get; set; }
+
         // Convenience properties for backward compatibility during migration
         public Player? Player => Source as Player ?? Target as Player;
         public Enemy? Enemy => Source as Enemy ?? Target as Enemy;
 
-        public AbilityContext(Combatant source, Combatant? target = null)
+        public AbilityContext(Combatant source, Combatant? target = null, IGameInterface? combatInterface = null)
         {
             Source = source;
             Target = target;
             Random = new Random();
+            CombatInterface = combatInterface;
         }
     }
 }

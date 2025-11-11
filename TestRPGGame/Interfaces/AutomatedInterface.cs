@@ -66,6 +66,11 @@ namespace TestRPGGame.Interfaces
                     Log($"  {e.Attacker} → {e.Target}: {e.Damage} {e.AttackType} damage{critMarker}");
                     break;
 
+                case GameEvents.AttackMissedEvent e:
+                    string missText = e.MissType == "Dodge" ? "dodged" : "missed";
+                    Log($"  {e.Attacker}'s attack {missText}! ({e.Target})");
+                    break;
+
                 case GameEvents.EffectAppliedEvent e:
                     Log($"  Effect on {e.Target}: {e.EffectName} ({e.Duration} turns)");
                     break;

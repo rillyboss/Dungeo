@@ -18,7 +18,14 @@ namespace TestRPGGame.Entities
         public int CurrentHP { get; set; }
         public int Attack { get; set; }
         public int Defense { get; set; }
-        public int Speed { get; set; }
+        public int Agility { get; set; }  // Renamed from Speed
+
+        // Backwards compatibility
+        public int Speed
+        {
+            get => Agility;
+            set => Agility = value;
+        }
 
         // Status Effect System (MMO-style buffs/debuffs)
         public StatusEffectManager Effects { get; private set; }
@@ -100,6 +107,17 @@ namespace TestRPGGame.Entities
             CurrentHP -= actualDamage;
 
             return actualDamage;
+        }
+
+        /// <summary>
+        /// Calculates dodge chance based on Agility stat.
+        /// Formula: Agility / 200, capped at 30% to prevent unkillable builds.
+        /// Examples: 10 agility = 5% dodge, 20 agility = 10% dodge, 60+ agility = 30% dodge
+        /// </summary>
+        public double GetDodgeChance()
+        {
+            double baseDodge = Agility / 200.0;
+            return Math.Min(0.30, baseDodge);  // Hard cap at 30%
         }
 
         /// <summary>

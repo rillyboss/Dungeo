@@ -80,6 +80,14 @@ namespace TestRPGGame.Interfaces
             public string AttackType { get; set; } // "Physical", "Magic", "Ability"
         }
 
+        public class AttackMissedEvent
+        {
+            public string Attacker { get; set; }
+            public string Target { get; set; }
+            public string MissType { get; set; } // "Miss" or "Dodge"
+            public string AttackType { get; set; } // "Physical", "Magic", "Ability"
+        }
+
         public class AbilityUsedEvent
         {
             public string User { get; set; }
