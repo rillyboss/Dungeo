@@ -1,7 +1,7 @@
 # Hybrid Systems Analysis
 
 **Date**: 2025-01-11
-**Status**: Phase 1 Complete ✅ | Phases 2-5 Pending
+**Status**: Phase 1 ✅ | Phase 2 ✅ | Phases 3-5 Pending
 **Goal**: Identify and eliminate all remaining Console I/O and non-data-driven code from game logic
 
 ---
@@ -13,7 +13,14 @@
 **Lines Removed**: 340 lines of legacy UI code
 **Result**: PlayerInventory.cs now 100% interface-driven with zero Console calls
 
-See "Phase 1 Execution Results" section below for details.
+## ✅ Phase 2 Complete - CombatStatusEffects.cs Deleted
+
+**Completion Date**: 2025-01-11
+**Commit**: 2245cee
+**Lines Removed**: 216 lines of dead code
+**Result**: 13 Console calls eliminated, zero functionality lost
+
+See execution results sections below for details.
 
 ---
 
@@ -27,16 +34,16 @@ Despite the successful legacy code cleanup, **several core game systems still vi
 
 | Priority | System | Console Calls | Lines of UI Code | Status |
 |----------|--------|---------------|------------------|---------|
-| ✅ **COMPLETE** | PlayerInventory.cs | ~~50+~~ → 0 | ~~320 lines~~ → 0 | **Phase 1 Done!** |
+| ✅ **COMPLETE** | PlayerInventory.cs | ~~50+~~ → 0 | ~~340 lines~~ → 0 | **Phase 1 Done!** |
+| ✅ **COMPLETE** | CombatStatusEffects.cs | ~~13~~ → 0 | ~~216 lines~~ → 0 | **Phase 2 Done!** |
 | 🟠 **HIGH** | Player.cs (CharacterSheet) | ~40 | ~42 lines | Phase 3 Pending |
-| 🟠 **HIGH** | CombatStatusEffects.cs | 13 | ~13 lines | Phase 2 Pending |
 | 🟡 **MEDIUM** | DungeonRunner.cs | 5 | 5 lines | Phase 4 Pending |
 | 🟢 **LOW** | Combatant.cs | 1 | 1 line | Phase 5 Pending |
 | 🟢 **LOW** | SaveSystem.cs | 3 | 3 lines | Phase 5 Pending |
 
-**Progress**: 50+ Console calls eliminated in Phase 1 ✅
-**Remaining**: ~62 Console calls in game logic
-**Completed Systems**: Shop.cs ✅ | PlayerInventory.cs ✅
+**Progress**: 63+ Console calls eliminated (Phases 1-2) ✅
+**Remaining**: ~49 Console calls in game logic
+**Completed Systems**: Shop.cs ✅ | PlayerInventory.cs ✅ | CombatStatusEffects.cs ✅
 
 ---
 
@@ -517,6 +524,54 @@ We simply removed the fallback path and legacy methods.
 
 ---
 
+## Phase 2 Execution Results
+
+### What Was Done
+
+**Date**: 2025-01-11
+**Commit**: 2245cee
+**Time Taken**: < 15 minutes (discovery + deletion)
+
+#### Key Discovery
+
+CombatStatusEffects.cs was **completely dead code** with zero usage:
+- Only 2 references: class declaration + constructor
+- Never instantiated anywhere in the codebase
+- Real status effects system is in `Combat/StatusEffects/` folder (clean, event-driven)
+- This was legacy code from an earlier refactoring that wasn't cleaned up
+
+#### Changes Made
+
+1. **Verified** file was unused (grep analysis)
+2. **Ran baseline tests** (226/226 passing)
+3. **Deleted** CombatStatusEffects.cs via `git rm`
+4. **Ran tests** again (226/226 still passing)
+5. **Confirmed** zero functionality lost
+
+#### Results
+
+- **Lines Removed**: 216 (entire file deleted)
+- **Console Calls**: 13 → 0 ✅
+- **Game Logic Console Calls**: 54 → 41 (13 eliminated)
+- **Tests**: 226/226 passing ✅
+- **Functionality Lost**: Zero (dead code)
+
+#### What Were the 13 Console Calls?
+
+All were status effect messages that were never being executed:
+- Enemy regenerates HP
+- Player takes burning/bleed damage
+- Thorns/shield/enrage fade messages
+- Speed buff expiration
+
+These messages are now properly handled by the real StatusEffects system via events.
+
+#### Lesson Learned
+
+During major refactorings, **always delete the old code** once the new system is verified. Leaving dead code creates confusion about architecture and adds unnecessary maintenance burden.
+
+---
+
 ## Next Steps
 
 ### ✅ Phase 1: COMPLETE
@@ -524,19 +579,24 @@ We simply removed the fallback path and legacy methods.
 - 340 lines removed
 - Zero Console calls
 
-### 🚀 Phase 2: CombatStatusEffects (Next)
-- Add StatusEffectTickEvent
-- Replace 13 Console calls with events
-- **Time Estimate**: 1 hour
-- **Impact**: Medium-High
+### ✅ Phase 2: COMPLETE
+- CombatStatusEffects.cs deleted (dead code)
+- 216 lines removed
+- 13 Console calls eliminated
+
+### 🚀 Phase 3: Player CharacterSheet (Next)
+- Extract DisplayCharacterSheet() to interface method
+- Replace ~40 Console calls with events
+- **Time Estimate**: 1-2 hours
+- **Impact**: Medium
 
 ### Remaining Phases
-- Phase 3: Player CharacterSheet (1-2 hours)
 - Phase 4: DungeonRunner Console.Clear() (30 min)
 - Phase 5: Minor cleanups (15 min)
 
+**Progress So Far**: 556 lines removed, 63+ Console calls eliminated
 **Total Remaining**: ~2-3 hours to 100% clean architecture
 
 ---
 
-**Status**: Phase 1 complete ✅ | Ready for Phase 2 when approved
+**Status**: Phases 1-2 complete ✅ | Ready for Phase 3 when approved
