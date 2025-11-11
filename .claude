@@ -51,16 +51,57 @@ Before beginning any work, follow this workflow:
 ### Current Project State (Updated Each Session)
 
 **Last Updated**: 2025-01-10
-- **Tests Passing**: 86/86 ✅
+- **Tests Passing**: 119/119 ✅
 - **Recent Major Changes**:
-  - Classes are now data-driven (classes.json)
-  - All classes balanced (Rogue nerfed, Mage buffed)
-  - Starting equipment system implemented
-  - Save slot deletion feature added
-  - All status effects functional (DOT, HOT, etc.)
+  - Refactored to Source/Target ability execution pattern
+  - Eliminated manual type-checking in CombatSystem (ExecuteEnemyAbilityEffects removed)
+  - Ability effects now work symmetrically for players and enemies
+  - Created Abilities\Applicators namespace for clearer architecture
+  - All status effects fully integrated with new system
 
 ## Project Overview
 This is a data-driven text-based RPG game built with C# and .NET. All game content is defined in JSON files to enable rapid iteration without code changes.
+
+## Architecture Principles
+
+### Ability Effect System
+The game uses a polymorphic ability effect system with Source/Target pattern:
+
+**AbilityContext** (`Abilities\Effects\AbilityContext.cs`):
+- `Source`: The combatant casting/using the ability (caster/attacker)
+- `Target`: The combatant being affected (defender/recipient)
+- Effects work symmetrically for both players and enemies
+- Backward compatibility properties (`Player`, `Enemy`) available during migration
+
+**Effect Types**:
+1. **Effects** (`Abilities\Effects\`): Core effect implementations (DamageEffect, PoisonEffect, RestoreEffect, etc.)
+2. **Applicators** (`Abilities\Applicators\`): Status effect triggers (BuffApplicator, ThornsApplicator, etc.)
+
+**Key Design**:
+- All effects implement `IAbilityEffect` with `Execute(AbilityContext context)` method
+- Effects determine behavior polymorphically - no type checking in CombatSystem
+- Adding new effects requires NO changes to CombatSystem
+- Status effects applied via extension methods on `Combatant` (e.g., `ApplyBurning`, `ApplyShield`)
+
+### Status Effect System
+MMO-style status effect architecture:
+
+**StatusEffectManager** (`Combat\StatusEffects\StatusEffectManager.cs`):
+- Manages list of active effects on each Combatant
+- Processes lifecycle hooks: OnApply, OnTurnStart, OnExpire, OnTakeDamage
+- Provides queries: GetBuffs(), GetDebuffs(), GetActiveShield(), etc.
+
+**Effect Categories**:
+- DOT (Damage Over Time): Burning, Poison, Bleed
+- HOT (Heal Over Time): Regeneration
+- Defensive: Shield (absorbs damage), Thorns (reflects damage)
+- Control: Stun
+- Stat Modifiers: Battle Rage, Shield Wall, Speed buffs
+
+**Extension Methods** (`Combat\StatusEffects\StatusEffectFactory.cs`):
+- All Combatants can apply effects via: `combatant.ApplyBurning(source, duration, damage)`
+- Factory creates effects with proper configuration
+- Source tracking for damage attribution
 
 ## Data-Driven Design Principles
 
