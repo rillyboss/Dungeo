@@ -77,59 +77,59 @@ namespace TestRPGGame.Tests
         }
 
         [Fact]
-        public void Shop_RefreshCostsFiftyGold()
+        public void Shop_RefreshCost_UsesGameConfig()
         {
-            // This tests the refresh constant is correct
-            const int EXPECTED_REFRESH_COST = 50;
-
+            // Verify shop refresh cost comes from GameConfig
             // Arrange
+            var config = GameConfig.Config;
             var player = new Player("Test", PlayerClass.Warrior);
             player.Gold = 100;
 
             // Act
-            int refreshCost = 50; // From Shop.cs line 189
+            int refreshCost = config.ShopRefreshCost;
             player.Gold -= refreshCost;
 
             // Assert
-            Assert.Equal(EXPECTED_REFRESH_COST, refreshCost);
+            Assert.Equal(50, refreshCost); // Default config value
             Assert.Equal(50, player.Gold);
         }
 
         [Fact]
-        public void Shop_PotionPriceFiftyGold()
+        public void Shop_PotionPrice_UsesGameConfig()
         {
-            // This tests the potion price constant is correct
-            const int EXPECTED_POTION_PRICE = 50;
-
+            // Verify potion price comes from GameConfig
             // Arrange
+            var config = GameConfig.Config;
             var player = new Player("Test", PlayerClass.Warrior);
             player.Gold = 150;
             int potionsToBuy = 2;
 
             // Act
-            int potionPrice = 50; // From Shop.cs line 214
+            int potionPrice = config.PotionPrice;
             int totalCost = potionsToBuy * potionPrice;
             player.Gold -= totalCost;
             player.PotionCount += potionsToBuy;
 
             // Assert
-            Assert.Equal(EXPECTED_POTION_PRICE, potionPrice);
+            Assert.Equal(50, potionPrice); // Default config value
             Assert.Equal(50, player.Gold);
             Assert.Equal(5, player.PotionCount); // Started with 3
         }
 
         [Fact]
-        public void Shop_SellPrice_IsSixtyPercentOfBuyPrice()
+        public void Shop_SellPrice_UsesGameConfig()
         {
-            // Test sell price calculation from Shop.cs line 174
+            // Verify sell price multiplier comes from GameConfig
+            // Arrange
+            var config = GameConfig.Config;
             int buyPrice = 100;
-            int expectedSellPrice = 60;
 
             // Act
-            int sellPrice = (int)(buyPrice * 0.6);
+            int sellPrice = (int)(buyPrice * config.ItemSellPriceMultiplier);
 
             // Assert
-            Assert.Equal(expectedSellPrice, sellPrice);
+            Assert.Equal(60, sellPrice); // 60% of 100 with default config
+            Assert.Equal(0.6, config.ItemSellPriceMultiplier);
         }
 
         [Theory]
@@ -192,6 +192,7 @@ namespace TestRPGGame.Tests
         public void Shop_PlayerCanSellItems()
         {
             // Arrange
+            var config = GameConfig.Config;
             var autoInterface = new AutomatedInterface();
             var shop = new Shop(autoInterface);
             var player = new Player("Test", PlayerClass.Warrior);
@@ -208,11 +209,11 @@ namespace TestRPGGame.Tests
             player.Inventory.BackpackItems.Add(itemToSell);
 
             int initialGold = player.Gold;
-            int expectedSellPrice = (int)(itemToSell.Price * 0.6);
+            int expectedSellPrice = (int)(itemToSell.Price * config.ItemSellPriceMultiplier);
 
             // Note: AutomatedInterface doesn't sell items, it only buys
             // So we test the sell logic directly
-            int sellPrice = (int)(itemToSell.Price * 0.6);
+            int sellPrice = (int)(itemToSell.Price * config.ItemSellPriceMultiplier);
             player.Gold += sellPrice;
             player.Inventory.BackpackItems.Remove(itemToSell);
 

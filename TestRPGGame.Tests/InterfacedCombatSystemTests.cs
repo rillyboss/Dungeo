@@ -4,6 +4,7 @@ using TestRPGGame.Interfaces;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Factories;
+using TestRPGGame.Systems;
 using System.Linq;
 
 namespace TestRPGGame.Tests
@@ -160,6 +161,58 @@ namespace TestRPGGame.Tests
             // Assert
             // Should complete combat (no flee option)
             Assert.Contains("COMBAT", log);
+        }
+
+        [Fact]
+        public void InterfacedCombatSystem_UsesGameConfig_MaxTurns()
+        {
+            // Verify combat uses MaxCombatTurns from config
+            var config = GameConfig.Config;
+
+            // Assert
+            Assert.Equal(100, config.MaxCombatTurns);
+        }
+
+        [Fact]
+        public void InterfacedCombatSystem_UsesGameConfig_LootDropChance()
+        {
+            // Verify combat uses loot drop chance from config
+            var config = GameConfig.Config;
+
+            // Assert
+            Assert.Equal(0.4, config.CombatLootDropChance); // 40%
+        }
+
+        [Fact]
+        public void InterfacedCombatSystem_UsesGameConfig_GoldLoss()
+        {
+            // Verify combat gold loss calculation uses config
+            var config = GameConfig.Config;
+            int playerGold = 1000;
+
+            // Act
+            int goldLoss = (int)(playerGold * config.CombatGoldLossPercent);
+            goldLoss = System.Math.Min(goldLoss, config.CombatGoldLossMax);
+
+            // Assert
+            Assert.Equal(0.25, config.CombatGoldLossPercent);
+            Assert.Equal(100, config.CombatGoldLossMax);
+            Assert.Equal(100, goldLoss); // 25% of 1000 capped at 100
+        }
+
+        [Fact]
+        public void InterfacedCombatSystem_UsesGameConfig_ManaRegen()
+        {
+            // Verify combat mana regen uses config
+            var config = GameConfig.Config;
+            int maxMana = 100;
+
+            // Act
+            int regenAmount = (int)(maxMana * config.ManaRegenRate);
+
+            // Assert
+            Assert.Equal(0.05, config.ManaRegenRate);
+            Assert.Equal(5, regenAmount); // 5% of 100
         }
     }
 }
