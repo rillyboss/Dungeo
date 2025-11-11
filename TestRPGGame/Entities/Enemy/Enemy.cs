@@ -35,10 +35,10 @@ namespace TestRPGGame.Entities.Enemy
             GoldReward = gold;
             ExpReward = exp;
             Abilities = new List<EnemyAbility>();
-            // StatusEffects (old) and Effects (new) initialized by base Combatant constructor
+            // Effects (StatusEffectManager) initialized by base Combatant constructor
             AI = null; // Created by EnemyFactory
         }
 
-        // TakeDamage, IsAlive, and EnsureStatusEffects inherited from Combatant base class
+        // TakeDamage and IsAlive inherited from Combatant base class
     }
 }

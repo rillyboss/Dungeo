@@ -1,14 +1,18 @@
+using TestRPGGame.Abilities.Effects;
 using TestRPGGame.UI;
 
-namespace TestRPGGame.Abilities.Effects
+namespace TestRPGGame.Abilities.Applicators
 {
-    // Shield effect - absorbs damage
-    public class ShieldEffect : IAbilityEffect
+    /// <summary>
+    /// Applies a Shield status effect that absorbs damage.
+    /// This is an applicator that triggers the actual ShieldEffect status effect.
+    /// </summary>
+    public class ShieldApplicator : IAbilityEffect
     {
         public int ShieldAmount { get; set; }
         public int Duration { get; set; }
 
-        public ShieldEffect(int shieldAmount, int duration)
+        public ShieldApplicator(int shieldAmount, int duration)
         {
             ShieldAmount = shieldAmount;
             Duration = duration;

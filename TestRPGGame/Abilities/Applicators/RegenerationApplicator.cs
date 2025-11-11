@@ -1,14 +1,18 @@
+using TestRPGGame.Abilities.Effects;
 using TestRPGGame.UI;
 
-namespace TestRPGGame.Abilities.Effects
+namespace TestRPGGame.Abilities.Applicators
 {
-    // Heal over time effect - regenerates HP each turn
-    public class HealOverTimeEffect : IAbilityEffect
+    /// <summary>
+    /// Applies a Regeneration status effect (heal over time).
+    /// This is an applicator that triggers the actual HealOverTimeEffect status effect.
+    /// </summary>
+    public class RegenerationApplicator : IAbilityEffect
     {
         public int HealPerTurn { get; set; }
         public int Duration { get; set; }
 
-        public HealOverTimeEffect(int healPerTurn, int duration)
+        public RegenerationApplicator(int healPerTurn, int duration)
         {
             HealPerTurn = healPerTurn;
             Duration = duration;

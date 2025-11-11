@@ -1,14 +1,18 @@
+using TestRPGGame.Abilities.Effects;
 using TestRPGGame.UI;
 
-namespace TestRPGGame.Abilities.Effects
+namespace TestRPGGame.Abilities.Applicators
 {
-    // Thorns effect - reflects damage back to attacker
-    public class ThornsEffect : IAbilityEffect
+    /// <summary>
+    /// Applies a Thorns status effect that reflects damage back to attackers.
+    /// This is an applicator that triggers the actual ThornsEffect status effect.
+    /// </summary>
+    public class ThornsApplicator : IAbilityEffect
     {
         public int ReflectDamage { get; set; }
         public int Duration { get; set; }
 
-        public ThornsEffect(int reflectDamage, int duration)
+        public ThornsApplicator(int reflectDamage, int duration)
         {
             ReflectDamage = reflectDamage;
             Duration = duration;

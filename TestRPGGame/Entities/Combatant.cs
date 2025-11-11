@@ -20,16 +20,11 @@ namespace TestRPGGame.Entities
         public int Defense { get; set; }
         public int Speed { get; set; }
 
-        // OLD Status Effect System (DEPRECATED - being migrated to Effects)
-        // TODO: Remove after migration complete
-        public CombatStatusEffects StatusEffects { get; set; }
-
-        // NEW Status Effect System (MMO-style buffs/debuffs)
+        // Status Effect System (MMO-style buffs/debuffs)
         public StatusEffectManager Effects { get; private set; }
 
         protected Combatant()
         {
-            StatusEffects = new CombatStatusEffects(); // Legacy - remove after migration
             Effects = new StatusEffectManager(this);
         }
 
@@ -56,12 +51,13 @@ namespace TestRPGGame.Entities
         /// <summary>
         /// Unified damage application method for all combat damage.
         /// This method will be the single source of truth for damage calculation.
-        /// It handles defense calculation, shield absorption, and HP reduction.
+        /// It handles defense calculation, shield absorption, status effect hooks, and HP reduction.
         /// </summary>
         /// <param name="rawDamage">The incoming damage before defense/shields</param>
         /// <param name="applyShieldAbsorption">Whether to check for shield absorption (default: true)</param>
+        /// <param name="attacker">The combatant dealing the damage (for Thorns reflection)</param>
         /// <returns>The actual damage dealt after defense and shields</returns>
-        public virtual int ApplyDamage(int rawDamage, bool applyShieldAbsorption = true)
+        public virtual int ApplyDamage(int rawDamage, bool applyShieldAbsorption = true, Combatant? attacker = null)
         {
             // Step 1: Apply defense reduction
             // Current formula: Linear subtraction (will be refactored to percentage-based)
@@ -81,10 +77,22 @@ namespace TestRPGGame.Entities
                     {
                         UI.UIHelper.PrintColoredLine($"   🛡️  Shield absorbed {blocked} damage! ({shield.CurrentShieldValue} remaining)", ConsoleColor.Cyan);
                     }
+
+                    // Remove shield if depleted
+                    if (shield.CurrentShieldValue <= 0)
+                    {
+                        Effects.RemoveEffect(shield);
+                    }
                 }
             }
 
-            // Step 3: Apply final damage to HP
+            // Step 3: Trigger status effect hooks (e.g., Thorns)
+            if (attacker != null)
+            {
+                Effects.ProcessTakeDamage(attacker, ref damageAfterShield);
+            }
+
+            // Step 4: Apply final damage to HP
             int actualDamage = Math.Max(0, damageAfterShield);
             CurrentHP -= actualDamage;
 
@@ -117,16 +125,5 @@ namespace TestRPGGame.Entities
             return Defense;
         }
 
-        /// <summary>
-        /// Ensures StatusEffects is initialized. Useful for lazy initialization.
-        /// DEPRECATED - Legacy method for old system.
-        /// </summary>
-        public void EnsureStatusEffects()
-        {
-            if (StatusEffects == null)
-            {
-                StatusEffects = new CombatStatusEffects();
-            }
-        }
     }
 }

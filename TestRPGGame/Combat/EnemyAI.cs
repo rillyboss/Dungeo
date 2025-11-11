@@ -5,6 +5,7 @@ using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Abilities.Effects;
+using TestRPGGame.Abilities.Applicators;
 
 namespace TestRPGGame.Combat
 {
@@ -46,7 +47,7 @@ namespace TestRPGGame.Combat
         /// Select the best ability for the enemy to use based on current combat state.
         /// Returns null if enemy should use basic attack.
         /// </summary>
-        public EnemyAbility? SelectAbility(Enemy enemy, Player player, Dictionary<string, int> activeBuffs)
+        public EnemyAbility? SelectAbility(Enemy enemy, Player player)
         {
             // Check for phase transitions (bosses only)
             CheckPhaseTransition(enemy);
@@ -66,7 +67,7 @@ namespace TestRPGGame.Combat
                 .Select(ability => new
                 {
                     Ability = ability,
-                    Score = ScoreAbility(ability, enemy, player, activeBuffs)
+                    Score = ScoreAbility(ability, enemy, player)
                 })
                 .OrderByDescending(x => x.Score)
                 .ToList();
@@ -126,7 +127,7 @@ namespace TestRPGGame.Combat
         /// Score an ability based on current combat context and AI behavior.
         /// Higher score = more likely to use.
         /// </summary>
-        private double ScoreAbility(EnemyAbility ability, Enemy enemy, Player player, Dictionary<string, int> activeBuffs)
+        private double ScoreAbility(EnemyAbility ability, Enemy enemy, Player player)
         {
             double score = 1.0;
 
@@ -139,7 +140,7 @@ namespace TestRPGGame.Combat
             score *= GetAbilityTypeWeight(ability);
 
             // Apply contextual decision factors
-            score *= GetContextualModifiers(ability, enemy, player, activeBuffs);
+            score *= GetContextualModifiers(ability, enemy, player);
 
             // Apply phase priority boosts (bosses only)
             if (Phases != null && currentPhaseIndex < Phases.Count)
@@ -190,12 +191,12 @@ namespace TestRPGGame.Combat
             {
                 DamageEffect => "damage",
                 PoisonEffect => "damage",
-                BuffEffect => "buff",
+                BuffApplicator => "buff",
                 RestoreEffect => "heal",
-                ShieldEffect => "defensive",
-                ThornsEffect => "defensive",
-                StunEffect => "control",
-                HealOverTimeEffect => "heal",
+                ShieldApplicator => "defensive",
+                ThornsApplicator => "defensive",
+                StunApplicator => "control",
+                RegenerationApplicator => "heal",
                 LifeStealEffect => "damage",
                 _ => "other"
             };
@@ -204,7 +205,7 @@ namespace TestRPGGame.Combat
         /// <summary>
         /// Apply contextual modifiers based on combat state.
         /// </summary>
-        private double GetContextualModifiers(EnemyAbility ability, Enemy enemy, Player player, Dictionary<string, int> activeBuffs)
+        private double GetContextualModifiers(EnemyAbility ability, Enemy enemy, Player player)
         {
             if (CurrentBehavior == null || CurrentBehavior.DecisionFactors.Count == 0)
             {
@@ -243,7 +244,7 @@ namespace TestRPGGame.Combat
 
             if (CurrentBehavior.DecisionFactors.TryGetValue("playerHasBuffs", out double playerBuffsFactor))
             {
-                if (activeBuffs.Count > 0)
+                if (player.Effects.GetBuffs().Count > 0)
                 {
                     modifier *= playerBuffsFactor;
                 }

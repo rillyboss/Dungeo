@@ -6,6 +6,8 @@ using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Equipment;
 using TestRPGGame.Abilities;
 using TestRPGGame.Abilities.Effects;
+using TestRPGGame.Abilities.Applicators;
+using TestRPGGame.Combat.StatusEffects;
 using TestRPGGame.Systems;
 using TestRPGGame.UI;
 
@@ -14,7 +16,6 @@ namespace TestRPGGame.Combat
     public class CombatSystem
     {
         private Random random = new Random();
-        private Dictionary<string, int> activeBuffs = new Dictionary<string, int>();
         private bool playerDodgeNext = false;
         private bool enemyStunNext = false;
         private Ability? queuedPlayerAbility = null;
@@ -185,7 +186,7 @@ namespace TestRPGGame.Combat
             // Use AI to select ability if available
             if (enemy.AI != null)
             {
-                queuedEnemyAbility = enemy.AI.SelectAbility(enemy, player, activeBuffs);
+                queuedEnemyAbility = enemy.AI.SelectAbility(enemy, player);
             }
             else
             {
@@ -208,12 +209,6 @@ namespace TestRPGGame.Combat
         {
             // Apply status effects at start of player's turn (new system)
             player.Effects.ProcessTurnStart();
-
-            // Also apply old system effects during migration
-            if (player.StatusEffects != null)
-            {
-                player.StatusEffects.ApplyPlayerTurnEffects(player, enemy);
-            }
             Thread.Sleep(500);
 
             if (queuedPlayerAbility != null)
@@ -245,12 +240,6 @@ namespace TestRPGGame.Combat
 
             // Apply status effects at start of enemy's turn (new system)
             enemy.Effects.ProcessTurnStart();
-
-            // Also apply old system effects during migration
-            if (enemy.StatusEffects != null)
-            {
-                enemy.StatusEffects.ApplyEnemyTurnEffects(enemy, player);
-            }
             Thread.Sleep(500);
 
             // Check for phase transition and show phase message
@@ -342,22 +331,7 @@ namespace TestRPGGame.Combat
                 Thread.Sleep(500);
             }
 
-            // Tick down legacy activeBuffs (for backwards compatibility with Battle Rage, etc.)
-            List<string> expiredBuffs = new List<string>();
-            foreach (var buff in activeBuffs)
-            {
-                activeBuffs[buff.Key]--;
-                if (activeBuffs[buff.Key] <= 0)
-                {
-                    expiredBuffs.Add(buff.Key);
-                }
-            }
-            foreach (var buff in expiredBuffs)
-            {
-                activeBuffs.Remove(buff);
-                UIHelper.PrintColoredLine($"⏰ {buff} effect has worn off!", ConsoleColor.Gray);
-                Thread.Sleep(500);
-            }
+            // Status effects are now automatically managed by StatusEffectManager
 
             // Reduce ability cooldowns
             foreach (var ability in player.Abilities)
@@ -387,13 +361,9 @@ namespace TestRPGGame.Combat
                 }
                 else if (effect is PoisonEffect poisonEffect)
                 {
-                    // Enemy applies burning/DOT to player via player StatusEffects
-                    if (player.StatusEffects != null)
-                    {
-                        player.StatusEffects.DamageOverTimeAmount = poisonEffect.DamagePerTurn;
-                        player.StatusEffects.DamageOverTimeTurns = poisonEffect.Duration;
-                        UIHelper.PrintColoredLine($"   🔥 You are burning! ({poisonEffect.DamagePerTurn} damage/turn for {poisonEffect.Duration} turns)", ConsoleColor.Red);
-                    }
+                    // Enemy applies burning/DOT to player using new status effect system
+                    player.ApplyBurning(enemy, poisonEffect.Duration, poisonEffect.DamagePerTurn);
+                    UIHelper.PrintColoredLine($"   🔥 You are burning! ({poisonEffect.DamagePerTurn} damage/turn for {poisonEffect.Duration} turns)", ConsoleColor.Red);
                 }
                 else if (effect is RestoreEffect restoreEffect)
                 {
@@ -408,35 +378,27 @@ namespace TestRPGGame.Combat
                         enemy.AI.RecordHealUsed();
                     }
                 }
-                else if (effect is HealOverTimeEffect hotEffect)
+                else if (effect is RegenerationApplicator hotEffect)
                 {
-                    // Apply heal over time to enemy
-                    if (enemy.StatusEffects != null)
-                    {
-                        enemy.StatusEffects.HealOverTimeAmount = hotEffect.HealPerTurn;
-                        enemy.StatusEffects.HealOverTimeTurns = hotEffect.Duration;
-                        UIHelper.PrintColoredLine($"   💚 {enemy.Name} begins regenerating! ({hotEffect.HealPerTurn} HP/turn for {hotEffect.Duration} turns)", ConsoleColor.Green);
-                    }
+                    // Apply heal over time to enemy using new status effect system
+                    enemy.ApplyRegeneration(hotEffect.Duration, hotEffect.HealPerTurn);
+                    UIHelper.PrintColoredLine($"   💚 {enemy.Name} begins regenerating! ({hotEffect.HealPerTurn} HP/turn for {hotEffect.Duration} turns)", ConsoleColor.Green);
                 }
                 else if (effect is StatModEffect statModEffect)
                 {
                     // Reduce player's speed temporarily (simplified - just show message for now)
                     UIHelper.PrintColoredLine($"   🔻 Your combat effectiveness is reduced!", ConsoleColor.Magenta);
                 }
-                else if (effect is BuffEffect buffEffect)
+                else if (effect is BuffApplicator buffEffect)
                 {
                     // Enemy buffs are simplified for now - just show message
                     UIHelper.PrintColoredLine($"   ⚡ {enemy.Name} is empowered by {buffEffect.BuffName}!", ConsoleColor.Yellow);
                 }
-                else if (effect is ThornsEffect thornsEffect)
+                else if (effect is ThornsApplicator thornsEffect)
                 {
-                    // Apply Thorns to enemy
-                    if (enemy.StatusEffects != null)
-                    {
-                        enemy.StatusEffects.ThornsValue = thornsEffect.ReflectDamage;
-                        enemy.StatusEffects.ThornsTurns = thornsEffect.Duration;
-                        UIHelper.PrintColoredLine($"   🌵 {enemy.Name} is surrounded by thorns! ({thornsEffect.ReflectDamage} damage reflection for {thornsEffect.Duration} turns)", ConsoleColor.Yellow);
-                    }
+                    // Apply Thorns to enemy using new status effect system
+                    enemy.ApplyThorns(thornsEffect.Duration, thornsEffect.ReflectDamage);
+                    UIHelper.PrintColoredLine($"   🌵 {enemy.Name} is surrounded by thorns! ({thornsEffect.ReflectDamage} damage reflection for {thornsEffect.Duration} turns)", ConsoleColor.Yellow);
                 }
 
                 Thread.Sleep(500);
@@ -447,8 +409,7 @@ namespace TestRPGGame.Combat
         {
             Console.Clear();
 
-            // Initialize boss status effects
-            boss.EnsureStatusEffects();
+            // Boss status effects are automatically initialized via StatusEffectManager
 
             string bossTitle = isMiniboss ? "MINIBOSS" : "FINAL BOSS";
             UIHelper.PrintColoredLine($"\n╔══════════════════════════════════════════╗", ConsoleColor.Red);
@@ -479,7 +440,6 @@ namespace TestRPGGame.Combat
         public bool StartBattle(Player player, Enemy enemy, bool canFlee = true)
         {
             Console.Clear();
-            activeBuffs.Clear();
             playerDodgeNext = false;
             enemyStunNext = false;
             player.ResetForNewBattle();
@@ -551,18 +511,10 @@ namespace TestRPGGame.Combat
                 player.Effects.DisplayAllEffects("Player");
             }
 
-            // Legacy display (keep during migration)
-            List<string> legacyPlayerEffects = new List<string>();
-            if (activeBuffs.ContainsKey("Battle Rage"))
-                legacyPlayerEffects.Add($"⚡ Battle Rage ({activeBuffs["Battle Rage"]} turns)");
-            if (activeBuffs.ContainsKey("Shield Wall"))
-                legacyPlayerEffects.Add($"🛡️  Shield Wall ({activeBuffs["Shield Wall"]} turns)");
+            // Display Dodge Ready separately (not part of status effects system)
             if (playerDodgeNext)
-                legacyPlayerEffects.Add($"💨 Dodge Ready");
-            if (legacyPlayerEffects.Count > 0)
             {
-                Console.Write("   [Legacy Effects]: ");
-                UIHelper.PrintColoredLine(string.Join(", ", legacyPlayerEffects), ConsoleColor.DarkGray);
+                UIHelper.PrintColoredLine("   💨 Dodge Ready", ConsoleColor.Cyan);
             }
 
             Console.WriteLine();
@@ -716,11 +668,9 @@ namespace TestRPGGame.Combat
         {
             int damage = player.GetTotalAttack();
 
-            // Apply attack buff
-            if (activeBuffs.ContainsKey("Battle Rage"))
-            {
-                damage = (int)(damage * 1.5);
-            }
+            // Apply damage multiplier from status effects (Battle Rage, etc.)
+            double damageMultiplier = player.Effects.GetTotalDamageMultiplier();
+            damage = (int)(damage * damageMultiplier);
 
             // Critical hit chance
             bool isCrit = random.NextDouble() < player.CritChance;
@@ -780,7 +730,8 @@ namespace TestRPGGame.Combat
                 }
             }
 
-            enemy.CurrentHP -= actualDamage;
+            // Apply damage to enemy using unified method (handles defense, shields, thorns)
+            enemy.ApplyDamage(actualDamage, applyShieldAbsorption: true, attacker: player);
 
             Console.WriteLine();
 
@@ -824,17 +775,13 @@ namespace TestRPGGame.Combat
             }
             if (chainLightningProc)
             {
-                enemy.CurrentHP -= chainLightningDmg;
+                enemy.ApplyDamage(chainLightningDmg, applyShieldAbsorption: true, attacker: player);
                 UIHelper.PrintColoredLine($"   ⚡ CHAIN LIGHTNING! Deals {chainLightningDmg} bonus damage!", ConsoleColor.Yellow);
             }
             if (bleedProc)
             {
-                // Apply bleed via enemy's status effects
-                if (enemy.StatusEffects != null)
-                {
-                    enemy.StatusEffects.BleedAmount = bleedDmg;
-                    enemy.StatusEffects.BleedTurns = 3; // Bleed lasts 3 turns
-                }
+                // Apply bleed using new status effect system
+                enemy.ApplyBleed(player, 3, bleedDmg);
                 UIHelper.PrintColoredLine($"   🩸 BLEED! {enemy.Name} is bleeding {bleedDmg} damage per turn!", ConsoleColor.DarkRed);
             }
             if (stunProc)
@@ -843,12 +790,7 @@ namespace TestRPGGame.Combat
                 UIHelper.PrintColoredLine($"   ⚡ STUNNED! {enemy.Name} loses their next turn!", ConsoleColor.Yellow);
             }
 
-            // Check if enemy has Thorns active and reflect damage to player
-            if (enemy.StatusEffects != null && enemy.StatusEffects.ThornsValue > 0)
-            {
-                player.CurrentHP -= enemy.StatusEffects.ThornsValue;
-                UIHelper.PrintColoredLine($"   🌵 THORNS! You take {enemy.StatusEffects.ThornsValue} reflected damage!", ConsoleColor.Yellow);
-            }
+            // Thorns damage is now handled automatically by the new status effect system via ProcessTakeDamage hook
         }
 
         private void UseAbility(Player player, Enemy enemy, bool canFlee)
@@ -919,7 +861,6 @@ namespace TestRPGGame.Combat
             // Create ability context
             var context = new AbilityContext(player, enemy)
             {
-                ActiveBuffs = activeBuffs,
                 PlayerDodgeNext = playerDodgeNext,
                 Random = random,
                 IsPlayerAbility = true
@@ -939,183 +880,20 @@ namespace TestRPGGame.Combat
             }
         }
 
-        private void EnemyTurn(Player player, Enemy enemy)
-        {
-            UIHelper.PrintColoredLine($"\n{enemy.Name}'s TURN:", ConsoleColor.Red);
-            Thread.Sleep(800);
-
-            // Apply status effects at start of enemy turn
-            if (enemy.StatusEffects != null)
-            {
-                enemy.StatusEffects.ApplyEnemyTurnEffects(enemy, player);
-                Thread.Sleep(500);
-            }
-
-            // Reduce cooldowns on all enemy abilities
-            foreach (var enemyAbility in enemy.Abilities)
-            {
-                enemyAbility.ReduceCooldown();
-            }
-
-            // Check for phase transition and show phase message
-            if (enemy.AI != null)
-            {
-                string? phaseMessage = enemy.AI.GetCurrentPhaseMessage(enemy.Name);
-                if (!string.IsNullOrEmpty(phaseMessage))
-                {
-                    UIHelper.PrintColoredLine($"\n⚡ {phaseMessage}", ConsoleColor.Magenta);
-                    Thread.Sleep(1000);
-                }
-            }
-
-            // Use AI to select ability if available, otherwise fall back to simple logic
-            EnemyAbility? selectedAbility = null;
-            if (enemy.AI != null)
-            {
-                selectedAbility = enemy.AI.SelectAbility(enemy, player, activeBuffs);
-            }
-            else
-            {
-                // Fallback: simple iteration through abilities (old behavior)
-                foreach (var enemyAbility in enemy.Abilities)
-                {
-                    if (enemyAbility.CanUse(enemy.CurrentHP, enemy.MaxHP))
-                    {
-                        selectedAbility = enemyAbility;
-                        break;
-                    }
-                }
-            }
-
-            // Execute selected ability
-            bool usedAbility = false;
-            if (selectedAbility != null)
-            {
-                var enemyAbility = selectedAbility;
-                enemyAbility.Use();
-
-                // Execute ability effects
-                UIHelper.PrintColored($"💢 {enemy.Name} uses ", ConsoleColor.Red);
-                UIHelper.PrintColored($"{enemyAbility.Ability.Name}", ConsoleColor.Yellow);
-                UIHelper.PrintColoredLine($"!", ConsoleColor.Red);
-                UIHelper.PrintColoredLine($"   {enemyAbility.Ability.Description}", ConsoleColor.Gray);
-                Thread.Sleep(600);
-
-                if (playerDodgeNext)
-                {
-                    UIHelper.PrintColoredLine($"💨 You dodged {enemy.Name}'s {enemyAbility.Ability.Name}!", ConsoleColor.Cyan);
-                    playerDodgeNext = false;
-                }
-                else
-                {
-                    // Execute each effect manually (simplified for enemy abilities)
-                    foreach (var effect in enemyAbility.Ability.Effects)
-                    {
-                        if (effect is DamageEffect damageEffect)
-                        {
-                            // Calculate damage based on enemy attack
-                            int baseDamage = (int)(enemy.Attack * damageEffect.Multiplier);
-                            int actualDamage = ApplyDamageToPlayer(player, enemy, baseDamage);
-                            UIHelper.PrintColoredLine($"   💥 {actualDamage} damage dealt!", ConsoleColor.Red);
-                        }
-                        else if (effect is PoisonEffect poisonEffect)
-                        {
-                            // Enemy applies burning/DOT to player via StatusEffects
-                            if (enemy.StatusEffects != null)
-                            {
-                                enemy.StatusEffects.DamageOverTimeAmount = poisonEffect.DamagePerTurn;
-                                enemy.StatusEffects.DamageOverTimeTurns = poisonEffect.Duration;
-                                UIHelper.PrintColoredLine($"   🔥 You are burning! ({poisonEffect.DamagePerTurn} damage/turn for {poisonEffect.Duration} turns)", ConsoleColor.Red);
-                            }
-                        }
-                        else if (effect is RestoreEffect restoreEffect)
-                        {
-                            // Enemy heals itself
-                            int healAmount = Math.Min(restoreEffect.Amount, enemy.MaxHP - enemy.CurrentHP);
-                            enemy.CurrentHP += healAmount;
-                            UIHelper.PrintColoredLine($"   💚 {enemy.Name} heals for {healAmount} HP!", ConsoleColor.Green);
-
-                            // Notify AI that enemy used a heal ability
-                            if (enemy.AI != null)
-                            {
-                                enemy.AI.RecordHealUsed();
-                            }
-                        }
-                        else if (effect is HealOverTimeEffect hotEffect)
-                        {
-                            // Apply heal over time to enemy
-                            if (enemy.StatusEffects != null)
-                            {
-                                enemy.StatusEffects.HealOverTimeAmount = hotEffect.HealPerTurn;
-                                enemy.StatusEffects.HealOverTimeTurns = hotEffect.Duration;
-                                UIHelper.PrintColoredLine($"   💚 {enemy.Name} begins regenerating! ({hotEffect.HealPerTurn} HP/turn for {hotEffect.Duration} turns)", ConsoleColor.Green);
-                            }
-                        }
-                        else if (effect is StatModEffect statModEffect)
-                        {
-                            // Reduce player's speed temporarily (simplified - just show message for now)
-                            UIHelper.PrintColoredLine($"   🔻 Your combat effectiveness is reduced!", ConsoleColor.Magenta);
-                        }
-                        else if (effect is BuffEffect buffEffect)
-                        {
-                            // Enemy buffs are simplified for now - just show message
-                            UIHelper.PrintColoredLine($"   ⚡ {enemy.Name} is empowered by {buffEffect.BuffName}!", ConsoleColor.Yellow);
-                        }
-                        else if (effect is ThornsEffect thornsEffect)
-                        {
-                            // Apply Thorns to enemy
-                            if (enemy.StatusEffects != null)
-                            {
-                                enemy.StatusEffects.ThornsValue = thornsEffect.ReflectDamage;
-                                enemy.StatusEffects.ThornsTurns = thornsEffect.Duration;
-                                UIHelper.PrintColoredLine($"   🌵 {enemy.Name} is surrounded by thorns! ({thornsEffect.ReflectDamage} damage reflection for {thornsEffect.Duration} turns)", ConsoleColor.Yellow);
-                            }
-                        }
-
-                        Thread.Sleep(500);
-                    }
-                }
-
-                usedAbility = true;
-            }
-
-            if (!usedAbility)
-            {
-                if (playerDodgeNext)
-                {
-                    UIHelper.PrintColoredLine($"💨 You dodged {enemy.Name}'s attack!", ConsoleColor.Cyan);
-                    playerDodgeNext = false;
-                }
-                else
-                {
-                    int actualDamage = ApplyDamageToPlayer(player, enemy, enemy.Attack);
-                    UIHelper.PrintColoredLine($"⚔️  {enemy.Name} attacks! {actualDamage} damage!", ConsoleColor.Red);
-                }
-            }
-
-            // Notify AI of turn end (for memory and tracking)
-            if (enemy.AI != null)
-            {
-                enemy.AI.OnTurnEnd();
-            }
-
-            Thread.Sleep(1000);
-        }
-
         private int ApplyDamageToPlayer(Player player, Enemy enemy, int baseDamage)
         {
             int damage = baseDamage;
 
-            // Apply shield wall
-            if (activeBuffs.ContainsKey("Shield Wall"))
+            // Apply Shield Wall damage reduction from status effects
+            if (player.Effects.HasEffect("shield_wall"))
             {
                 damage = damage / 2;
             }
 
-            int actualDamage = Math.Max(1, damage - player.GetTotalDefense());
-            player.CurrentHP -= actualDamage;
+            // Use unified damage application (handles defense, shields, status effect thorns)
+            int actualDamage = player.ApplyDamage(damage, applyShieldAbsorption: true, attacker: enemy);
 
-            // Check for Thorns effect
+            // Check for equipment-based Thorns effect
             var specialEffects = player.Inventory.GetAllSpecialEffects();
             foreach (var effect in specialEffects)
             {
@@ -1123,7 +901,7 @@ namespace TestRPGGame.Combat
                 {
                     // Apply reflected damage to enemy
                     enemy.CurrentHP -= effect.Value;
-                    UIHelper.PrintColoredLine($"   🌵 THORNS! Enemy takes {effect.Value} reflected damage!", ConsoleColor.Yellow);
+                    UIHelper.PrintColoredLine($"   🌵 THORNS (Equipment)! Enemy takes {effect.Value} reflected damage!", ConsoleColor.Yellow);
                 }
             }
 

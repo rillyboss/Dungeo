@@ -307,8 +307,7 @@ namespace TestRPGGame.Entities.Player
                 ability.CurrentCooldown = 0;
             }
 
-            // Reset status effects for new battle (both old and new systems during migration)
-            StatusEffects = new CombatStatusEffects();
+            // Reset status effects for new battle
             Effects.ClearAll();
         }
     }

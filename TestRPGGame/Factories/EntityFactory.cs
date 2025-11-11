@@ -6,6 +6,7 @@ using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Entities.Dungeon;
 using TestRPGGame.Abilities;
 using TestRPGGame.Abilities.Effects;
+using TestRPGGame.Abilities.Applicators;
 using TestRPGGame.Combat;
 using TestRPGGame.Equipment;
 
@@ -58,16 +59,16 @@ namespace TestRPGGame.Factories
             return data.Type.ToLower() switch
             {
                 "damage" => new DamageEffect(data.Multiplier, usesMagic: data.Type == "Magic", guaranteedCrit: data.GuaranteedCrit),
-                "buff" => new BuffEffect(data.BuffName ?? "Unknown Buff", data.Duration),
+                "buff" => new BuffApplicator(data.BuffName ?? "Unknown Buff", data.Duration),
                 "restore" => new RestoreEffect(data.Value, isMana: data.Value > 0),
                 "statmod" => new StatModEffect("speed", data.Value),
                 "dodge" => new DodgeEffect(),
                 "poison" => new PoisonEffect(data.DamagePerTurn, data.Duration, data.Value),
                 "damageovertime" => new PoisonEffect(data.Value, data.Duration, data.Value), // Burning/DOT effect
-                "healovertime" => new HealOverTimeEffect(data.Value, data.Duration),
-                "stun" => new StunEffect(data.Duration),
-                "thorns" => new ThornsEffect(data.Value, data.Duration),
-                "shield" => new ShieldEffect(data.Value, data.Duration),
+                "healovertime" => new RegenerationApplicator(data.Value, data.Duration),
+                "stun" => new StunApplicator(data.Duration),
+                "thorns" => new ThornsApplicator(data.Value, data.Duration),
+                "shield" => new ShieldApplicator(data.Value, data.Duration),
                 "lifesteal" => new LifeStealEffect(data.Multiplier, data.Value),
                 _ => null
             };
