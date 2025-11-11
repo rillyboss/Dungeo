@@ -31,17 +31,8 @@ namespace TestRPGGame
 
             // Check command line arguments for interface selection
             bool useAutomated = args.Contains("--automated") || args.Contains("-a");
-            bool useOldGame = args.Contains("--old") || args.Contains("-o");
 
-            if (useOldGame)
-            {
-                // Run original game (DEPRECATED - for backwards compatibility only)
-                Console.WriteLine("⚠️  Starting LEGACY game (deprecated)...");
-                Console.WriteLine("   Use 'dotnet run' without --old flag for the new architecture\n");
-                Game game = new Game();
-                game.Start();
-            }
-            else if (useAutomated)
+            if (useAutomated)
             {
                 // Run with automated AI interface (for testing/analysis)
                 Console.WriteLine("Starting game with AUTOMATED interface...\n");
