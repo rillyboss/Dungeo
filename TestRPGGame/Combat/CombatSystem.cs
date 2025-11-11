@@ -25,15 +25,7 @@ namespace TestRPGGame.Combat
         /// </summary>
         private int GetPlayerEffectiveSpeed(Player player)
         {
-            int speed = player.Speed;
-
-            // Add speed buff if active
-            if (player.StatusEffects != null && player.StatusEffects.SpeedBuffTurns > 0)
-            {
-                speed += player.StatusEffects.SpeedBuffValue;
-            }
-
-            return speed;
+            return player.Speed + player.Effects.GetSpeedModifier();
         }
 
         /// <summary>
@@ -41,15 +33,7 @@ namespace TestRPGGame.Combat
         /// </summary>
         private int GetEnemyEffectiveSpeed(Enemy enemy)
         {
-            int speed = enemy.Speed;
-
-            // Add speed buff if active
-            if (enemy.StatusEffects != null && enemy.StatusEffects.SpeedBuffTurns > 0)
-            {
-                speed += enemy.StatusEffects.SpeedBuffValue;
-            }
-
-            return speed;
+            return enemy.Speed + enemy.Effects.GetSpeedModifier();
         }
 
         /// <summary>
@@ -222,12 +206,15 @@ namespace TestRPGGame.Combat
         /// </summary>
         private void ExecutePlayerAction(Player player, Enemy enemy)
         {
-            // Apply player status effects at start of their action
+            // Apply status effects at start of player's turn (new system)
+            player.Effects.ProcessTurnStart();
+
+            // Also apply old system effects during migration
             if (player.StatusEffects != null)
             {
                 player.StatusEffects.ApplyPlayerTurnEffects(player, enemy);
-                Thread.Sleep(500);
             }
+            Thread.Sleep(500);
 
             if (queuedPlayerAbility != null)
             {
@@ -256,12 +243,15 @@ namespace TestRPGGame.Combat
             UIHelper.PrintColoredLine($"\n{enemy.Name}'s TURN:", ConsoleColor.Red);
             Thread.Sleep(800);
 
-            // Apply enemy status effects at start of their action
+            // Apply status effects at start of enemy's turn (new system)
+            enemy.Effects.ProcessTurnStart();
+
+            // Also apply old system effects during migration
             if (enemy.StatusEffects != null)
             {
                 enemy.StatusEffects.ApplyEnemyTurnEffects(enemy, player);
-                Thread.Sleep(500);
             }
+            Thread.Sleep(500);
 
             // Check for phase transition and show phase message
             if (enemy.AI != null)
@@ -555,36 +545,24 @@ namespace TestRPGGame.Combat
             Console.Write("   ");
             DrawManaBar(player.CurrentMana, player.MaxMana, ConsoleColor.Blue);
 
-            // Display player status effects
-            List<string> playerEffects = new List<string>();
-            if (player.StatusEffects != null)
+            // Display player status effects using new system
+            if (player.Effects.ActiveEffects.Count > 0)
             {
-                // Status effects from Player.StatusEffects
-                if (player.StatusEffects.DamageOverTimeTurns > 0)
-                    playerEffects.Add($"🔥 Burning ({player.StatusEffects.DamageOverTimeAmount} dmg/turn, {player.StatusEffects.DamageOverTimeTurns} turns)");
-                if (player.StatusEffects.BleedTurns > 0)
-                    playerEffects.Add($"🩸 Bleeding ({player.StatusEffects.BleedAmount} dmg/turn, {player.StatusEffects.BleedTurns} turns)");
-                if (player.StatusEffects.HealOverTimeTurns > 0)
-                    playerEffects.Add($"💚 Regenerating ({player.StatusEffects.HealOverTimeAmount} HP/turn, {player.StatusEffects.HealOverTimeTurns} turns)");
-                if (player.StatusEffects.SpeedBuffTurns > 0)
-                    playerEffects.Add($"⚡ Speed Boost (+{player.StatusEffects.SpeedBuffValue}, {player.StatusEffects.SpeedBuffTurns} turns)");
-                if (player.StatusEffects.ShieldValue > 0)
-                    playerEffects.Add($"🛡️  Shield ({player.StatusEffects.ShieldValue} HP, {player.StatusEffects.ShieldTurns} turns)");
-                if (player.StatusEffects.ThornsValue > 0)
-                    playerEffects.Add($"🌵 Thorns ({player.StatusEffects.ThornsValue} dmg reflect, {player.StatusEffects.ThornsTurns} turns)");
+                player.Effects.DisplayAllEffects("Player");
             }
-            // Legacy activeBuffs (Battle Rage, Shield Wall, etc.)
-            if (activeBuffs.ContainsKey("Battle Rage"))
-                playerEffects.Add($"⚡ Battle Rage ({activeBuffs["Battle Rage"]} turns)");
-            if (activeBuffs.ContainsKey("Shield Wall"))
-                playerEffects.Add($"🛡️  Shield Wall ({activeBuffs["Shield Wall"]} turns)");
-            if (playerDodgeNext)
-                playerEffects.Add($"💨 Dodge Ready");
 
-            if (playerEffects.Count > 0)
+            // Legacy display (keep during migration)
+            List<string> legacyPlayerEffects = new List<string>();
+            if (activeBuffs.ContainsKey("Battle Rage"))
+                legacyPlayerEffects.Add($"⚡ Battle Rage ({activeBuffs["Battle Rage"]} turns)");
+            if (activeBuffs.ContainsKey("Shield Wall"))
+                legacyPlayerEffects.Add($"🛡️  Shield Wall ({activeBuffs["Shield Wall"]} turns)");
+            if (playerDodgeNext)
+                legacyPlayerEffects.Add($"💨 Dodge Ready");
+            if (legacyPlayerEffects.Count > 0)
             {
-                Console.Write("   Effects: ");
-                UIHelper.PrintColoredLine(string.Join(", ", playerEffects), ConsoleColor.Gray);
+                Console.Write("   [Legacy Effects]: ");
+                UIHelper.PrintColoredLine(string.Join(", ", legacyPlayerEffects), ConsoleColor.DarkGray);
             }
 
             Console.WriteLine();
@@ -594,32 +572,17 @@ namespace TestRPGGame.Combat
             Console.Write("   ");
             DrawHealthBar(enemy.CurrentHP, enemy.MaxHP, ConsoleColor.Red);
 
-            // Display enemy status effects
-            List<string> enemyEffects = new List<string>();
-            if (enemy.StatusEffects != null)
+            // Display enemy status effects using new system
+            if (enemy.Effects.ActiveEffects.Count > 0 || enemyStunNext)
             {
-                if (enemy.StatusEffects.HealOverTimeTurns > 0)
-                    enemyEffects.Add($"💚 Regenerating ({enemy.StatusEffects.HealOverTimeAmount} HP/turn, {enemy.StatusEffects.HealOverTimeTurns} turns)");
-                if (enemy.StatusEffects.DamageOverTimeTurns > 0)
-                    enemyEffects.Add($"🔥 Burning ({enemy.StatusEffects.DamageOverTimeAmount} dmg/turn, {enemy.StatusEffects.DamageOverTimeTurns} turns)");
-                if (enemy.StatusEffects.BleedTurns > 0)
-                    enemyEffects.Add($"🩸 Bleeding ({enemy.StatusEffects.BleedAmount} dmg/turn, {enemy.StatusEffects.BleedTurns} turns)");
-                if (enemy.StatusEffects.ShieldValue > 0)
-                    enemyEffects.Add($"🛡️  Shield ({enemy.StatusEffects.ShieldValue} HP, {enemy.StatusEffects.ShieldTurns} turns)");
-                if (enemy.StatusEffects.ThornsValue > 0)
-                    enemyEffects.Add($"🌵 Thorns ({enemy.StatusEffects.ThornsValue} dmg reflect, {enemy.StatusEffects.ThornsTurns} turns)");
-                if (enemy.StatusEffects.SpeedBuffTurns > 0)
-                    enemyEffects.Add($"⚡ Speed Boost (+{enemy.StatusEffects.SpeedBuffValue}, {enemy.StatusEffects.SpeedBuffTurns} turns)");
-                if (enemy.StatusEffects.IsEnraged)
-                    enemyEffects.Add($"😤 Enraged ({enemy.StatusEffects.EnrageDamageMultiplier}x dmg, {enemy.StatusEffects.EnrageTurns} turns)");
-                if (enemyStunNext)
-                    enemyEffects.Add($"⚡ Stunned (next turn)");
+                enemy.Effects.DisplayAllEffects("Enemy");
             }
 
-            if (enemyEffects.Count > 0)
+            // Show stun status (legacy)
+            if (enemyStunNext)
             {
-                Console.Write("   Effects: ");
-                UIHelper.PrintColoredLine(string.Join(", ", enemyEffects), ConsoleColor.Gray);
+                Console.Write("   [Legacy]: ");
+                UIHelper.PrintColoredLine("⚡ Stunned (next turn)", ConsoleColor.DarkGray);
             }
 
             Console.WriteLine("\n" + new string('═', 60) + "\n");
