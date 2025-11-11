@@ -430,7 +430,189 @@ namespace TestRPGGame.Interfaces
 
         public ShopAction RequestShopAction(List<ShopItemInfo> forSale, List<EquipmentItem> inventory, int playerGold)
         {
-            // For now, just exit shop - full shop UI would be implemented here
+            Console.Clear();
+            AsciiArt.DrawShop();
+            Console.WriteLine();
+            UIHelper.PrintColoredLine($"💰 Your Gold: {playerGold}\n", ConsoleColor.Yellow);
+
+            UIHelper.PrintColoredLine("1. 🛒 Buy Items", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine("2. 💵 Sell Items", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine("3. 🔄 Refresh Shop (costs 50 gold)", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine("4. 🧪 Buy Potions (50 gold each)", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine("5. 🚪 Leave Shop", ConsoleColor.Gray);
+
+            Console.Write("\nWhat would you like to do? ");
+            string choice = Console.ReadLine() ?? "";
+
+            switch (choice)
+            {
+                case "1":
+                    return RequestBuyItem(forSale, playerGold);
+                case "2":
+                    return RequestSellItem(inventory);
+                case "3":
+                    return new ShopAction { ActionType = ShopActionType.RefreshShop };
+                case "4":
+                    return RequestBuyPotions(playerGold);
+                case "5":
+                    return new ShopAction { ActionType = ShopActionType.Exit };
+                default:
+                    UIHelper.PrintColoredLine("\n❌ Invalid choice!", ConsoleColor.Red);
+                    Thread.Sleep(1000);
+                    return RequestShopAction(forSale, inventory, playerGold); // Recurse
+            }
+        }
+
+        private ShopAction RequestBuyItem(List<ShopItemInfo> forSale, int playerGold)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("═══════════════ SHOP INVENTORY ═══════════════\n", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine($"💰 Your Gold: {playerGold}\n", ConsoleColor.Yellow);
+
+            if (forSale.Count == 0)
+            {
+                Console.WriteLine("Shop is empty! Try refreshing.\n");
+                Console.WriteLine("Press any key to go back...");
+                Console.ReadKey(true);
+                return new ShopAction { ActionType = ShopActionType.Exit };
+            }
+
+            for (int i = 0; i < forSale.Count; i++)
+            {
+                var item = forSale[i].Item;
+                if (item != null)
+                {
+                    Console.Write($"  {i + 1}. ");
+                    UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                    Console.Write($" ({item.Slot.GetDisplayName()})");
+                    Console.WriteLine($" (Lv {item.Level}) - {item.Price} gold");
+
+                    Console.Write("     ");
+                    if (item.AttackBonus > 0) Console.Write($"⚔️ +{item.AttackBonus} ");
+                    if (item.DefenseBonus > 0) Console.Write($"🛡️ +{item.DefenseBonus} ");
+                    if (item.MagicBonus > 0) Console.Write($"🔮 +{item.MagicBonus} ");
+                    if (item.HPBonus > 0) Console.Write($"❤️ +{item.HPBonus} ");
+                    if (item.SpecialEffects.Count > 0) Console.Write($"✨ x{item.SpecialEffects.Count} ");
+                    Console.WriteLine();
+                }
+            }
+
+            Console.WriteLine("\n0. Back");
+            Console.Write("\nSelect item to buy (or 'v' + number to view details): ");
+            string input = Console.ReadLine() ?? "";
+
+            if (input == "0")
+            {
+                return new ShopAction { ActionType = ShopActionType.Exit };
+            }
+            else if (input.StartsWith("v") && int.TryParse(input.Substring(1), out int viewIndex) &&
+                     viewIndex > 0 && viewIndex <= forSale.Count && forSale[viewIndex - 1].Item != null)
+            {
+                Console.Clear();
+                Console.WriteLine();
+                forSale[viewIndex - 1].Item!.DisplayDetails();
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey(true);
+                return RequestBuyItem(forSale, playerGold); // Recurse
+            }
+            else if (int.TryParse(input, out int buyIndex) && buyIndex > 0 && buyIndex <= forSale.Count)
+            {
+                return new ShopAction
+                {
+                    ActionType = ShopActionType.BuyItem,
+                    ItemIndex = buyIndex - 1
+                };
+            }
+
+            return new ShopAction { ActionType = ShopActionType.Exit };
+        }
+
+        private ShopAction RequestSellItem(List<EquipmentItem> inventory)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("═══════════════ SELL ITEMS ═══════════════\n", ConsoleColor.Cyan);
+
+            if (inventory.Count == 0)
+            {
+                Console.WriteLine("Your backpack is empty!\n");
+                Console.WriteLine("Press any key to go back...");
+                Console.ReadKey(true);
+                return new ShopAction { ActionType = ShopActionType.Exit };
+            }
+
+            UIHelper.PrintColoredLine("╔═══ BACKPACK ═══╗\n", ConsoleColor.Cyan);
+            for (int i = 0; i < inventory.Count; i++)
+            {
+                var item = inventory[i];
+                int sellPrice = (int)(item.Price * 0.6);
+
+                Console.Write($"  {i + 1}. ");
+                UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                Console.WriteLine($" - Sell for {sellPrice} gold");
+            }
+
+            Console.WriteLine("\n0. Back");
+            Console.Write("\nSelect item to sell (or 'v' + number to view details): ");
+            string input = Console.ReadLine() ?? "";
+
+            if (input == "0")
+            {
+                return new ShopAction { ActionType = ShopActionType.Exit };
+            }
+            else if (input.StartsWith("v") && int.TryParse(input.Substring(1), out int viewIndex) &&
+                     viewIndex > 0 && viewIndex <= inventory.Count)
+            {
+                Console.Clear();
+                Console.WriteLine();
+                inventory[viewIndex - 1].DisplayDetails();
+                Console.WriteLine("\nPress any key to continue...");
+                Console.ReadKey(true);
+                return RequestSellItem(inventory); // Recurse
+            }
+            else if (int.TryParse(input, out int sellIndex) && sellIndex > 0 && sellIndex <= inventory.Count)
+            {
+                var item = inventory[sellIndex - 1];
+                int sellPrice = (int)(item.Price * 0.6);
+
+                Console.Write($"\nSell ");
+                UIHelper.PrintColored($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                Console.Write($" for {sellPrice} gold? (y/n): ");
+
+                string confirm = Console.ReadLine() ?? "";
+                if (confirm.ToLower() == "y")
+                {
+                    return new ShopAction
+                    {
+                        ActionType = ShopActionType.SellItem,
+                        ItemIndex = sellIndex - 1
+                    };
+                }
+            }
+
+            return new ShopAction { ActionType = ShopActionType.Exit };
+        }
+
+        private ShopAction RequestBuyPotions(int playerGold)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("═══════════════ POTIONS ═══════════════\n", ConsoleColor.Cyan);
+
+            Console.WriteLine($"🧪 Health Potion - Restores 50% HP");
+            UIHelper.PrintColoredLine($"💰 Price: 50 gold each", ConsoleColor.Yellow);
+            Console.WriteLine($"\nYour gold: {playerGold}");
+
+            Console.Write("\nHow many potions? (0 to cancel): ");
+            string input = Console.ReadLine() ?? "";
+
+            if (int.TryParse(input, out int amount) && amount > 0)
+            {
+                return new ShopAction
+                {
+                    ActionType = ShopActionType.BuyPotion,
+                    Quantity = amount
+                };
+            }
+
             return new ShopAction { ActionType = ShopActionType.Exit };
         }
 

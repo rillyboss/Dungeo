@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Threading;
+using System.Linq;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Equipment;
-using TestRPGGame.Abilities;
-using TestRPGGame.UI;
 using TestRPGGame.Interfaces;
-
 
 namespace TestRPGGame.Systems
 {
@@ -23,59 +20,61 @@ namespace TestRPGGame.Systems
             shopInventory = new List<EquipmentItem>();
         }
 
-        private void SendMessage(string message, ConsoleColor color = ConsoleColor.White)
-        {
-            gameInterface?.OnEvent(new GameEvents.InfoMessageEvent
-            {
-                Message = message,
-                Type = GameEvents.MessageType.Info,
-                Color = color
-            });
-        }
-
         public void Enter(Player player)
         {
             // Generate shop inventory if empty or refresh
             RefreshShopInventory(player.Level);
 
+            // Notify that shop was entered
+            gameInterface.OnEvent(new GameEvents.ShopEnteredEvent
+            {
+                AvailableItems = BuildShopItemList()
+            });
+
             bool shopping = true;
 
             while (shopping)
             {
-                Console.Clear();
-                AsciiArt.DrawShop();
-                SendMessage("");
-                SendMessage($"💰 Your Gold: {player.Gold}\n");
+                // Build shop state
+                var shopItems = BuildShopItemInfoList();
 
-                SendMessage("1. 🛒 Buy Items");
-                SendMessage("2. 💵 Sell Items");
-                SendMessage("3. 🔄 Refresh Shop (costs 50 gold)");
-                SendMessage("4. 🧪 Buy Potions (50 gold each)");
-                SendMessage("5. 🚪 Leave Shop");
+                // REQUEST decision from interface
+                var action = gameInterface.RequestShopAction(
+                    forSale: shopItems,
+                    inventory: player.Inventory.BackpackItems,
+                    playerGold: player.Gold
+                );
 
-                Console.Write("\nWhat would you like to do? ");
-                string choice = Console.ReadLine() ?? "";
-
-                switch (choice)
+                // EXECUTE business logic based on action
+                switch (action.ActionType)
                 {
-                    case "1":
-                        BuyItems(player);
+                    case ShopActionType.BuyItem:
+                        if (action.ItemIndex.HasValue)
+                        {
+                            ProcessPurchase(player, action.ItemIndex.Value);
+                        }
                         break;
-                    case "2":
-                        SellItems(player);
+
+                    case ShopActionType.SellItem:
+                        if (action.ItemIndex.HasValue)
+                        {
+                            ProcessSale(player, action.ItemIndex.Value);
+                        }
                         break;
-                    case "3":
-                        RefreshShop(player);
+
+                    case ShopActionType.RefreshShop:
+                        ProcessRefresh(player);
                         break;
-                    case "4":
-                        BuyPotions(player);
+
+                    case ShopActionType.BuyPotion:
+                        if (action.Quantity.HasValue)
+                        {
+                            ProcessPotionPurchase(player, action.Quantity.Value);
+                        }
                         break;
-                    case "5":
+
+                    case ShopActionType.Exit:
                         shopping = false;
-                        break;
-                    default:
-                        SendMessage("\n❌ Invalid choice!");
-                        Thread.Sleep(1000);
                         break;
                 }
             }
@@ -90,209 +89,161 @@ namespace TestRPGGame.Systems
 
             for (int i = 0; i < itemCount; i++)
             {
-                // Items can be slightly above or below player level
                 EquipmentItem item = EquipmentGenerator.GenerateItem(playerLevel);
                 shopInventory.Add(item);
             }
         }
 
-        private void RefreshShop(Player player)
+        private List<ShopItemInfo> BuildShopItemInfoList()
         {
-            if (player.Gold >= 50)
+            return shopInventory.Select((item, index) => new ShopItemInfo
             {
-                player.Gold -= 50;
-                RefreshShopInventory(player.Level);
-                SendMessage("\n✅ Shop inventory refreshed!");
-                Thread.Sleep(1500);
+                Index = index,
+                Name = item.Name,
+                Type = item.Slot.GetDisplayName(),
+                Rarity = item.Rarity.ToString(),
+                Price = item.Price,
+                Level = item.Level,
+                Item = item
+            }).ToList();
+        }
+
+        private List<GameEvents.ShopItemInfo> BuildShopItemList()
+        {
+            return shopInventory.Select(item => new GameEvents.ShopItemInfo
+            {
+                Name = item.Name,
+                Type = item.Slot.GetDisplayName(),
+                Rarity = item.Rarity.ToString(),
+                Price = item.Price,
+                Level = item.Level
+            }).ToList();
+        }
+
+        private void ProcessPurchase(Player player, int itemIndex)
+        {
+            if (itemIndex < 0 || itemIndex >= shopInventory.Count)
+            {
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+                {
+                    Message = "Invalid item selection!",
+                    Type = GameEvents.MessageType.Error
+                });
+                return;
+            }
+
+            var item = shopInventory[itemIndex];
+
+            if (player.Gold >= item.Price)
+            {
+                player.Gold -= item.Price;
+                player.Inventory.BackpackItems.Add(item);
+                shopInventory.RemoveAt(itemIndex);
+
+                gameInterface.OnEvent(new GameEvents.ItemPurchasedEvent
+                {
+                    ItemName = item.Name,
+                    Price = item.Price,
+                    GoldRemaining = player.Gold
+                });
             }
             else
             {
-                SendMessage("\n❌ Not enough gold! Need 50 gold.");
-                Thread.Sleep(1500);
+                int needed = item.Price - player.Gold;
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+                {
+                    Message = $"Not enough gold! You have {player.Gold}, need {needed} more gold.",
+                    Type = GameEvents.MessageType.Error
+                });
             }
         }
 
-        private void BuyItems(Player player)
+        private void ProcessSale(Player player, int itemIndex)
         {
-            bool browsing = true;
-
-            while (browsing)
+            if (itemIndex < 0 || itemIndex >= player.Inventory.BackpackItems.Count)
             {
-                Console.Clear();
-                SendMessage("═══════════════ SHOP INVENTORY ═══════════════\n");
-                SendMessage($"💰 Your Gold: {player.Gold}\n");
-
-                if (shopInventory.Count == 0)
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
                 {
-                    SendMessage("Shop is empty! Try refreshing.\n");
-                }
-                else
+                    Message = "Invalid item selection!",
+                    Type = GameEvents.MessageType.Error
+                });
+                return;
+            }
+
+            var item = player.Inventory.BackpackItems[itemIndex];
+            int sellPrice = (int)(item.Price * 0.6); // Sell for 60% of buy price
+
+            player.Gold += sellPrice;
+            player.Inventory.BackpackItems.RemoveAt(itemIndex);
+
+            gameInterface.OnEvent(new GameEvents.ItemSoldEvent
+            {
+                ItemName = item.Name,
+                Price = sellPrice,
+                GoldRemaining = player.Gold
+            });
+        }
+
+        private void ProcessRefresh(Player player)
+        {
+            const int REFRESH_COST = 50;
+
+            if (player.Gold >= REFRESH_COST)
+            {
+                player.Gold -= REFRESH_COST;
+                RefreshShopInventory(player.Level);
+
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
                 {
-                    // Display items with their actual index
-                    for (int i = 0; i < shopInventory.Count; i++)
-                    {
-                        var item = shopInventory[i];
-                        Console.Write($"  {i + 1}. ");
-                        Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                        Console.Write($" ({item.Slot.GetDisplayName()})");
-                        SendMessage($" (Lv {item.Level}) - {item.Price} gold");
-
-                        // Show key stats
-                        Console.Write("     ");
-                        if (item.AttackBonus > 0) Console.Write($"⚔️ +{item.AttackBonus} ");
-                        if (item.DefenseBonus > 0) Console.Write($"🛡️ +{item.DefenseBonus} ");
-                        if (item.MagicBonus > 0) Console.Write($"🔮 +{item.MagicBonus} ");
-                        if (item.HPBonus > 0) Console.Write($"❤️ +{item.HPBonus} ");
-                        if (item.SpecialEffects.Count > 0) Console.Write($"✨ x{item.SpecialEffects.Count} ");
-                        SendMessage("");
-                    }
-                    SendMessage("");
-                }
-
-                SendMessage("0. Back");
-                Console.Write("\nSelect item to buy (or 'v' + number to view details): ");
-                string input = Console.ReadLine() ?? "";
-
-                if (input == "0")
+                    Message = "Shop inventory refreshed!",
+                    Type = GameEvents.MessageType.Success
+                });
+            }
+            else
+            {
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
                 {
-                    browsing = false;
-                }
-                else if (input.StartsWith("v") && int.TryParse(input.Substring(1), out int viewIndex) && viewIndex > 0 && viewIndex <= shopInventory.Count)
-                {
-                    Console.Clear();
-                    SendMessage("");
-                    shopInventory[viewIndex - 1].DisplayDetails();
-                    SendMessage("\nPress any key to continue...");
-                    Console.ReadKey(true);
-                }
-                else if (int.TryParse(input, out int buyIndex) && buyIndex > 0 && buyIndex <= shopInventory.Count)
-                {
-                    var item = shopInventory[buyIndex - 1];
-
-                    if (player.Gold >= item.Price)
-                    {
-                        player.Gold -= item.Price;
-                        player.Inventory.BackpackItems.Add(item);
-                        shopInventory.RemoveAt(buyIndex - 1);
-
-                        Console.Write($"\n✅ Purchased ");
-                        Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                        SendMessage("!");
-                        SendMessage($"Item added to your backpack. Remaining gold: {player.Gold}");
-                        Thread.Sleep(2000);
-                    }
-                    else
-                    {
-                        int needed = item.Price - player.Gold;
-                        SendMessage($"\n❌ Not enough gold! You have {player.Gold}, need {needed} more gold.");
-                        Thread.Sleep(1500);
-                    }
-                }
+                    Message = $"Not enough gold! Need {REFRESH_COST} gold.",
+                    Type = GameEvents.MessageType.Error
+                });
             }
         }
 
-        private void SellItems(Player player)
+        private void ProcessPotionPurchase(Player player, int quantity)
         {
-            bool selling = true;
+            const int POTION_PRICE = 50;
 
-            while (selling)
+            if (quantity <= 0)
             {
-                Console.Clear();
-                SendMessage("═══════════════ SELL ITEMS ═══════════════\n");
-                SendMessage($"💰 Your Gold: {player.Gold}\n");
-
-                if (player.Inventory.BackpackItems.Count == 0)
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
                 {
-                    SendMessage("Your backpack is empty!\n");
-                    SendMessage("Press any key to go back...");
-                    Console.ReadKey(true);
-                    return;
-                }
-
-                SendMessage("╔═══ BACKPACK ═══╗\n");
-                for (int i = 0; i < player.Inventory.BackpackItems.Count; i++)
-                {
-                    var item = player.Inventory.BackpackItems[i];
-                    int sellPrice = (int)(item.Price * 0.6); // Sell for 60% of buy price
-
-                    Console.Write($"  {i + 1}. ");
-                    Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                    SendMessage($" - Sell for {sellPrice} gold");
-                }
-                SendMessage("");
-
-                SendMessage("0. Back");
-                Console.Write("\nSelect item to sell (or 'v' + number to view details): ");
-                string input = Console.ReadLine() ?? "";
-
-                if (input == "0")
-                {
-                    selling = false;
-                }
-                else if (input.StartsWith("v") && int.TryParse(input.Substring(1), out int viewIndex) && viewIndex > 0 && viewIndex <= player.Inventory.BackpackItems.Count)
-                {
-                    Console.Clear();
-                    SendMessage("");
-                    player.Inventory.BackpackItems[viewIndex - 1].DisplayDetails();
-                    SendMessage("\nPress any key to continue...");
-                    Console.ReadKey(true);
-                }
-                else if (int.TryParse(input, out int sellIndex) && sellIndex > 0 && sellIndex <= player.Inventory.BackpackItems.Count)
-                {
-                    var item = player.Inventory.BackpackItems[sellIndex - 1];
-                    int sellPrice = (int)(item.Price * 0.6);
-
-                    Console.Write($"\nSell ");
-                    Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                    Console.Write($" for {sellPrice} gold? (y/n): ");
-
-                    string confirm = Console.ReadLine() ?? "";
-
-                    if (confirm.ToLower() == "y")
-                    {
-                        player.Gold += sellPrice;
-                        player.Inventory.BackpackItems.RemoveAt(sellIndex - 1);
-
-                        SendMessage($"\n✅ Sold for {sellPrice} gold!");
-                        Thread.Sleep(1500);
-                    }
-                }
-            }
-        }
-
-        private void BuyPotions(Player player)
-        {
-            Console.Clear();
-            SendMessage("═══════════════ POTIONS ═══════════════\n");
-
-            SendMessage($"🧪 Health Potion - Restores 50% HP");
-            SendMessage($"💰 Price: 50 gold each");
-            SendMessage($"\nYou currently have: {player.PotionCount} potions");
-            SendMessage($"Your gold: {player.Gold}");
-
-            Console.Write("\nHow many potions? (0 to cancel): ");
-            string input = Console.ReadLine() ?? "";
-
-            if (int.TryParse(input, out int amount) && amount > 0)
-            {
-                int totalCost = amount * 50;
-                if (player.Gold >= totalCost)
-                {
-                    player.Gold -= totalCost;
-                    player.PotionCount += amount;
-                    SendMessage($"\n✅ Purchased {amount} potion(s)!");
-                }
-                else
-                {
-                    SendMessage("\n❌ Not enough gold!");
-                }
-            }
-            else if (amount < 0)
-            {
-                SendMessage("\n❌ Invalid amount!");
+                    Message = "Invalid quantity!",
+                    Type = GameEvents.MessageType.Error
+                });
+                return;
             }
 
-            Thread.Sleep(2000);
+            int totalCost = quantity * POTION_PRICE;
+
+            if (player.Gold >= totalCost)
+            {
+                player.Gold -= totalCost;
+                player.PotionCount += quantity;
+
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+                {
+                    Message = $"Purchased {quantity} potion(s)!",
+                    Type = GameEvents.MessageType.Success
+                });
+            }
+            else
+            {
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+                {
+                    Message = "Not enough gold!",
+                    Type = GameEvents.MessageType.Error
+                });
+            }
         }
     }
 }

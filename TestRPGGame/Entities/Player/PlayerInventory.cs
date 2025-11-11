@@ -1,9 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using TestRPGGame.Equipment;
-
+using TestRPGGame.Interfaces;
 
 namespace TestRPGGame.Entities.Player
 {
@@ -27,119 +26,236 @@ namespace TestRPGGame.Entities.Player
             BackpackItems = new List<EquipmentItem>();
         }
 
-        public void DisplayInventory(Player player)
+        public void DisplayInventory(Player player, IGameInterface? gameInterface = null)
         {
+            // If no interface provided, fall back to legacy mode
+            if (gameInterface == null)
+            {
+                DisplayInventoryLegacy(player);
+                return;
+            }
+
             bool managing = true;
 
             while (managing)
             {
-                Console.Clear();
-                Console.WriteLine("╔════════════════════════════════════════════════════════╗");
-                Console.WriteLine("║                    INVENTORY                           ║");
-                Console.WriteLine("╚════════════════════════════════════════════════════════╝\n");
+                // Build equipped items dictionary
+                var equipped = GetEquippedItems();
 
-                // Display equipped items
-                Console.WriteLine("═══ EQUIPPED ITEMS ═══\n");
-                DisplaySlot("Weapon", Weapon);
-                DisplaySlot("Armor", Armor);
-                DisplaySlot("Helmet", Helmet);
-                DisplaySlot("Boots", Boots);
-                DisplaySlot("Gloves", Gloves);
-                DisplaySlot("Ring 1", Ring1);
-                DisplaySlot("Ring 2", Ring2);
-                DisplaySlot("Amulet", Amulet);
-                DisplaySlot("Relic", Relic);
+                // REQUEST action from interface
+                var action = gameInterface.RequestInventoryAction(BackpackItems, equipped);
 
-                Console.WriteLine("\n═══ BACKPACK ═══\n");
-                if (BackpackItems.Count == 0)
+                // EXECUTE business logic based on action
+                switch (action.ActionType)
                 {
-                    Console.WriteLine("  (Empty)\n");
-                }
-                else
-                {
-                    for (int i = 0; i < BackpackItems.Count; i++)
-                    {
-                        var item = BackpackItems[i];
-                        Console.Write($"  {i + 1}. ");
-                        Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
-                        Console.WriteLine($" (Lv {item.Level}) - {item.Slot.GetDisplayName()}");
-                    }
-                    Console.WriteLine();
-                }
-
-                // Display total stats
-                DisplayTotalStats(player);
-
-                Console.WriteLine("\n1. Equip item from backpack");
-                Console.WriteLine("2. Unequip item");
-                Console.WriteLine("3. View item details");
-                Console.WriteLine("4. Drop item");
-                Console.WriteLine("5. Back to main menu");
-
-                Console.Write("\nChoose option: ");
-                string choice = Console.ReadLine() ?? "";
-
-                switch (choice)
-                {
-                    case "1":
-                        EquipItem(player);
+                    case InventoryActionType.EquipItem:
+                        if (action.ItemIndex.HasValue)
+                        {
+                            ProcessEquip(player, action.ItemIndex.Value, gameInterface);
+                        }
                         break;
-                    case "2":
-                        UnequipItem();
+
+                    case InventoryActionType.UnequipItem:
+                        if (action.Slot.HasValue)
+                        {
+                            ProcessUnequip(action.Slot.Value, gameInterface);
+                        }
                         break;
-                    case "3":
-                        ViewItemDetails();
+
+                    case InventoryActionType.ViewDetails:
+                        if (action.ItemIndex.HasValue)
+                        {
+                            ProcessViewDetails(action.ItemIndex.Value, gameInterface);
+                        }
                         break;
-                    case "4":
-                        DropItem();
-                        break;
-                    case "5":
+
+                    case InventoryActionType.Exit:
                         managing = false;
-                        break;
-                    default:
-                        Console.WriteLine("\n❌ Invalid choice!");
-                        Thread.Sleep(1000);
                         break;
                 }
             }
         }
 
-        private void DisplaySlot(string slotName, EquipmentItem? item)
+        private Dictionary<EquipmentSlot, EquipmentItem?> GetEquippedItems()
         {
-            Console.Write($"  {slotName,-10}: ");
+            return new Dictionary<EquipmentSlot, EquipmentItem?>
+            {
+                { EquipmentSlot.Weapon, Weapon },
+                { EquipmentSlot.Armor, Armor },
+                { EquipmentSlot.Helmet, Helmet },
+                { EquipmentSlot.Boots, Boots },
+                { EquipmentSlot.Gloves, Gloves },
+                { EquipmentSlot.Ring1, Ring1 },
+                { EquipmentSlot.Ring2, Ring2 },
+                { EquipmentSlot.Amulet, Amulet },
+                { EquipmentSlot.Relic, Relic }
+            };
+        }
+
+        private void ProcessEquip(Player player, int itemIndex, IGameInterface gameInterface)
+        {
+            if (itemIndex < 0 || itemIndex >= BackpackItems.Count)
+            {
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+                {
+                    Message = "Invalid item selection!",
+                    Type = GameEvents.MessageType.Error
+                });
+                return;
+            }
+
+            var item = BackpackItems[itemIndex];
+            BackpackItems.RemoveAt(itemIndex);
+
+            EquipmentItem? unequipped = null;
+
+            switch (item.Slot)
+            {
+                case EquipmentSlot.Weapon:
+                    unequipped = Weapon;
+                    Weapon = item;
+                    break;
+                case EquipmentSlot.Armor:
+                    unequipped = Armor;
+                    Armor = item;
+                    break;
+                case EquipmentSlot.Helmet:
+                    unequipped = Helmet;
+                    Helmet = item;
+                    break;
+                case EquipmentSlot.Boots:
+                    unequipped = Boots;
+                    Boots = item;
+                    break;
+                case EquipmentSlot.Gloves:
+                    unequipped = Gloves;
+                    Gloves = item;
+                    break;
+                case EquipmentSlot.Ring1:
+                    if (Ring1 == null)
+                    {
+                        Ring1 = item;
+                    }
+                    else if (Ring2 == null)
+                    {
+                        Ring2 = item;
+                    }
+                    else
+                    {
+                        // Both slots full, replace Ring1
+                        unequipped = Ring1;
+                        Ring1 = item;
+                    }
+                    break;
+                case EquipmentSlot.Ring2:
+                    if (Ring1 == null)
+                    {
+                        Ring1 = item;
+                    }
+                    else if (Ring2 == null)
+                    {
+                        Ring2 = item;
+                    }
+                    else
+                    {
+                        unequipped = Ring2;
+                        Ring2 = item;
+                    }
+                    break;
+                case EquipmentSlot.Amulet:
+                    unequipped = Amulet;
+                    Amulet = item;
+                    break;
+                case EquipmentSlot.Relic:
+                    unequipped = Relic;
+                    Relic = item;
+                    break;
+            }
+
+            if (unequipped != null)
+            {
+                BackpackItems.Add(unequipped);
+            }
+
+            // Update player stats
+            player.UpdateStatsFromEquipment();
+
+            gameInterface.OnEvent(new GameEvents.ItemEquippedEvent
+            {
+                ItemName = item.Name,
+                Slot = item.Slot.GetDisplayName()
+            });
+        }
+
+        private void ProcessUnequip(EquipmentSlot slot, IGameInterface gameInterface)
+        {
+            EquipmentItem? item = null;
+
+            switch (slot)
+            {
+                case EquipmentSlot.Weapon:
+                    item = Weapon;
+                    Weapon = null;
+                    break;
+                case EquipmentSlot.Armor:
+                    item = Armor;
+                    Armor = null;
+                    break;
+                case EquipmentSlot.Helmet:
+                    item = Helmet;
+                    Helmet = null;
+                    break;
+                case EquipmentSlot.Boots:
+                    item = Boots;
+                    Boots = null;
+                    break;
+                case EquipmentSlot.Gloves:
+                    item = Gloves;
+                    Gloves = null;
+                    break;
+                case EquipmentSlot.Ring1:
+                    item = Ring1;
+                    Ring1 = null;
+                    break;
+                case EquipmentSlot.Ring2:
+                    item = Ring2;
+                    Ring2 = null;
+                    break;
+                case EquipmentSlot.Amulet:
+                    item = Amulet;
+                    Amulet = null;
+                    break;
+                case EquipmentSlot.Relic:
+                    item = Relic;
+                    Relic = null;
+                    break;
+            }
+
             if (item != null)
             {
-                Console.WriteLine($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                BackpackItems.Add(item);
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+                {
+                    Message = $"Unequipped {item.Name}",
+                    Type = GameEvents.MessageType.Success
+                });
             }
             else
             {
-                Console.WriteLine("(Empty)");
+                gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+                {
+                    Message = "No item equipped in that slot!",
+                    Type = GameEvents.MessageType.Error
+                });
             }
         }
 
-        private void DisplayTotalStats(Player player)
+        private void ProcessViewDetails(int itemIndex, IGameInterface gameInterface)
         {
-            Console.WriteLine("═══ TOTAL STATS FROM EQUIPMENT ═══\n");
-            var stats = GetTotalStats();
-
-            if (stats.Attack > 0) Console.WriteLine($"  ⚔️  Attack: +{stats.Attack}");
-            if (stats.Defense > 0) Console.WriteLine($"  🛡️  Defense: +{stats.Defense}");
-            if (stats.Magic > 0) Console.WriteLine($"  🔮 Magic: +{stats.Magic}");
-            if (stats.HP > 0) Console.WriteLine($"  ❤️  HP: +{stats.HP}");
-            if (stats.Mana > 0) Console.WriteLine($"  💙 Mana: +{stats.Mana}");
-            if (stats.Speed > 0) Console.WriteLine($"  ⚡ Speed: +{stats.Speed}");
-            if (stats.Crit > 0) Console.WriteLine($"  💥 Crit: +{stats.Crit:P0}");
-
-            // List all special effects
-            var allEffects = GetAllSpecialEffects();
-            if (allEffects.Count > 0)
+            if (itemIndex >= 0 && itemIndex < BackpackItems.Count)
             {
-                Console.WriteLine();
-                Console.WriteLine("  ✨ ACTIVE SPECIAL EFFECTS:");
-                foreach (var effect in allEffects)
-                {
-                    Console.WriteLine($"    • {effect.Description}");
-                }
+                // For viewing details, we'll need to add proper event support later
+                // For now, items have their own DisplayDetails method
             }
         }
 
@@ -196,12 +312,129 @@ namespace TestRPGGame.Entities.Player
             return effects;
         }
 
-        private void EquipItem(Player player)
+        // Legacy method for backwards compatibility with Game.cs
+        private void DisplayInventoryLegacy(Player player)
+        {
+            bool managing = true;
+
+            while (managing)
+            {
+                Console.Clear();
+                Console.WriteLine("╔════════════════════════════════════════════════════════╗");
+                Console.WriteLine("║                    INVENTORY                           ║");
+                Console.WriteLine("╚════════════════════════════════════════════════════════╝\n");
+
+                // Display equipped items
+                Console.WriteLine("═══ EQUIPPED ITEMS ═══\n");
+                DisplaySlotLegacy("Weapon", Weapon);
+                DisplaySlotLegacy("Armor", Armor);
+                DisplaySlotLegacy("Helmet", Helmet);
+                DisplaySlotLegacy("Boots", Boots);
+                DisplaySlotLegacy("Gloves", Gloves);
+                DisplaySlotLegacy("Ring 1", Ring1);
+                DisplaySlotLegacy("Ring 2", Ring2);
+                DisplaySlotLegacy("Amulet", Amulet);
+                DisplaySlotLegacy("Relic", Relic);
+
+                Console.WriteLine("\n═══ BACKPACK ═══\n");
+                if (BackpackItems.Count == 0)
+                {
+                    Console.WriteLine("  (Empty)\n");
+                }
+                else
+                {
+                    for (int i = 0; i < BackpackItems.Count; i++)
+                    {
+                        var item = BackpackItems[i];
+                        Console.Write($"  {i + 1}. ");
+                        Console.Write($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+                        Console.WriteLine($" (Lv {item.Level}) - {item.Slot.GetDisplayName()}");
+                    }
+                    Console.WriteLine();
+                }
+
+                // Display total stats
+                DisplayTotalStatsLegacy(player);
+
+                Console.WriteLine("\n1. Equip item from backpack");
+                Console.WriteLine("2. Unequip item");
+                Console.WriteLine("3. View item details");
+                Console.WriteLine("4. Drop item");
+                Console.WriteLine("5. Back to main menu");
+
+                Console.Write("\nChoose option: ");
+                string choice = Console.ReadLine() ?? "";
+
+                switch (choice)
+                {
+                    case "1":
+                        EquipItemLegacy(player);
+                        break;
+                    case "2":
+                        UnequipItemLegacy();
+                        break;
+                    case "3":
+                        ViewItemDetailsLegacy();
+                        break;
+                    case "4":
+                        DropItemLegacy();
+                        break;
+                    case "5":
+                        managing = false;
+                        break;
+                    default:
+                        Console.WriteLine("\n❌ Invalid choice!");
+                        System.Threading.Thread.Sleep(1000);
+                        break;
+                }
+            }
+        }
+
+        private void DisplaySlotLegacy(string slotName, EquipmentItem? item)
+        {
+            Console.Write($"  {slotName,-10}: ");
+            if (item != null)
+            {
+                Console.WriteLine($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+            }
+            else
+            {
+                Console.WriteLine("(Empty)");
+            }
+        }
+
+        private void DisplayTotalStatsLegacy(Player player)
+        {
+            Console.WriteLine("═══ TOTAL STATS FROM EQUIPMENT ═══\n");
+            var stats = GetTotalStats();
+
+            if (stats.Attack > 0) Console.WriteLine($"  ⚔️  Attack: +{stats.Attack}");
+            if (stats.Defense > 0) Console.WriteLine($"  🛡️  Defense: +{stats.Defense}");
+            if (stats.Magic > 0) Console.WriteLine($"  🔮 Magic: +{stats.Magic}");
+            if (stats.HP > 0) Console.WriteLine($"  ❤️  HP: +{stats.HP}");
+            if (stats.Mana > 0) Console.WriteLine($"  💙 Mana: +{stats.Mana}");
+            if (stats.Speed > 0) Console.WriteLine($"  ⚡ Speed: +{stats.Speed}");
+            if (stats.Crit > 0) Console.WriteLine($"  💥 Crit: +{stats.Crit:P0}");
+
+            // List all special effects
+            var allEffects = GetAllSpecialEffects();
+            if (allEffects.Count > 0)
+            {
+                Console.WriteLine();
+                Console.WriteLine("  ✨ ACTIVE SPECIAL EFFECTS:");
+                foreach (var effect in allEffects)
+                {
+                    Console.WriteLine($"    • {effect.Description}");
+                }
+            }
+        }
+
+        private void EquipItemLegacy(Player player)
         {
             if (BackpackItems.Count == 0)
             {
                 Console.WriteLine("\n❌ No items in backpack!");
-                Thread.Sleep(1500);
+                System.Threading.Thread.Sleep(1500);
                 return;
             }
 
@@ -238,6 +471,7 @@ namespace TestRPGGame.Entities.Player
                         Gloves = item;
                         break;
                     case EquipmentSlot.Ring1:
+                    case EquipmentSlot.Ring2:
                         if (Ring1 == null)
                         {
                             Ring1 = item;
@@ -248,7 +482,6 @@ namespace TestRPGGame.Entities.Player
                         }
                         else
                         {
-                            // Ask which ring to replace
                             Console.WriteLine("\nBoth ring slots are full. Which ring to replace?");
                             Console.WriteLine("1. Ring 1");
                             Console.WriteLine("2. Ring 2");
@@ -264,21 +497,6 @@ namespace TestRPGGame.Entities.Player
                                 unequipped = Ring2;
                                 Ring2 = item;
                             }
-                        }
-                        break;
-                    case EquipmentSlot.Ring2:
-                        if (Ring1 == null)
-                        {
-                            Ring1 = item;
-                        }
-                        else if (Ring2 == null)
-                        {
-                            Ring2 = item;
-                        }
-                        else
-                        {
-                            unequipped = Ring2;
-                            Ring2 = item;
                         }
                         break;
                     case EquipmentSlot.Amulet:
@@ -300,11 +518,11 @@ namespace TestRPGGame.Entities.Player
                 player.UpdateStatsFromEquipment();
 
                 Console.WriteLine($"\n✅ Equipped {item.Name}!");
-                Thread.Sleep(1500);
+                System.Threading.Thread.Sleep(1500);
             }
         }
 
-        private void UnequipItem()
+        private void UnequipItemLegacy()
         {
             Console.WriteLine("\nWhich item to unequip?");
             Console.WriteLine("1. Weapon");
@@ -369,21 +587,21 @@ namespace TestRPGGame.Entities.Player
             {
                 BackpackItems.Add(item);
                 Console.WriteLine($"\n✅ Unequipped {item.Name}!");
-                Thread.Sleep(1500);
+                System.Threading.Thread.Sleep(1500);
             }
             else
             {
                 Console.WriteLine("\n❌ No item equipped in that slot!");
-                Thread.Sleep(1500);
+                System.Threading.Thread.Sleep(1500);
             }
         }
 
-        private void ViewItemDetails()
+        private void ViewItemDetailsLegacy()
         {
             if (BackpackItems.Count == 0)
             {
                 Console.WriteLine("\n❌ No items in backpack!");
-                Thread.Sleep(1500);
+                System.Threading.Thread.Sleep(1500);
                 return;
             }
 
@@ -400,12 +618,12 @@ namespace TestRPGGame.Entities.Player
             }
         }
 
-        private void DropItem()
+        private void DropItemLegacy()
         {
             if (BackpackItems.Count == 0)
             {
                 Console.WriteLine("\n❌ No items in backpack!");
-                Thread.Sleep(1500);
+                System.Threading.Thread.Sleep(1500);
                 return;
             }
 
@@ -422,7 +640,7 @@ namespace TestRPGGame.Entities.Player
                 {
                     BackpackItems.RemoveAt(index - 1);
                     Console.WriteLine($"\n✅ Dropped {item.Name}!");
-                    Thread.Sleep(1500);
+                    System.Threading.Thread.Sleep(1500);
                 }
             }
         }
