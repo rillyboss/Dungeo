@@ -207,3 +207,47 @@ This was a major overhaul focusing on game balance and quality-of-life improveme
 **Files Modified**: 15+
 **Tests Passing**: 86/86 ✅
 **Net Lines Changed**: ~500+
+
+---
+
+## Historical Bug Fixes Archive
+
+### Shop Gold Calculation Bug (Fixed)
+**Date**: Early development
+**Problem**: Players with 154 gold told they couldn't afford 110 gold item
+**Cause**: Error message calculation was backwards (item.Price - player.Gold showed negative)
+**Fix**: Corrected calculation in ShopNew.cs:183
+**Result**: ✅ Fixed
+
+### Buff Duration Behavior (Design Decision)
+**Problem**: "Battle Rage (3 turns)" expires after player acts once
+**Cause**: Buffs decrement after EVERY action (player AND enemy)
+**Current**: "3 turns" = 3 total actions
+**Note**: This is working as designed (buffs count actions, not rounds)
+
+### Ability Selection Not Showing (Fixed)
+**Date**: 2025-11-10 (Commit 388d43c)
+**Problem**: Rogue "Use Ability" option didn't show ability list
+**Cause**: RequestCombatAction() returned UseAbility without prompting
+**Fix**: Added RequestAbilitySelection() call in ConsoleInterface
+**Result**: ✅ Fixed - abilities now display with mana costs and cooldowns
+
+### Enemy Art Not Displaying (Fixed + Enhanced)
+**Date**: 2025-11-10 (Commit 388d43c)
+**Problem**: Enemy ASCII art wasn't displaying in combat
+**Fix**: Added AsciiArt.DrawEnemy() call to CombatStartedEvent handler
+**Enhancement**: Implemented data-driven enemy art system
+  - Created Data/Enemies/enemy-art.json
+  - Pattern-based matching (e.g., "Goblin" matches "Armored Goblin")
+  - 8 enemy art templates included
+  - Customizable colors per enemy type
+**Result**: ✅ Fixed + modding support added
+
+### AoE Abilities in 1v1 Combat (Clarification)
+**Question**: How do AoE abilities work when combat is 1v1?
+**Answer**: AoE abilities function identically to single-target in current system
+**Purpose**: Boss flavor, future multi-enemy support, damage scaling
+**Current**: No actual area effect (hits single target with higher multiplier)
+**Future**: Could add multi-enemy encounters where AoE hits all targets
+
+---
