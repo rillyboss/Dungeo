@@ -51,7 +51,7 @@ namespace TestRPGGame.Tests
         }
 
         [Fact]
-        public void PlayerInventory_DisplayInventory_WithInterface()
+        public void PlayerInventory_ManageInventory_WithInterface()
         {
             // Arrange
             var autoInterface = new AutomatedInterface();
@@ -65,7 +65,7 @@ namespace TestRPGGame.Tests
             });
 
             // Act
-            player.Inventory.DisplayInventory(player, autoInterface);
+            player.Inventory.ManageInventory(player, autoInterface);
             var log = autoInterface.GetLog();
 
             // Assert

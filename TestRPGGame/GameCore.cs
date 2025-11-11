@@ -339,8 +339,8 @@ namespace TestRPGGame
         {
             if (player == null) return;
 
-            // Use existing Inventory system (has embedded Console UI)
-            player.Inventory.DisplayInventory(player, gameInterface);
+            // Use interface-driven inventory system
+            player.Inventory.ManageInventory(player, gameInterface);
         }
 
         private void ViewCharacterSheet()
