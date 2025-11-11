@@ -83,11 +83,6 @@ namespace TestRPGGame.Entities
                     int blocked = shield.AbsorbDamage(damageAfterDefense);
                     damageAfterShield = damageAfterDefense - blocked;
 
-                    if (blocked > 0)
-                    {
-                        Console.WriteLine($"   🛡️  Shield absorbed {blocked} damage! ({shield.CurrentShieldValue} remaining)");
-                    }
-
                     // Remove shield if depleted
                     if (shield.CurrentShieldValue <= 0)
                     {

@@ -101,9 +101,8 @@ namespace TestRPGGame.Systems
 
                 return true;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error saving game: {ex.Message}");
                 return false;
             }
         }
@@ -185,9 +184,8 @@ namespace TestRPGGame.Systems
 
                 return (player, dungeonProgress);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error loading game: {ex.Message}");
                 return (null, null);
             }
         }
@@ -255,9 +253,8 @@ namespace TestRPGGame.Systems
                 }
                 return false;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
-                Console.WriteLine($"Error deleting save: {ex.Message}");
                 return false;
             }
         }
