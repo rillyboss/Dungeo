@@ -616,26 +616,58 @@ namespace TestRPGGame.Combat
 
         private void PerformBasicAttack(Player player, Enemy enemy)
         {
-            int damage = player.GetTotalAttack();
+            // Step 1: Check accuracy/dodge for basic attack
+            double weaponAccuracy = 1.0; // Default 100% for no weapon
+            var equippedWeapon = player.Inventory.Weapon;
+            if (equippedWeapon != null)
+            {
+                weaponAccuracy = equippedWeapon.Accuracy;
+            }
 
-            // Apply damage multiplier from status effects (Battle Rage, etc.)
+            double enemyDodgeChance = enemy.GetDodgeChance();
+            double hitChance = weaponAccuracy * (1.0 - enemyDodgeChance);
+
+            if (random.NextDouble() >= hitChance)
+            {
+                // MISS!
+                bool wasDodged = random.NextDouble() < (enemyDodgeChance / (1.0 - hitChance + 0.001));
+                string missText = wasDodged ? "dodged" : "missed";
+                UIHelper.PrintColoredLine($"💨 Your attack {missText}! ({enemy.Name})", ConsoleColor.DarkGray);
+                Thread.Sleep(800);
+                return; // No damage dealt
+            }
+
+            // Step 2: Calculate base damage with weapon variance
+            int baseDamage = player.GetTotalAttack();
+
+            // Apply weapon damage variance (min/max damage range)
+            if (equippedWeapon != null && equippedWeapon.MaxDamage > 0)
+            {
+                // Weapon has min/max damage - roll within range
+                int minDmg = equippedWeapon.MinDamage;
+                int maxDmg = equippedWeapon.MaxDamage;
+                baseDamage = random.Next(minDmg, maxDmg + 1);
+            }
+
+            // Step 3: Apply damage multiplier from status effects (Battle Rage, etc.)
             double damageMultiplier = player.Effects.GetTotalDamageMultiplier();
-            damage = (int)(damage * damageMultiplier);
+            int damage = (int)(baseDamage * damageMultiplier);
 
-            // Critical hit chance
-            bool isCrit = random.NextDouble() < player.CritChance;
+            // Step 4: Critical hit chance (agility provides bonus crit!)
+            double totalCritChance = player.CritChance + (player.Agility / 500.0);
+            bool isCrit = random.NextDouble() < totalCritChance;
             if (isCrit)
             {
                 damage = (int)(damage * 2);
             }
 
-            // Get weapon attack type and apply weakness multiplier
+            // Step 5: Get weapon attack type and apply weakness multiplier
             AttackType weaponType = player.GetWeaponAttackType();
             double effectiveness = AttackTypeSystem.GetDamageMultiplier(weaponType, enemy.Type);
             damage = (int)(damage * effectiveness);
 
-            // Apply damage
-            int actualDamage = Math.Max(1, damage - enemy.Defense);
+            // Raw damage calculated - defense will be applied in ApplyDamage()
+            int rawDamage = damage;
 
             // Check for special effects BEFORE applying damage
             var specialEffects = player.Inventory.GetAllSpecialEffects();
@@ -656,7 +688,7 @@ namespace TestRPGGame.Combat
                     switch (effect.Type)
                     {
                         case EffectType.DoubleDamage:
-                            actualDamage *= 2;
+                            rawDamage *= 2;
                             doubleProc = true;
                             break;
                         case EffectType.LifeSteal:
@@ -681,7 +713,7 @@ namespace TestRPGGame.Combat
             }
 
             // Apply damage to enemy using unified method (handles defense, shields, thorns)
-            enemy.ApplyDamage(actualDamage, applyShieldAbsorption: true, attacker: player);
+            int actualDamage = enemy.ApplyDamage(rawDamage, applyShieldAbsorption: true, attacker: player);
 
             Console.WriteLine();
 
