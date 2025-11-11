@@ -13,6 +13,7 @@ namespace TestRPGGame.Entities.Enemy
     {
         private static List<EnemyData>? _enemyPool = null;
         private static ILogger _logger = new ConsoleLogger(); // Default to console logging
+        private static IDataRepository _repository = new JsonDataRepository(); // Default repository
 
         /// <summary>
         /// Sets the logger for EnemyFactory. Use NullLogger for tests to suppress output.
@@ -22,6 +23,15 @@ namespace TestRPGGame.Entities.Enemy
             _logger = logger;
         }
 
+        /// <summary>
+        /// Sets the data repository. Use for dependency injection (e.g., mock repository for tests).
+        /// </summary>
+        public static void SetRepository(IDataRepository repository)
+        {
+            _repository = repository;
+            _enemyPool = null; // Clear cache when repository changes
+        }
+
         public static Enemy CreateEnemy(int playerLevel)
         {
             // Load enemy pool from data (cached), excluding bosses
@@ -29,7 +39,7 @@ namespace TestRPGGame.Entities.Enemy
             {
                 // Get all enemies but exclude bosses (IsBoss = true)
                 // Call ToList() immediately to materialize the query and avoid collection modification exceptions
-                _enemyPool = DataLoader.GetEnemiesByLevel(0, 100).ToList()
+                _enemyPool = _repository.GetEnemiesByLevel(0, 100).ToList()
                     .Where(e => !e.IsBoss)
                     .ToList();
             }
@@ -61,7 +71,7 @@ namespace TestRPGGame.Entities.Enemy
             {
                 try
                 {
-                    var ability = DataLoader.GetAbility(abilityData.AbilityId);
+                    var ability = _repository.GetAbility(abilityData.AbilityId);
                     var abilityInstance = EntityFactory.CreateAbility(ability);
                     enemy.Abilities.Add(new EnemyAbility(abilityInstance, abilityData.UseThreshold));
                 }
@@ -97,7 +107,7 @@ namespace TestRPGGame.Entities.Enemy
             bool isBoss = enemyData.IsBoss;
             if (!isBoss && level >= 2) // Behaviors only appear at level 2+
             {
-                var availableBehaviors = DataLoader.GetBehaviorsWithSpawnChance().ToList();
+                var availableBehaviors = _repository.GetBehaviorsWithSpawnChance().ToList();
                 if (availableBehaviors.Count > 0 && modifierCount < maxModifiers)
                 {
                     double totalChance = availableBehaviors.Sum(b => b.SpawnChance);
@@ -124,7 +134,7 @@ namespace TestRPGGame.Entities.Enemy
             // Roll for prefix
             if (modifierCount < maxModifiers && RandomProvider.Next(100) < prefixChance)
             {
-                var availablePrefixes = DataLoader.GetEnemyPrefixesByLevel(level).ToList();
+                var availablePrefixes = _repository.GetEnemyPrefixesByLevel(level).ToList();
                 if (availablePrefixes.Count > 0)
                 {
                     prefix = availablePrefixes[RandomProvider.Next(availablePrefixes.Count)];
@@ -135,7 +145,7 @@ namespace TestRPGGame.Entities.Enemy
             // Roll for suffix (less likely if already has prefix)
             if (modifierCount < maxModifiers && RandomProvider.Next(100) < suffixChance)
             {
-                var availableSuffixes = DataLoader.GetEnemySuffixesByLevel(level).ToList();
+                var availableSuffixes = _repository.GetEnemySuffixesByLevel(level).ToList();
                 if (availableSuffixes.Count > 0)
                 {
                     suffix = availableSuffixes[RandomProvider.Next(availableSuffixes.Count)];
@@ -188,7 +198,7 @@ namespace TestRPGGame.Entities.Enemy
                 {
                     try
                     {
-                        var ability = DataLoader.GetAbility(abilityId);
+                        var ability = _repository.GetAbility(abilityId);
                         var abilityInstance = EntityFactory.CreateAbility(ability);
                         // Suffix abilities can be used at any HP
                         enemy.Abilities.Add(new EnemyAbility(abilityInstance, 100));
@@ -244,7 +254,7 @@ namespace TestRPGGame.Entities.Enemy
 
                 // Load default behavior for boss (or use "default" if not specified)
                 string behaviorId = enemyData.DefaultBehavior ?? "default";
-                behavior = DataLoader.GetBehavior(behaviorId);
+                behavior = _repository.GetBehavior(behaviorId);
             }
             else
             {
@@ -266,7 +276,7 @@ namespace TestRPGGame.Entities.Enemy
                     behaviorId = "default";
                 }
 
-                behavior = DataLoader.GetBehavior(behaviorId);
+                behavior = _repository.GetBehavior(behaviorId);
             }
 
             // Create AI with behavior and phases

@@ -19,6 +19,16 @@ namespace TestRPGGame.Factories
     /// </summary>
     public static class EntityFactory
     {
+        private static IDataRepository _repository = new JsonDataRepository(); // Default repository
+
+        /// <summary>
+        /// Sets the data repository. Use for dependency injection (e.g., mock repository for tests).
+        /// </summary>
+        public static void SetRepository(IDataRepository repository)
+        {
+            _repository = repository;
+        }
+
         #region Ability Factory
 
         public static Ability CreateAbility(AbilityData data)
@@ -173,8 +183,8 @@ namespace TestRPGGame.Factories
             dungeon.EncounterConfig = data.EncounterConfig;
 
             // Load miniboss and boss using unified enemy system
-            var minibossData = DataLoader.GetEnemy(data.MinibossId);
-            var bossData = DataLoader.GetEnemy(data.BossId);
+            var minibossData = _repository.GetEnemy(data.MinibossId);
+            var bossData = _repository.GetEnemy(data.BossId);
 
             dungeon.Miniboss = CreateEnemy(minibossData, data.RecommendedLevel);
             dungeon.Boss = CreateEnemy(bossData, data.RecommendedLevel);

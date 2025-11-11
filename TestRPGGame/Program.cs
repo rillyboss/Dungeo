@@ -17,7 +17,9 @@ namespace TestRPGGame
             Console.WriteLine("Loading game data...");
             try
             {
-                DataLoader.LoadAllData();
+                // Use default JSON repository for production
+                var dataRepository = new JsonDataRepository();
+                dataRepository.LoadAllData();
                 Console.WriteLine("Game data loaded successfully!\n");
             }
             catch (Exception ex)

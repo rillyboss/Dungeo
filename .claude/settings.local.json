@@ -3,7 +3,8 @@
     "allow": [
       "Bash(git branch:*)",
       "Bash(\"TestRPGGame/Entities/Player/PlayerInventory_clean.cs\")",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(dotnet add:*)"
     ],
     "deny": [],
     "ask": []

@@ -48,7 +48,10 @@ namespace TestRPGGame.Entities.Player
         private int BaseSpeed { get; set; }
         private double BaseCritChance { get; set; }
 
-        public Player(string name, PlayerClass playerClass)
+        // Data repository for loading class/ability data
+        private readonly IDataRepository _repository;
+
+        public Player(string name, PlayerClass playerClass, IDataRepository? repository = null)
         {
             Name = name;
             Class = playerClass;
@@ -57,6 +60,7 @@ namespace TestRPGGame.Entities.Player
             ExperienceToNextLevel = 100;
             Inventory = new PlayerInventory();
             Abilities = new List<Ability>();
+            _repository = repository ?? new JsonDataRepository(); // Use provided repository or default
             // StatusEffects (old) and Effects (new) initialized by base Combatant constructor
 
             InitializeFromClassData();
@@ -68,7 +72,7 @@ namespace TestRPGGame.Entities.Player
         private void InitializeFromClassData()
         {
             // Load class configuration from data
-            var classData = DataLoader.GetClass(Class.ToString());
+            var classData = _repository.GetClass(Class.ToString());
 
             // Set base stats from class data
             BaseMaxHP = classData.BaseMaxHP;
@@ -143,7 +147,7 @@ namespace TestRPGGame.Entities.Player
         private void InitializeAbilities()
         {
             // Load abilities from data - code has zero knowledge of specific abilities
-            var classAbilities = DataLoader.GetAbilitiesForClass(Class.ToString());
+            var classAbilities = _repository.GetAbilitiesForClass(Class.ToString());
 
             foreach (var abilityData in classAbilities)
             {
@@ -170,7 +174,7 @@ namespace TestRPGGame.Entities.Player
             ExperienceToNextLevel = (int)(ExperienceToNextLevel * 1.5);
 
             // Load class data for stat growth
-            var classData = DataLoader.GetClass(Class.ToString());
+            var classData = _repository.GetClass(Class.ToString());
 
             // Apply data-driven stat increases
             BaseMaxHP += classData.HPPerLevel;

@@ -11,6 +11,7 @@ namespace TestRPGGame.Equipment
     public static class EquipmentGenerator
     {
         private static ItemGenerationData? _itemData;
+        private static IDataRepository _repository = new JsonDataRepository(); // Default repository
 
         // Strategy pattern: Dictionary dispatch instead of switch statements
         private static readonly Dictionary<EquipmentSlot, ISlotStatGenerator> _statGenerators = new()
@@ -25,6 +26,14 @@ namespace TestRPGGame.Equipment
             { EquipmentSlot.Amulet, new AmuletStatGenerator() },
             { EquipmentSlot.Relic, new RelicStatGenerator() }
         };
+
+        /// <summary>
+        /// Sets the data repository. Use for dependency injection (e.g., mock repository for tests).
+        /// </summary>
+        public static void SetRepository(IDataRepository repository)
+        {
+            _repository = repository;
+        }
 
         // Legacy arrays for non-weapon/armor slots (Helmet, Boots, Gloves, Rings, Amulets, Relics)
         private static readonly string[] helmetTypes = { "Helmet", "Helm", "Crown", "Circlet", "Hood", "Cap" };
@@ -43,7 +52,7 @@ namespace TestRPGGame.Equipment
         {
             if (_itemData == null)
             {
-                _itemData = DataLoader.GetItemGenerationData();
+                _itemData = _repository.GetItemGenerationData();
             }
         }
 
