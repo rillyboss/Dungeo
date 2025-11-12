@@ -326,13 +326,15 @@ namespace TestRPGGame.Interfaces
             Console.WriteLine("4. 🎒 Inventory & Equipment");
             Console.WriteLine("5. 📖 Character Sheet");
             Console.WriteLine("6. 🌟 Unlock Abilities");
-            Console.WriteLine("7. 😴 Rest (Restore HP & Mana)");
-            Console.WriteLine("8. 💾 Save Game");
-            Console.WriteLine("9. ❓ Help");
+            Console.WriteLine("7. 📊 View Statistics");
+            Console.WriteLine("8. 🏆 View Achievements");
+            Console.WriteLine("9. 😴 Rest (Restore HP & Mana)");
+            Console.WriteLine("A. 💾 Save Game");
+            Console.WriteLine("H. ❓ Help");
             Console.WriteLine("0. 🚪 Exit Game");
 
             Console.Write("\nChoose an option: ");
-            string choice = Console.ReadLine() ?? "";
+            string choice = Console.ReadLine()?.ToUpper() ?? "";
 
             return choice switch
             {
@@ -342,9 +344,11 @@ namespace TestRPGGame.Interfaces
                 "4" => MainMenuChoice.Inventory,
                 "5" => MainMenuChoice.CharacterSheet,
                 "6" => MainMenuChoice.UnlockAbilities,
-                "7" => MainMenuChoice.Rest,
-                "8" => MainMenuChoice.Save,
-                "9" => MainMenuChoice.Help,
+                "7" => MainMenuChoice.Statistics,
+                "8" => MainMenuChoice.Achievements,
+                "9" => MainMenuChoice.Rest,
+                "A" => MainMenuChoice.Save,
+                "H" => MainMenuChoice.Help,
                 "0" => MainMenuChoice.Exit,
                 _ => MainMenuChoice.Combat // Default
             };
@@ -1184,6 +1188,135 @@ namespace TestRPGGame.Interfaces
 
             Console.WriteLine();
             Console.WriteLine($"  💰 Value: {item.Price} gold");
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey(true);
+        }
+
+        public void DisplayStatistics(Systems.StatisticsInfo info)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine("          PLAYER STATISTICS", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Cyan);
+
+            // Combat Stats
+            UIHelper.PrintColoredLine("⚔️  COMBAT STATS", ConsoleColor.Green);
+            Console.WriteLine($"  Total Kills: {info.TotalKills}");
+            Console.WriteLine($"  Bosses Defeated: {info.BossesDefeated}");
+            Console.WriteLine($"  Total Deaths: {info.TotalDeaths}");
+            Console.WriteLine($"  K/D Ratio: {info.KillDeathRatio:F2}");
+            Console.WriteLine($"  Combats Won: {info.CombatsWon}");
+            Console.WriteLine($"  Combats Fled: {info.CombatsFled}");
+            Console.WriteLine();
+
+            // Damage Stats
+            UIHelper.PrintColoredLine("💥 DAMAGE STATS", ConsoleColor.Red);
+            Console.WriteLine($"  Total Damage Dealt: {info.TotalDamageDealt:N0}");
+            Console.WriteLine($"  Total Damage Taken: {info.TotalDamageTaken:N0}");
+            Console.WriteLine($"  Total Healing: {info.TotalHealingDone:N0}");
+            Console.WriteLine($"  Critical Hits: {info.CriticalHitsDealt}");
+            Console.WriteLine($"  Attacks Missed: {info.AttacksMissed}");
+            Console.WriteLine($"  Attacks Dodged: {info.AttacksDodged}");
+            Console.WriteLine($"  Avg Damage/Combat: {info.AverageDamagePerCombat:F1}");
+            Console.WriteLine($"  Highest Single Hit: {info.HighestDamageInOneTurn}");
+            Console.WriteLine();
+
+            // Gold & Economy
+            UIHelper.PrintColoredLine("💰 ECONOMY", ConsoleColor.Yellow);
+            Console.WriteLine($"  Total Gold Earned: {info.TotalGoldEarned:N0}");
+            Console.WriteLine($"  Total Gold Spent: {info.TotalGoldSpent:N0}");
+            Console.WriteLine($"  Net Gold: {info.NetGold:N0}");
+            Console.WriteLine($"  Most Gold at Once: {info.MostGoldAtOnce:N0}");
+            Console.WriteLine($"  Items Bought: {info.ItemsBought}");
+            Console.WriteLine($"  Items Sold: {info.ItemsSold}");
+            Console.WriteLine($"  Times Rested: {info.TimesRested}");
+            Console.WriteLine();
+
+            // Dungeon Stats
+            UIHelper.PrintColoredLine("🏰 DUNGEON STATS", ConsoleColor.Magenta);
+            Console.WriteLine($"  Dungeons Completed: {info.TotalDungeonsCompleted}");
+            Console.WriteLine($"  Dungeon Attempts: {info.DungeonAttempts}");
+            Console.WriteLine($"  Success Rate: {info.DungeonSuccessRate:F1}%");
+            Console.WriteLine();
+
+            // Progression
+            UIHelper.PrintColoredLine("📈 PROGRESSION", ConsoleColor.Cyan);
+            Console.WriteLine($"  Highest Level: {info.HighestLevelReached}");
+            Console.WriteLine($"  Total Levels Gained: {info.TotalLevelsGained}");
+            Console.WriteLine($"  Total XP Gained: {info.TotalExperienceGained:N0}");
+            Console.WriteLine($"  Abilities Unlocked: {info.AbilitiesUnlocked}");
+            Console.WriteLine($"  Legendary Items Found: {info.LegendaryItemsFound}");
+            Console.WriteLine($"  Epic Items Found: {info.EpicItemsFound}");
+            Console.WriteLine();
+
+            // Misc Stats
+            UIHelper.PrintColoredLine("📊 MISCELLANEOUS", ConsoleColor.White);
+            Console.WriteLine($"  Potions Used: {info.PotionsUsed}");
+            Console.WriteLine($"  Total Combat Turns: {info.TotalTurnsInCombat}");
+            Console.WriteLine($"  Longest Combat: {info.LongestCombat} turns");
+            Console.WriteLine($"  Game Saves: {info.GameSaves}");
+
+            Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey(true);
+        }
+
+        public void DisplayAchievements(AchievementDisplayInfo info)
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine("            ACHIEVEMENTS", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Cyan);
+
+            // Overall progress
+            Console.WriteLine($"Progress: {info.UnlockedAchievements}/{info.TotalAchievements} ({info.CompletionPercentage:F1}%)");
+            Console.WriteLine($"Points: {info.EarnedPoints}/{info.TotalPoints}\n");
+
+            // Display by category
+            foreach (var category in info.Categories)
+            {
+                if (!info.AchievementsByCategory.ContainsKey(category))
+                    continue;
+
+                var achievements = info.AchievementsByCategory[category];
+                var unlockedCount = achievements.Count(a => a.IsUnlocked);
+
+                UIHelper.PrintColoredLine($"\n🏆 {category.ToUpper()} ({unlockedCount}/{achievements.Count})", ConsoleColor.Green);
+
+                foreach (var achievement in achievements)
+                {
+                    // Skip hidden achievements if not unlocked
+                    if (achievement.IsHidden && !achievement.IsUnlocked)
+                        continue;
+
+                    var statusIcon = achievement.IsUnlocked ? "✓" : " ";
+                    var nameColor = achievement.IsUnlocked ? ConsoleColor.Yellow : ConsoleColor.Gray;
+
+                    Console.ForegroundColor = nameColor;
+                    Console.WriteLine($"  [{statusIcon}] {achievement.Name} ({achievement.Points} pts)");
+                    Console.ResetColor();
+
+                    Console.WriteLine($"      {achievement.Description}");
+
+                    if (!achievement.IsUnlocked)
+                    {
+                        Console.ForegroundColor = ConsoleColor.DarkGray;
+                        Console.WriteLine($"      Progress: {achievement.ProgressText}");
+                        Console.ResetColor();
+                    }
+                    else if (achievement.GoldReward > 0 || achievement.ExperienceReward > 0 || !string.IsNullOrEmpty(achievement.TitleReward))
+                    {
+                        var rewards = new List<string>();
+                        if (achievement.GoldReward > 0) rewards.Add($"{achievement.GoldReward}g");
+                        if (achievement.ExperienceReward > 0) rewards.Add($"{achievement.ExperienceReward} XP");
+                        if (!string.IsNullOrEmpty(achievement.TitleReward)) rewards.Add($"Title: {achievement.TitleReward}");
+
+                        Console.ForegroundColor = ConsoleColor.DarkYellow;
+                        Console.WriteLine($"      Rewards: {string.Join(", ", rewards)}");
+                        Console.ResetColor();
+                    }
+                }
+            }
 
             Console.WriteLine("\nPress any key to continue...");
             Console.ReadKey(true);

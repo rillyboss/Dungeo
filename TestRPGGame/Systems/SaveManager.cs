@@ -53,10 +53,10 @@ namespace TestRPGGame.Systems
         /// <summary>
         /// Loads a character from the specified save slot.
         /// </summary>
-        /// <returns>Tuple of (Player, DungeonProgress) or nulls if load failed</returns>
-        public (Player?, DungeonProgress?) LoadCharacter(int slotNumber)
+        /// <returns>Tuple of (Player, DungeonProgress, PlayerStatistics, UnlockedAchievements) or nulls if load failed</returns>
+        public (Player?, DungeonProgress?, PlayerStatistics?, HashSet<string>?) LoadCharacter(int slotNumber)
         {
-            var (loadedPlayer, loadedProgress) = SaveSystem.LoadGame(slotNumber);
+            var (loadedPlayer, loadedProgress, loadedStatistics, unlockedAchievements) = SaveSystem.LoadGame(slotNumber);
 
             if (loadedPlayer != null)
             {
@@ -76,7 +76,7 @@ namespace TestRPGGame.Systems
                     Type = GameEvents.MessageType.Success
                 });
 
-                return (loadedPlayer, loadedProgress ?? new DungeonProgress());
+                return (loadedPlayer, loadedProgress ?? new DungeonProgress(), loadedStatistics ?? new PlayerStatistics(), unlockedAchievements ?? new HashSet<string>());
             }
             else
             {
@@ -86,14 +86,14 @@ namespace TestRPGGame.Systems
                     Type = GameEvents.MessageType.Error
                 });
 
-                return (null, null);
+                return (null, null, null, null);
             }
         }
 
         /// <summary>
         /// Saves the game to a specific slot with user confirmation.
         /// </summary>
-        public void SaveGame(Player player, DungeonProgress dungeonProgress)
+        public void SaveGame(Player player, DungeonProgress dungeonProgress, PlayerStatistics? statistics = null, HashSet<string>? unlockedAchievements = null)
         {
             var slots = GetSaveSlotInfoList();
             int slotNumber = _gameInterface.RequestSaveSlot(slots);
@@ -110,7 +110,7 @@ namespace TestRPGGame.Systems
                     if (!confirm) return;
                 }
 
-                bool success = SaveSystem.SaveGame(player, slotNumber, dungeonProgress);
+                bool success = SaveSystem.SaveGame(player, slotNumber, dungeonProgress, statistics, unlockedAchievements);
 
                 if (success)
                 {
@@ -145,11 +145,11 @@ namespace TestRPGGame.Systems
         /// <summary>
         /// Automatically saves the game to the last used save slot.
         /// </summary>
-        public void AutoSave(Player player, DungeonProgress dungeonProgress)
+        public void AutoSave(Player player, DungeonProgress dungeonProgress, PlayerStatistics? statistics = null, HashSet<string>? unlockedAchievements = null)
         {
             if (_lastSaveSlot.HasValue)
             {
-                bool success = SaveSystem.SaveGame(player, _lastSaveSlot.Value, dungeonProgress);
+                bool success = SaveSystem.SaveGame(player, _lastSaveSlot.Value, dungeonProgress, statistics, unlockedAchievements);
                 _gameInterface.OnEvent(new GameEvents.GameSavedEvent
                 {
                     SlotNumber = _lastSaveSlot.Value,

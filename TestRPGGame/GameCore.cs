@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Factories;
@@ -15,23 +16,37 @@ namespace TestRPGGame
     public class GameCore
     {
         private readonly IGameInterface _gameInterface;
+        private readonly IGameInterface _trackingInterface; // Wrapper that tracks statistics
         private readonly InterfacedCombatSystem _combat;
         private readonly Shop _shop;
         private readonly SaveManager _saveManager;
         private readonly DungeonManager _dungeonManager;
         private readonly ProgressionManager _progressionManager;
+        private readonly StatisticsManager _statisticsManager;
+        private readonly AchievementManager _achievementManager;
+        private StatisticsTracker _statisticsTracker; // Not readonly - recreated when loading save
 
         private Player? _player;
+        private PlayerStatistics _statistics;
         private bool _isRunning;
 
         public GameCore(IGameInterface gameInterface)
         {
             _gameInterface = gameInterface;
-            _combat = new InterfacedCombatSystem(gameInterface);
-            _shop = new Shop(gameInterface);
-            _saveManager = new SaveManager(gameInterface);
-            _dungeonManager = new DungeonManager(gameInterface, _combat);
-            _progressionManager = new ProgressionManager(gameInterface);
+
+            // Initialize statistics tracking
+            _statistics = new PlayerStatistics();
+            _statisticsTracker = new StatisticsTracker(_statistics);
+            _trackingInterface = new EventTrackingInterface(gameInterface, _statisticsTracker);
+
+            // Use tracking interface for all game systems
+            _combat = new InterfacedCombatSystem(_trackingInterface);
+            _shop = new Shop(_trackingInterface);
+            _saveManager = new SaveManager(_trackingInterface);
+            _dungeonManager = new DungeonManager(_trackingInterface, _combat);
+            _progressionManager = new ProgressionManager(_trackingInterface);
+            _statisticsManager = new StatisticsManager(_trackingInterface);
+            _achievementManager = new AchievementManager(_trackingInterface);
             _isRunning = true;
         }
 
@@ -48,12 +63,27 @@ namespace TestRPGGame
             }
             else
             {
-                var (loadedPlayer, loadedProgress) = _saveManager.LoadCharacter(slotNumber);
+                var (loadedPlayer, loadedProgress, loadedStatistics, unlockedAchievements) = _saveManager.LoadCharacter(slotNumber);
                 _player = loadedPlayer;
 
                 if (loadedProgress != null)
                 {
                     _dungeonManager.SetProgress(loadedProgress);
+                }
+
+                // Load statistics or create new if none saved (backwards compatibility)
+                if (loadedStatistics != null)
+                {
+                    _statistics = loadedStatistics;
+                    _statisticsTracker = new StatisticsTracker(_statistics);
+                    // Note: We'd need to recreate the tracking interface here, but for simplicity
+                    // we'll just update the tracker's reference. The existing wrapper will continue to work.
+                }
+
+                // Load unlocked achievements
+                if (unlockedAchievements != null)
+                {
+                    _achievementManager.RestoreUnlockStatus(unlockedAchievements);
                 }
             }
 
@@ -98,6 +128,12 @@ namespace TestRPGGame
                     case MainMenuChoice.UnlockAbilities:
                         UnlockAbilities();
                         break;
+                    case MainMenuChoice.Statistics:
+                        ViewStatistics();
+                        break;
+                    case MainMenuChoice.Achievements:
+                        ViewAchievements();
+                        break;
                     case MainMenuChoice.Rest:
                         Rest();
                         break;
@@ -121,10 +157,11 @@ namespace TestRPGGame
             var enemy = EnemyFactory.CreateEnemy(_player.Level);
             bool victory = _combat.StartBattle(_player, enemy, canFlee: true);
 
-            // Auto-save after successful combat
+            // Check achievements and auto-save after successful combat
             if (victory)
             {
-                _saveManager.AutoSave(_player, _dungeonManager.Progress);
+                _achievementManager.CheckAchievements(_statistics, _player);
+                _saveManager.AutoSave(_player, _dungeonManager.Progress, _statistics, _achievementManager.GetUnlockedAchievementIds());
             }
 
             _gameInterface.WaitForAcknowledgment();
@@ -138,7 +175,8 @@ namespace TestRPGGame
 
             if (success)
             {
-                _saveManager.AutoSave(_player, _dungeonManager.Progress);
+                _achievementManager.CheckAchievements(_statistics, _player);
+                _saveManager.AutoSave(_player, _dungeonManager.Progress, _statistics, _achievementManager.GetUnlockedAchievementIds());
             }
         }
 
@@ -148,8 +186,9 @@ namespace TestRPGGame
 
             _shop.Enter(_player);
 
-            // Auto-save after shop visit
-            _saveManager.AutoSave(_player, _dungeonManager.Progress);
+            // Check achievements and auto-save after shop visit
+            _achievementManager.CheckAchievements(_statistics, _player);
+            _saveManager.AutoSave(_player, _dungeonManager.Progress, _statistics, _achievementManager.GetUnlockedAchievementIds());
         }
 
         private void ManageInventory()
@@ -174,15 +213,26 @@ namespace TestRPGGame
             _progressionManager.UnlockAbilities(_player);
         }
 
+        private void ViewStatistics()
+        {
+            if (_player == null) return;
+
+            _statisticsManager.DisplayStatistics(_statistics);
+        }
+
         private void Rest()
         {
             if (_player == null) return;
 
+            int restCost = GameConfig.Config.RestingCost;
             bool success = _progressionManager.Rest(_player);
 
             if (success)
             {
-                _saveManager.AutoSave(_player, _dungeonManager.Progress);
+                // Manually track rest since there's no dedicated event
+                _statisticsTracker.RecordRest(restCost);
+                _achievementManager.CheckAchievements(_statistics, _player);
+                _saveManager.AutoSave(_player, _dungeonManager.Progress, _statistics, _achievementManager.GetUnlockedAchievementIds());
             }
         }
 
@@ -190,7 +240,44 @@ namespace TestRPGGame
         {
             if (_player == null) return;
 
-            _saveManager.SaveGame(_player, _dungeonManager.Progress);
+            _achievementManager.CheckAchievements(_statistics, _player);
+            _saveManager.SaveGame(_player, _dungeonManager.Progress, _statistics, _achievementManager.GetUnlockedAchievementIds());
+        }
+
+        private void ViewAchievements()
+        {
+            if (_player == null) return;
+
+            // Build display info from achievement manager
+            var displayInfo = new Interfaces.AchievementDisplayInfo
+            {
+                Categories = _achievementManager.GetCategories(),
+                AchievementsByCategory = _achievementManager.GetCategories().ToDictionary(
+                    category => category,
+                    category => _achievementManager.GetAchievementsByCategory(category)
+                        .Select(a => new Interfaces.AchievementInfo
+                        {
+                            Id = a.Id,
+                            Name = a.Name,
+                            Description = a.Description,
+                            Category = a.Category,
+                            Points = a.Points,
+                            IsUnlocked = a.IsUnlocked,
+                            IsHidden = a.IsHidden,
+                            ProgressText = a.GetProgressString(_statistics),
+                            GoldReward = a.GoldReward,
+                            ExperienceReward = a.ExperienceReward,
+                            TitleReward = a.TitleReward
+                        }).ToList()
+                ),
+                TotalAchievements = _achievementManager.Achievements.Count,
+                UnlockedAchievements = _achievementManager.Achievements.Count(a => a.IsUnlocked),
+                CompletionPercentage = _achievementManager.CompletionPercentage,
+                TotalPoints = _achievementManager.TotalPoints,
+                EarnedPoints = _achievementManager.EarnedPoints
+            };
+
+            _gameInterface.DisplayAchievements(displayInfo);
         }
 
         private void ShowHelp()

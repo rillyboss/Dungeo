@@ -23,7 +23,7 @@ namespace TestRPGGame.Systems
             return Path.Combine(SaveDirectory, $"save_slot_{slot}.json");
         }
 
-        public static bool SaveGame(Player player, int slot, DungeonProgress? dungeonProgress = null)
+        public static bool SaveGame(Player player, int slot, DungeonProgress? dungeonProgress = null, PlayerStatistics? statistics = null, HashSet<string>? unlockedAchievements = null)
         {
             try
             {
@@ -85,6 +85,12 @@ namespace TestRPGGame.Systems
                     // Save dungeon progress
                     CompletedDungeons = dungeonProgress?.CompletedDungeons ?? new Dictionary<string, bool>(),
 
+                    // Save statistics
+                    Statistics = statistics,
+
+                    // Save unlocked achievements
+                    UnlockedAchievements = unlockedAchievements ?? new HashSet<string>(),
+
                     SaveTime = DateTime.Now,
                     PlayTime = 0 // Could track this in the future
                 };
@@ -107,20 +113,20 @@ namespace TestRPGGame.Systems
             }
         }
 
-        public static (Player?, DungeonProgress?) LoadGame(int slot)
+        public static (Player?, DungeonProgress?, PlayerStatistics?, HashSet<string>?) LoadGame(int slot)
         {
             try
             {
                 if (slot < 1 || slot > MaxSaveSlots)
                 {
                     // Note: Error handling is done by caller, no direct console output
-                    return (null, null);
+                    return (null, null, null, null);
                 }
 
                 string saveFilePath = GetSaveFilePath(slot);
                 if (!File.Exists(saveFilePath))
                 {
-                    return (null, null);
+                    return (null, null, null, null);
                 }
 
                 // Read file
@@ -131,7 +137,7 @@ namespace TestRPGGame.Systems
 
                 if (saveData == null)
                 {
-                    return (null, null);
+                    return (null, null, null, null);
                 }
 
                 // Create player with basic constructor
@@ -182,11 +188,17 @@ namespace TestRPGGame.Systems
                     dungeonProgress.CompletedDungeons = saveData.CompletedDungeons;
                 }
 
-                return (player, dungeonProgress);
+                // Restore statistics (or create new if none saved - for backwards compatibility)
+                var statistics = saveData.Statistics ?? new PlayerStatistics();
+
+                // Restore unlocked achievements (or create new if none saved - for backwards compatibility)
+                var unlockedAchievements = saveData.UnlockedAchievements ?? new HashSet<string>();
+
+                return (player, dungeonProgress, statistics, unlockedAchievements);
             }
             catch (Exception)
             {
-                return (null, null);
+                return (null, null, null, null);
             }
         }
 

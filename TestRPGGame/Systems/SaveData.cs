@@ -48,6 +48,12 @@ namespace TestRPGGame.Systems
         // Dungeon progress
         public Dictionary<string, bool> CompletedDungeons { get; set; } = new Dictionary<string, bool>();
 
+        // Statistics
+        public PlayerStatistics? Statistics { get; set; }
+
+        // Achievements
+        public HashSet<string> UnlockedAchievements { get; set; } = new HashSet<string>();
+
         // Metadata
         public DateTime SaveTime { get; set; }
         public int PlayTime { get; set; } // In seconds

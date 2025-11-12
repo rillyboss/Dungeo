@@ -72,7 +72,7 @@ namespace TestRPGGame.Tests
             SaveSystem.SaveGame(originalPlayer, 2, progress);
 
             // Act
-            var (loadedPlayer, loadedProgress) = SaveSystem.LoadGame(2);
+            var (loadedPlayer, loadedProgress, _, _) = SaveSystem.LoadGame(2);
 
             // Assert
             Assert.NotNull(loadedPlayer);
@@ -176,7 +176,7 @@ namespace TestRPGGame.Tests
 
             // Act
             SaveSystem.SaveGame(player2, 1, progress);
-            var (loaded, _) = SaveSystem.LoadGame(1);
+            var (loaded, _, _, _) = SaveSystem.LoadGame(1);
 
             // Assert
             Assert.NotNull(loaded);
@@ -189,7 +189,7 @@ namespace TestRPGGame.Tests
         public void LoadGame_ReturnsNullForEmptySlot()
         {
             // Act
-            var (player, progress) = SaveSystem.LoadGame(1);
+            var (player, progress, _, _) = SaveSystem.LoadGame(1);
 
             // Assert
             Assert.Null(player);
@@ -207,7 +207,7 @@ namespace TestRPGGame.Tests
 
             // Act
             SaveSystem.SaveGame(player, 1, progress);
-            var (loadedPlayer, loadedProgress) = SaveSystem.LoadGame(1);
+            var (loadedPlayer, loadedProgress, _, _) = SaveSystem.LoadGame(1);
 
             // Assert
             Assert.NotNull(loadedProgress);
@@ -248,7 +248,7 @@ namespace TestRPGGame.Tests
 
             // Act
             SaveSystem.SaveGame(player, 1, progress);
-            var (loadedPlayer, _) = SaveSystem.LoadGame(1);
+            var (loadedPlayer, _, _, _) = SaveSystem.LoadGame(1);
 
             // Assert
             Assert.NotNull(loadedPlayer);
@@ -268,7 +268,7 @@ namespace TestRPGGame.Tests
 
             // Act
             SaveSystem.SaveGame(player, 1, progress);
-            var (loadedPlayer, _) = SaveSystem.LoadGame(1);
+            var (loadedPlayer, _, _, _) = SaveSystem.LoadGame(1);
 
             // Assert
             Assert.NotNull(loadedPlayer);

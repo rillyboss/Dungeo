@@ -222,6 +222,19 @@ namespace TestRPGGame.Interfaces
             public PlayerClass Class { get; set; }
         }
 
+        // Achievement events
+        public class AchievementUnlockedEvent
+        {
+            public string AchievementId { get; set; }
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public string Category { get; set; }
+            public int GoldReward { get; set; }
+            public int ExperienceReward { get; set; }
+            public string? TitleReward { get; set; }
+            public int Points { get; set; }
+        }
+
         // Message events
         public class InfoMessageEvent
         {

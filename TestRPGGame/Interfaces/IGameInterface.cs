@@ -90,6 +90,16 @@ namespace TestRPGGame.Interfaces
         void WaitForAcknowledgment();
 
         /// <summary>
+        /// Display player statistics
+        /// </summary>
+        void DisplayStatistics(Systems.StatisticsInfo info);
+
+        /// <summary>
+        /// Display achievements with categories, progress, and completion percentage
+        /// </summary>
+        void DisplayAchievements(AchievementDisplayInfo info);
+
+        /// <summary>
         /// Request player to choose from dungeon encounter options
         /// Returns the index of the chosen option (0-based)
         /// </summary>
@@ -116,6 +126,8 @@ namespace TestRPGGame.Interfaces
         Inventory,
         CharacterSheet,
         UnlockAbilities,
+        Statistics,
+        Achievements,
         Rest,
         Save,
         Help,
@@ -242,5 +254,31 @@ namespace TestRPGGame.Interfaces
         public bool IsCompleted { get; set; }
         public bool CanEnter { get; set; }
         public string? BlockingReason { get; set; }
+    }
+
+    public class AchievementDisplayInfo
+    {
+        public List<string> Categories { get; set; } = new();
+        public Dictionary<string, List<AchievementInfo>> AchievementsByCategory { get; set; } = new();
+        public int TotalAchievements { get; set; }
+        public int UnlockedAchievements { get; set; }
+        public double CompletionPercentage { get; set; }
+        public int TotalPoints { get; set; }
+        public int EarnedPoints { get; set; }
+    }
+
+    public class AchievementInfo
+    {
+        public string Id { get; set; } = string.Empty;
+        public string Name { get; set; } = string.Empty;
+        public string Description { get; set; } = string.Empty;
+        public string Category { get; set; } = string.Empty;
+        public int Points { get; set; }
+        public bool IsUnlocked { get; set; }
+        public bool IsHidden { get; set; }
+        public string ProgressText { get; set; } = string.Empty;
+        public int GoldReward { get; set; }
+        public int ExperienceReward { get; set; }
+        public string? TitleReward { get; set; }
     }
 }

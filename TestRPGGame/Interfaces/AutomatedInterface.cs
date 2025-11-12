@@ -279,6 +279,18 @@ namespace TestRPGGame.Interfaces
             return 0;
         }
 
+        public void DisplayStatistics(Systems.StatisticsInfo info)
+        {
+            // Automated interface logs statistics but doesn't display them interactively
+            Log($"STATISTICS: {info.TotalKills} kills, {info.TotalDeaths} deaths, {info.CombatsWon} combats won");
+        }
+
+        public void DisplayAchievements(AchievementDisplayInfo info)
+        {
+            // Automated interface logs achievements but doesn't display them interactively
+            Log($"ACHIEVEMENTS: {info.UnlockedAchievements}/{info.TotalAchievements} unlocked ({info.CompletionPercentage:F1}%), {info.EarnedPoints}/{info.TotalPoints} points");
+        }
+
         private void Log(string message)
         {
             log.AppendLine(message);

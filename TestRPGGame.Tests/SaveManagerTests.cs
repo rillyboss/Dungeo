@@ -102,7 +102,7 @@ namespace TestRPGGame.Tests
             SaveSystem.SaveGame(player, 1, progress);
 
             // Act
-            var (loadedPlayer, loadedProgress) = saveManager.LoadCharacter(1);
+            var (loadedPlayer, loadedProgress, _, _) = saveManager.LoadCharacter(1);
 
             // Assert
             Assert.NotNull(loadedPlayer);
@@ -127,7 +127,7 @@ namespace TestRPGGame.Tests
             var saveManager = new SaveManager(_mockInterface.Object);
 
             // Act - Try to load from non-existent slot
-            var (loadedPlayer, loadedProgress) = saveManager.LoadCharacter(3);
+            var (loadedPlayer, loadedProgress, _, _) = saveManager.LoadCharacter(3);
 
             // Assert
             Assert.Null(loadedPlayer);
@@ -213,7 +213,7 @@ namespace TestRPGGame.Tests
             ), Times.Once);
 
             // Verify save succeeded
-            var (loaded, _) = SaveSystem.LoadGame(1);
+            var (loaded, _, _, _) = SaveSystem.LoadGame(1);
             Assert.NotNull(loaded);
             Assert.Equal("NewHero", loaded.Name);
         }
@@ -252,7 +252,7 @@ namespace TestRPGGame.Tests
             Assert.Null(saveManager.LastSaveSlot);
 
             // Verify old save is still there
-            var (loaded, _) = SaveSystem.LoadGame(1);
+            var (loaded, _, _, _) = SaveSystem.LoadGame(1);
             Assert.Equal("OldHero", loaded?.Name);
         }
 
@@ -278,7 +278,7 @@ namespace TestRPGGame.Tests
             )), Times.Once);
 
             // Verify save file exists
-            var (loaded, _) = SaveSystem.LoadGame(2);
+            var (loaded, _, _, _) = SaveSystem.LoadGame(2);
             Assert.NotNull(loaded);
         }
 

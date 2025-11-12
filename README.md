@@ -81,7 +81,7 @@ TestRPGGame/
 ├── Game.cs               # Main game loop
 └── Program.cs            # Entry point
 
-TestRPGGame.Tests/        # Unit tests (71 tests, 100% passing)
+TestRPGGame.Tests/        # Unit tests (375 tests, 100% passing)
 ```
 
 ## Technology Stack
@@ -141,7 +141,7 @@ The project includes comprehensive unit tests covering:
 - Boss abilities and status effects
 - Game configuration
 
-**Test Coverage**: 71 tests, 100% passing
+**Test Coverage**: 375 tests, 100% passing, 54% code coverage (3,269/6,042 lines)
 
 ## Development Philosophy
 
@@ -159,18 +159,34 @@ This project was built entirely using Claude Code to explore:
 - **Comprehensive Testing**: High test coverage ensuring reliability
 - **Git Version Control**: Professional development workflow
 
-## Future Roadmap
+## Development Roadmap
 
-1. Enemy special abilities implementation
-2. Equipment special effects (proc-based)
-3. Merchant system with dynamic pricing
-4. Quest system
-5. Character progression trees
-6. More dungeon types and mechanics
-7. Achievements system
-8. Combat difficulty options
-9. Equipment set bonuses
-10. Crafting system
+### ✅ Code Improvement Phase (COMPLETE)
+All architectural improvements complete! See [CODE_IMPROVEMENT_ROADMAP.md](CODE_IMPROVEMENT_ROADMAP.md) for details:
+- 100% Console-free game logic (event-driven architecture)
+- Dependency injection (IDataRepository, ILogger, IGameInterface)
+- SOLID principles throughout codebase
+- GameCore refactored from 571 → 240 lines (58% reduction)
+- Comprehensive test coverage (375 tests)
+
+### 🚀 Content Expansion Phase (IN PROGRESS)
+See [CONTENT_EXPANSION_ROADMAP.md](CONTENT_EXPANSION_ROADMAP.md) for the full plan:
+
+**Sprint 1: Foundation** ✅ COMPLETE
+1. ✅ Statistics Tracking System - 40+ tracked stats across combat, economy, progression
+2. ✅ Achievement System - 27 achievements with rewards, categories, and progression tracking
+
+**Sprint 2: Equipment Enhancement**
+3. Equipment-Granted Abilities - Gear grants temporary abilities
+4. Equipment Content Expansion - 3-5x more variety, set bonuses
+
+**Sprint 3: Combat Content**
+5. Enemies & Bosses Expansion - Triple enemy count, boss mechanics
+6. Abilities Expansion - 2-3x abilities per class, ultimates, combos
+
+**Sprint 4: Deep Systems**
+7. Skill Tree System - Branching progression trees per class
+8. Advanced Systems - Legendaries, challenge modes, prestige
 
 ## Credits
 
