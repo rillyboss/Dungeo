@@ -327,5 +327,687 @@
       }
     ],
     "PossibleDrops": []
+  },
+
+  // === EXPANDED ENEMY ROSTER === //
+
+  // DEMONS - Hellish creatures from the abyss
+  "imp": {
+    "Id": "imp",
+    "Name": "Imp",
+    "Level": 0,
+    "Type": "Demon",
+    "MinLevel": 2,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 100
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "hellhound": {
+    "Id": "hellhound",
+    "Name": "Hellhound",
+    "Level": 0,
+    "Type": "Demon",
+    "MinLevel": 4,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_flame_breath",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 80
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "infernal_guard": {
+    "Id": "infernal_guard",
+    "Name": "Infernal Guard",
+    "Level": 0,
+    "Type": "Demon",
+    "MinLevel": 6,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_crushing_blow",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_harden_skin",
+        "UseThreshold": 60
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "dreadlord": {
+    "Id": "dreadlord",
+    "Name": "Dreadlord",
+    "Level": 0,
+    "Type": "Demon",
+    "MinLevel": 8,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 75
+      },
+      {
+        "AbilityId": "enemy_life_drain",
+        "UseThreshold": 50
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "pit_fiend": {
+    "Id": "pit_fiend",
+    "Name": "Pit Fiend",
+    "Level": 0,
+    "Type": "Demon",
+    "MinLevel": 9,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_flame_breath",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_crushing_blow",
+        "UseThreshold": 85
+      },
+      {
+        "AbilityId": "enemy_enrage",
+        "UseThreshold": 40
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // UNDEAD - Risen from the grave
+  "zombie": {
+    "Id": "zombie",
+    "Name": "Zombie",
+    "Level": 0,
+    "Type": "Undead",
+    "MinLevel": 1,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 100
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "ghoul": {
+    "Id": "ghoul",
+    "Name": "Ghoul",
+    "Level": 0,
+    "Type": "Undead",
+    "MinLevel": 2,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_venom_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 80
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "skeleton_archer": {
+    "Id": "skeleton_archer",
+    "Name": "Skeleton Archer",
+    "Level": 0,
+    "Type": "Undead",
+    "MinLevel": 3,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 100
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "vampire_spawn": {
+    "Id": "vampire_spawn",
+    "Name": "Vampire Spawn",
+    "Level": 0,
+    "Type": "Undead",
+    "MinLevel": 6,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_life_drain",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 60
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "lich": {
+    "Id": "lich",
+    "Name": "Lich",
+    "Level": 0,
+    "Type": "Undead",
+    "MinLevel": 8,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 80
+      },
+      {
+        "AbilityId": "enemy_life_drain",
+        "UseThreshold": 70
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // ELEMENTALS - Living manifestations of primal forces
+  "water_elemental": {
+    "Id": "water_elemental",
+    "Name": "Water Elemental",
+    "Level": 0,
+    "Type": "Elemental",
+    "MinLevel": 7,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_life_drain",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 50
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "earth_elemental": {
+    "Id": "earth_elemental",
+    "Name": "Earth Elemental",
+    "Level": 0,
+    "Type": "Elemental",
+    "MinLevel": 7,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_crushing_blow",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_harden_skin",
+        "UseThreshold": 70
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "air_elemental": {
+    "Id": "air_elemental",
+    "Name": "Air Elemental",
+    "Level": 0,
+    "Type": "Elemental",
+    "MinLevel": 7,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 100
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "lightning_elemental": {
+    "Id": "lightning_elemental",
+    "Name": "Lightning Elemental",
+    "Level": 0,
+    "Type": "Elemental",
+    "MinLevel": 8,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 90
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // BEASTS - Savage creatures
+  "giant_spider": {
+    "Id": "giant_spider",
+    "Name": "Giant Spider",
+    "Level": 0,
+    "Type": "Beast",
+    "MinLevel": 2,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_venom_strike",
+        "UseThreshold": 100
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "wyvern": {
+    "Id": "wyvern",
+    "Name": "Wyvern",
+    "Level": 0,
+    "Type": "Beast",
+    "MinLevel": 6,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_venom_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 85
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "manticore": {
+    "Id": "manticore",
+    "Name": "Manticore",
+    "Level": 0,
+    "Type": "Beast",
+    "MinLevel": 7,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_venom_strike",
+        "UseThreshold": 75
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "chimera": {
+    "Id": "chimera",
+    "Name": "Chimera",
+    "Level": 0,
+    "Type": "Beast",
+    "MinLevel": 9,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_flame_breath",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 85
+      },
+      {
+        "AbilityId": "enemy_venom_strike",
+        "UseThreshold": 70
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // CONSTRUCTS - Magical automata
+  "iron_golem": {
+    "Id": "iron_golem",
+    "Name": "Iron Golem",
+    "Level": 0,
+    "Type": "Construct",
+    "MinLevel": 5,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_crushing_blow",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_harden_skin",
+        "UseThreshold": 65
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "animated_armor": {
+    "Id": "animated_armor",
+    "Name": "Animated Armor",
+    "Level": 0,
+    "Type": "Construct",
+    "MinLevel": 4,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_fierce_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_harden_skin",
+        "UseThreshold": 50
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "clockwork_guardian": {
+    "Id": "clockwork_guardian",
+    "Name": "Clockwork Guardian",
+    "Level": 0,
+    "Type": "Construct",
+    "MinLevel": 8,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_quick_strike",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_crushing_blow",
+        "UseThreshold": 80
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // ABERRATIONS - Horrifying otherworldly entities
+  "gibbering_mouther": {
+    "Id": "gibbering_mouther",
+    "Name": "Gibbering Mouther",
+    "Level": 0,
+    "Type": "Aberration",
+    "MinLevel": 4,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 100
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "mind_flayer": {
+    "Id": "mind_flayer",
+    "Name": "Mind Flayer",
+    "Level": 0,
+    "Type": "Aberration",
+    "MinLevel": 8,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 85
+      },
+      {
+        "AbilityId": "enemy_life_drain",
+        "UseThreshold": 60
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "beholder": {
+    "Id": "beholder",
+    "Name": "Beholder",
+    "Level": 0,
+    "Type": "Aberration",
+    "MinLevel": 9,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 90
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // FAE - Mystical forest spirits
+  "pixie": {
+    "Id": "pixie",
+    "Name": "Pixie",
+    "Level": 0,
+    "Type": "Fae",
+    "MinLevel": 2,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 100
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "dryad": {
+    "Id": "dryad",
+    "Name": "Dryad",
+    "Level": 0,
+    "Type": "Fae",
+    "MinLevel": 5,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_life_drain",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_harden_skin",
+        "UseThreshold": 50
+      }
+    ],
+    "PossibleDrops": []
+  },
+  "archfey": {
+    "Id": "archfey",
+    "Name": "Archfey",
+    "Level": 0,
+    "Type": "Fae",
+    "MinLevel": 8,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_dark_bolt",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_curse",
+        "UseThreshold": 80
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // CELESTIALS - Holy beings
+  "angel_warrior": {
+    "Id": "angel_warrior",
+    "Name": "Angel Warrior",
+    "Level": 0,
+    "Type": "Celestial",
+    "MinLevel": 9,
+    "MaxHP": 60,
+    "Attack": 8,
+    "Defense": 3,
+    "Speed": 5,
+    "GoldReward": 30,
+    "ExpReward": 50,
+    "Abilities": [
+      {
+        "AbilityId": "enemy_crushing_blow",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "enemy_harden_skin",
+        "UseThreshold": 75
+      }
+    ],
+    "PossibleDrops": []
   }
 }

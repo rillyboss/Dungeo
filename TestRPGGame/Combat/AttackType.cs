@@ -20,6 +20,9 @@ namespace TestRPGGame.Combat
         Dragon,
         Humanoid,
         Elemental,
-        Construct
+        Construct,
+        Aberration,
+        Fae,
+        Celestial
     }
 }

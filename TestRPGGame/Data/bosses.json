@@ -367,5 +367,261 @@
       }
     ],
     "PossibleDrops": []
+  },
+
+  // === NEW BOSS ENCOUNTERS === //
+
+  // Forest/Fae Boss
+  "corrupted_treant": {
+    "Id": "corrupted_treant",
+    "Name": "The Corrupted Treant",
+    "Level": 5,
+    "Type": "Fae",
+    "IsBoss": true,
+    "MaxHP": 700,
+    "Attack": 55,
+    "Defense": 45,
+    "Speed": 12,
+    "GoldReward": 0,
+    "ExpReward": 0,
+    "Abilities": [
+      {
+        "AbilityId": "boss_earthshaker",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "boss_stone_skin",
+        "UseThreshold": 80
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // Demonic Boss
+  "malphurion": {
+    "Id": "malphurion",
+    "Name": "Malphurion the Abyssal",
+    "Level": 10,
+    "Type": "Demon",
+    "IsBoss": true,
+    "MaxHP": 1300,
+    "Attack": 95,
+    "Defense": 65,
+    "Speed": 28,
+    "GoldReward": 0,
+    "ExpReward": 0,
+    "DefaultBehavior": "aggressive",
+    "Abilities": [
+      {
+        "AbilityId": "boss_inferno_blast",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "boss_void_drain",
+        "UseThreshold": 90
+      },
+      {
+        "AbilityId": "boss_cursed_flames",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "boss_molten_armor",
+        "UseThreshold": 65
+      }
+    ],
+    "Phases": [
+      {
+        "HPThreshold": 100,
+        "BehaviorId": "aggressive",
+        "PhaseMessage": "{name} emerges from the abyss wreathed in hellfire!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_inferno_blast": 2.0,
+          "boss_cursed_flames": 1.7
+        }
+      },
+      {
+        "HPThreshold": 50,
+        "BehaviorId": "berserker",
+        "PhaseMessage": "{name}'s flames intensify as demonic rage consumes him!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_void_drain": 2.5,
+          "boss_molten_armor": 2.2
+        }
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // Ice/Frost Boss
+  "frozen_king": {
+    "Id": "frozen_king",
+    "Name": "The Frozen King",
+    "Level": 7,
+    "Type": "Undead",
+    "IsBoss": true,
+    "MaxHP": 900,
+    "Attack": 70,
+    "Defense": 55,
+    "Speed": 14,
+    "GoldReward": 0,
+    "ExpReward": 0,
+    "Abilities": [
+      {
+        "AbilityId": "boss_dark_regeneration",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "boss_temporal_stun",
+        "UseThreshold": 85
+      },
+      {
+        "AbilityId": "boss_bone_shield",
+        "UseThreshold": 70
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // Aberration Boss
+  "elder_brain": {
+    "Id": "elder_brain",
+    "Name": "Elder Brain",
+    "Level": 11,
+    "Type": "Aberration",
+    "IsBoss": true,
+    "MaxHP": 1400,
+    "Attack": 80,
+    "Defense": 60,
+    "Speed": 15,
+    "GoldReward": 0,
+    "ExpReward": 0,
+    "DefaultBehavior": "cunning",
+    "Abilities": [
+      {
+        "AbilityId": "boss_void_annihilation",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "boss_shadow_torment",
+        "UseThreshold": 95
+      },
+      {
+        "AbilityId": "boss_eternal_darkness",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "boss_void_regeneration",
+        "UseThreshold": 55
+      }
+    ],
+    "Phases": [
+      {
+        "HPThreshold": 100,
+        "BehaviorId": "cunning",
+        "PhaseMessage": "The {name} pulsates with psionic energy...",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_shadow_torment": 2.2,
+          "boss_eternal_darkness": 1.9
+        }
+      },
+      {
+        "HPThreshold": 60,
+        "BehaviorId": "defensive",
+        "PhaseMessage": "The {name} retreats into its shell, regenerating!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_void_regeneration": 3.0
+        }
+      },
+      {
+        "HPThreshold": 30,
+        "BehaviorId": "tactical",
+        "PhaseMessage": "The {name} unleashes its full psychic might!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_void_annihilation": 3.5,
+          "boss_eternal_darkness": 2.8
+        }
+      }
+    ],
+    "PossibleDrops": []
+  },
+
+  // Celestial Boss
+  "seraphim_commander": {
+    "Id": "seraphim_commander",
+    "Name": "Seraphim Commander",
+    "Level": 13,
+    "Type": "Celestial",
+    "IsBoss": true,
+    "MaxHP": 1600,
+    "Attack": 110,
+    "Defense": 80,
+    "Speed": 32,
+    "GoldReward": 0,
+    "ExpReward": 0,
+    "DefaultBehavior": "tactical",
+    "Abilities": [
+      {
+        "AbilityId": "boss_arcane_missiles",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "boss_arcane_shield",
+        "UseThreshold": 75
+      },
+      {
+        "AbilityId": "boss_mana_regeneration",
+        "UseThreshold": 100
+      },
+      {
+        "AbilityId": "boss_flame_breath",
+        "UseThreshold": 90
+      }
+    ],
+    "Phases": [
+      {
+        "HPThreshold": 100,
+        "BehaviorId": "tactical",
+        "PhaseMessage": "The {name} descends in radiant glory!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_arcane_missiles": 2.0,
+          "boss_mana_regeneration": 1.8
+        }
+      },
+      {
+        "HPThreshold": 70,
+        "BehaviorId": "aggressive",
+        "PhaseMessage": "The {name}'s holy wrath manifests as divine flame!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_flame_breath": 2.5,
+          "boss_arcane_shield": 2.0
+        }
+      },
+      {
+        "HPThreshold": 40,
+        "BehaviorId": "defensive",
+        "PhaseMessage": "The {name} shields itself with holy barriers!",
+        "EnabledAbilities": [],
+        "DisabledAbilities": [],
+        "AbilityPriorityBoost": {
+          "boss_arcane_shield": 3.0,
+          "boss_mana_regeneration": 2.5
+        }
+      }
+    ],
+    "PossibleDrops": []
   }
 }

@@ -20,8 +20,8 @@ namespace TestRPGGame.Tests
             var enemyTypes = enemies.Select(e => e.BaseName).Distinct().ToList();
 
             // Assert - Only Tier 1 enemies (MinLevel 1)
-            // Tier 1: Goblin, Bandit, Skeleton Warrior, Wild Beast
-            var tier1Enemies = new[] { "Goblin", "Bandit", "Skeleton Warrior", "Wild Beast" };
+            // Tier 1: Goblin, Bandit, Skeleton Warrior, Wild Beast, Zombie
+            var tier1Enemies = new[] { "Goblin", "Bandit", "Skeleton Warrior", "Wild Beast", "Zombie" };
 
             foreach (var enemyType in enemyTypes)
             {
