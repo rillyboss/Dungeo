@@ -6,5 +6,18 @@
     ],
     "deny": [],
     "ask": []
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "type .claude\\context-enrichment.md"
+          }
+        ]
+      }
+    ]
   }
 }

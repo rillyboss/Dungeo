@@ -75,5 +75,110 @@
     "DefenseMultiplier": 1.5,
     "HPMultiplier": 2.0,
     "MinRarity": 4
+  },
+  "Tattered": {
+    "Id": "Tattered",
+    "Name": "Tattered",
+    "DefenseMultiplier": 0.7,
+    "HPMultiplier": 0.8,
+    "MinRarity": 0
+  },
+  "Rough": {
+    "Id": "Rough",
+    "Name": "Rough",
+    "DefenseMultiplier": 0.75,
+    "HPMultiplier": 0.85,
+    "MinRarity": 0
+  },
+  "Hardened": {
+    "Id": "Hardened",
+    "Name": "Hardened",
+    "DefenseMultiplier": 0.95,
+    "HPMultiplier": 0.95,
+    "MinRarity": 0
+  },
+  "Reinforced": {
+    "Id": "Reinforced",
+    "Name": "Reinforced",
+    "DefenseMultiplier": 1.15,
+    "HPMultiplier": 1.1,
+    "MinRarity": 1
+  },
+  "Sturdy": {
+    "Id": "Sturdy",
+    "Name": "Sturdy",
+    "DefenseMultiplier": 1.2,
+    "HPMultiplier": 1.0,
+    "MinRarity": 1
+  },
+  "Flexible": {
+    "Id": "Flexible",
+    "Name": "Flexible",
+    "DefenseMultiplier": 1.0,
+    "HPMultiplier": 1.15,
+    "MinRarity": 1
+  },
+  "Crystal": {
+    "Id": "Crystal",
+    "Name": "Crystal",
+    "DefenseMultiplier": 1.4,
+    "HPMultiplier": 1.25,
+    "MinRarity": 2
+  },
+  "Enchanted": {
+    "Id": "Enchanted",
+    "Name": "Enchanted",
+    "DefenseMultiplier": 1.35,
+    "HPMultiplier": 1.35,
+    "MinRarity": 2
+  },
+  "Ancient": {
+    "Id": "Ancient",
+    "Name": "Ancient",
+    "DefenseMultiplier": 1.45,
+    "HPMultiplier": 1.3,
+    "MinRarity": 2
+  },
+  "Titanic": {
+    "Id": "Titanic",
+    "Name": "Titanic",
+    "DefenseMultiplier": 1.55,
+    "HPMultiplier": 1.55,
+    "MinRarity": 3
+  },
+  "Demon Scale": {
+    "Id": "Demon Scale",
+    "Name": "Demon Scale",
+    "DefenseMultiplier": 1.65,
+    "HPMultiplier": 1.5,
+    "MinRarity": 3
+  },
+  "Angelic": {
+    "Id": "Angelic",
+    "Name": "Angelic",
+    "DefenseMultiplier": 1.6,
+    "HPMultiplier": 1.6,
+    "MinRarity": 3
+  },
+  "Primeval": {
+    "Id": "Primeval",
+    "Name": "Primeval",
+    "DefenseMultiplier": 1.85,
+    "HPMultiplier": 1.75,
+    "MinRarity": 4
+  },
+  "Cosmic": {
+    "Id": "Cosmic",
+    "Name": "Cosmic",
+    "DefenseMultiplier": 1.75,
+    "HPMultiplier": 1.9,
+    "MinRarity": 4
+  },
+  "Invincible": {
+    "Id": "Invincible",
+    "Name": "Invincible",
+    "DefenseMultiplier": 2.1,
+    "HPMultiplier": 1.6,
+    "MinRarity": 4
   }
 }

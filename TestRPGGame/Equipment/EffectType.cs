@@ -12,6 +12,12 @@ namespace TestRPGGame.Equipment
         Thorns,
         AttackBonus,
         DefenseBonus,
-        SpeedBonus
+        SpeedBonus,
+        ManaRegen,
+        HealthRegen,
+        DodgeChance,
+        BonusGold,
+        Execute,
+        FirstStrike
     }
 }

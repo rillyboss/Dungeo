@@ -9,7 +9,7 @@
     "Name": "of Power",
     "Effects": [
       {
-        "Type": "Mighty",
+        "Type": "AttackBonus",
         "Value": 5,
         "ProcChance": 100
       }
@@ -20,12 +20,12 @@
     "Name": "of the Bear",
     "Effects": [
       {
-        "Type": "Mighty",
+        "Type": "AttackBonus",
         "Value": 8,
         "ProcChance": 100
       },
       {
-        "Type": "Fortified",
+        "Type": "DefenseBonus",
         "Value": 3,
         "ProcChance": 100
       }
@@ -47,7 +47,7 @@
     "Name": "of Swiftness",
     "Effects": [
       {
-        "Type": "Swift",
+        "Type": "SpeedBonus",
         "Value": 5,
         "ProcChance": 100
       }
@@ -74,7 +74,7 @@
         "ProcChance": 25
       },
       {
-        "Type": "CriticalFocus",
+        "Type": "CritBonus",
         "Value": 15,
         "ProcChance": 100
       }
@@ -109,6 +109,215 @@
         "Type": "Stun",
         "Value": 0,
         "ProcChance": 15
+      }
+    ]
+  },
+  "of the Executioner": {
+    "Id": "of the Executioner",
+    "Name": "of the Executioner",
+    "Effects": [
+      {
+        "Type": "Execute",
+        "Value": 50,
+        "ProcChance": 40
+      },
+      {
+        "Type": "CritBonus",
+        "Value": 10,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Haste": {
+    "Id": "of Haste",
+    "Name": "of Haste",
+    "Effects": [
+      {
+        "Type": "FirstStrike",
+        "Value": 35,
+        "ProcChance": 100
+      },
+      {
+        "Type": "SpeedBonus",
+        "Value": 7,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Greed": {
+    "Id": "of Greed",
+    "Name": "of Greed",
+    "Effects": [
+      {
+        "Type": "BonusGold",
+        "Value": 25,
+        "ProcChance": 100
+      },
+      {
+        "Type": "LifeSteal",
+        "Value": 15,
+        "ProcChance": 20
+      }
+    ]
+  },
+  "of the Vampire": {
+    "Id": "of the Vampire",
+    "Name": "of the Vampire",
+    "Effects": [
+      {
+        "Type": "LifeSteal",
+        "Value": 40,
+        "ProcChance": 50
+      }
+    ]
+  },
+  "of Lightning": {
+    "Id": "of Lightning",
+    "Name": "of Lightning",
+    "Effects": [
+      {
+        "Type": "ChainLightning",
+        "Value": 50,
+        "ProcChance": 30
+      }
+    ]
+  },
+  "of Freezing": {
+    "Id": "of Freezing",
+    "Name": "of Freezing",
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "ProcChance": 25
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 7,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Venom": {
+    "Id": "of Venom",
+    "Name": "of Venom",
+    "Effects": [
+      {
+        "Type": "Bleed",
+        "Value": 25,
+        "ProcChance": 45
+      }
+    ]
+  },
+  "of the Archmage": {
+    "Id": "of the Archmage",
+    "Name": "of the Archmage",
+    "Effects": [
+      {
+        "Type": "ManaSiphon",
+        "Value": 15,
+        "ProcChance": 40
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 3,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Precision": {
+    "Id": "of Precision",
+    "Name": "of Precision",
+    "Effects": [
+      {
+        "Type": "CritBonus",
+        "Value": 20,
+        "ProcChance": 100
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Carnage": {
+    "Id": "of Carnage",
+    "Name": "of Carnage",
+    "Effects": [
+      {
+        "Type": "DoubleDamage",
+        "Value": 0,
+        "ProcChance": 30
+      },
+      {
+        "Type": "Bleed",
+        "Value": 20,
+        "ProcChance": 35
+      }
+    ]
+  },
+  "of the Storm": {
+    "Id": "of the Storm",
+    "Name": "of the Storm",
+    "Effects": [
+      {
+        "Type": "ChainLightning",
+        "Value": 45,
+        "ProcChance": 25
+      },
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "ProcChance": 20
+      }
+    ]
+  },
+  "of Immortality": {
+    "Id": "of Immortality",
+    "Name": "of Immortality",
+    "Effects": [
+      {
+        "Type": "LifeSteal",
+        "Value": 30,
+        "ProcChance": 35
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Assassin": {
+    "Id": "of the Assassin",
+    "Name": "of the Assassin",
+    "Effects": [
+      {
+        "Type": "CritBonus",
+        "Value": 25,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Execute",
+        "Value": 60,
+        "ProcChance": 30
+      }
+    ]
+  },
+  "of Ruin": {
+    "Id": "of Ruin",
+    "Name": "of Ruin",
+    "Effects": [
+      {
+        "Type": "AttackBonus",
+        "Value": 10,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DoubleDamage",
+        "Value": 0,
+        "ProcChance": 22
       }
     ]
   }

@@ -94,5 +94,141 @@
     "DefenseMultiplier": 0.0,
     "MagicMultiplier": 0.4,
     "MinRarity": 4
+  },
+  "Wooden": {
+    "Id": "Wooden",
+    "Name": "Wooden",
+    "AttackMultiplier": 0.7,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 0
+  },
+  "Crude": {
+    "Id": "Crude",
+    "Name": "Crude",
+    "AttackMultiplier": 0.75,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 0
+  },
+  "Bronze": {
+    "Id": "Bronze",
+    "Name": "Bronze",
+    "AttackMultiplier": 0.9,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 0
+  },
+  "Sharpened": {
+    "Id": "Sharpened",
+    "Name": "Sharpened",
+    "AttackMultiplier": 1.15,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 1
+  },
+  "Forged": {
+    "Id": "Forged",
+    "Name": "Forged",
+    "AttackMultiplier": 1.1,
+    "DefenseMultiplier": 0.2,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 1
+  },
+  "Balanced": {
+    "Id": "Balanced",
+    "Name": "Balanced",
+    "AttackMultiplier": 1.05,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 1.05,
+    "MinRarity": 1
+  },
+  "Alloyed": {
+    "Id": "Alloyed",
+    "Name": "Alloyed",
+    "AttackMultiplier": 1.2,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 1
+  },
+  "Tempered": {
+    "Id": "Tempered",
+    "Name": "Tempered",
+    "AttackMultiplier": 1.3,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 2
+  },
+  "Runic": {
+    "Id": "Runic",
+    "Name": "Runic",
+    "AttackMultiplier": 1.0,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 1.0,
+    "MinRarity": 2
+  },
+  "Blessed": {
+    "Id": "Blessed",
+    "Name": "Blessed",
+    "AttackMultiplier": 1.1,
+    "DefenseMultiplier": 0.3,
+    "MagicMultiplier": 0.8,
+    "MinRarity": 2
+  },
+  "Cursed": {
+    "Id": "Cursed",
+    "Name": "Cursed",
+    "AttackMultiplier": 1.5,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 2
+  },
+  "Titanic": {
+    "Id": "Titanic",
+    "Name": "Titanic",
+    "AttackMultiplier": 1.6,
+    "DefenseMultiplier": 0.4,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 3
+  },
+  "Void": {
+    "Id": "Void",
+    "Name": "Void",
+    "AttackMultiplier": 1.2,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 1.2,
+    "MinRarity": 3
+  },
+  "Phoenix": {
+    "Id": "Phoenix",
+    "Name": "Phoenix",
+    "AttackMultiplier": 1.45,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.7,
+    "MinRarity": 3
+  },
+  "Primordial": {
+    "Id": "Primordial",
+    "Name": "Primordial",
+    "AttackMultiplier": 1.7,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 1.3,
+    "MinRarity": 4
+  },
+  "Eldritch": {
+    "Id": "Eldritch",
+    "Name": "Eldritch",
+    "AttackMultiplier": 1.5,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 1.6,
+    "MinRarity": 4
+  },
+  "Godslayer": {
+    "Id": "Godslayer",
+    "Name": "Godslayer",
+    "AttackMultiplier": 1.9,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 4
   }
 }

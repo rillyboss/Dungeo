@@ -456,6 +456,48 @@ namespace TestRPGGame.Equipment
                     EffectType.SpeedBonus,
                     value),
 
+                EffectType.ManaRegen => new SpecialEffect(
+                    "Mana Regeneration",
+                    $"+{value} mana per turn",
+                    1.0,
+                    EffectType.ManaRegen,
+                    value),
+
+                EffectType.HealthRegen => new SpecialEffect(
+                    "Health Regeneration",
+                    $"+{value} HP per turn",
+                    1.0,
+                    EffectType.HealthRegen,
+                    value),
+
+                EffectType.DodgeChance => new SpecialEffect(
+                    "Evasion",
+                    $"+{value}% dodge chance",
+                    1.0,
+                    EffectType.DodgeChance,
+                    value),
+
+                EffectType.BonusGold => new SpecialEffect(
+                    "Fortune",
+                    $"+{value}% gold from enemies",
+                    1.0,
+                    EffectType.BonusGold,
+                    value),
+
+                EffectType.Execute => new SpecialEffect(
+                    "Execute",
+                    $"{procChance:P0} chance to deal {value}% bonus damage to enemies below 30% HP",
+                    procChance,
+                    EffectType.Execute,
+                    value),
+
+                EffectType.FirstStrike => new SpecialEffect(
+                    "First Strike",
+                    $"+{value}% damage on first attack in combat",
+                    1.0,
+                    EffectType.FirstStrike,
+                    value),
+
                 _ => null
             };
         }
@@ -543,6 +585,48 @@ namespace TestRPGGame.Equipment
                     1.0,
                     EffectType.SpeedBonus,
                     3 + (int)rarity * 2),
+
+                EffectType.ManaRegen => new SpecialEffect(
+                    "Mana Regeneration",
+                    $"+{2 + (int)rarity} mana per turn",
+                    1.0,
+                    EffectType.ManaRegen,
+                    2 + (int)rarity),
+
+                EffectType.HealthRegen => new SpecialEffect(
+                    "Health Regeneration",
+                    $"+{3 + level} HP per turn",
+                    1.0,
+                    EffectType.HealthRegen,
+                    3 + level),
+
+                EffectType.DodgeChance => new SpecialEffect(
+                    "Evasion",
+                    $"+{5 + (int)rarity * 3}% dodge chance",
+                    1.0,
+                    EffectType.DodgeChance,
+                    5 + (int)rarity * 3),
+
+                EffectType.BonusGold => new SpecialEffect(
+                    "Fortune",
+                    $"+{10 + (int)rarity * 5}% gold from enemies",
+                    1.0,
+                    EffectType.BonusGold,
+                    10 + (int)rarity * 5),
+
+                EffectType.Execute => new SpecialEffect(
+                    "Execute",
+                    $"{(0.2 + rarityBonus):P0} chance to deal {30 + (int)rarity * 10}% bonus damage to enemies below 30% HP",
+                    0.2 + rarityBonus,
+                    EffectType.Execute,
+                    30 + (int)rarity * 10),
+
+                EffectType.FirstStrike => new SpecialEffect(
+                    "First Strike",
+                    $"+{20 + (int)rarity * 10}% damage on first attack in combat",
+                    1.0,
+                    EffectType.FirstStrike,
+                    20 + (int)rarity * 10),
 
                 _ => new SpecialEffect("Unknown", "Unknown effect", 0, type, 0)
             };

@@ -9,7 +9,7 @@
     "Name": "of Protection",
     "Effects": [
       {
-        "Type": "Fortified",
+        "Type": "DefenseBonus",
         "Value": 5,
         "ProcChance": 100
       }
@@ -20,7 +20,7 @@
     "Name": "of the Turtle",
     "Effects": [
       {
-        "Type": "Fortified",
+        "Type": "DefenseBonus",
         "Value": 8,
         "ProcChance": 100
       },
@@ -36,7 +36,7 @@
     "Name": "of Fortitude",
     "Effects": [
       {
-        "Type": "Fortified",
+        "Type": "DefenseBonus",
         "Value": 6,
         "ProcChance": 100
       }
@@ -47,12 +47,12 @@
     "Name": "of Resilience",
     "Effects": [
       {
-        "Type": "Fortified",
+        "Type": "DefenseBonus",
         "Value": 5,
         "ProcChance": 100
       },
       {
-        "Type": "Swift",
+        "Type": "SpeedBonus",
         "Value": 3,
         "ProcChance": 100
       }
@@ -63,7 +63,7 @@
     "Name": "of the Mountain",
     "Effects": [
       {
-        "Type": "Fortified",
+        "Type": "DefenseBonus",
         "Value": 10,
         "ProcChance": 100
       },
@@ -79,7 +79,7 @@
     "Name": "of Invulnerability",
     "Effects": [
       {
-        "Type": "Fortified",
+        "Type": "DefenseBonus",
         "Value": 12,
         "ProcChance": 100
       },
@@ -89,8 +89,258 @@
         "ProcChance": 100
       },
       {
-        "Type": "Swift",
+        "Type": "SpeedBonus",
         "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Guardian": {
+    "Id": "of the Guardian",
+    "Name": "of the Guardian",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 8,
+        "ProcChance": 100
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 4,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Evasion": {
+    "Id": "of Evasion",
+    "Name": "of Evasion",
+    "Effects": [
+      {
+        "Type": "DodgeChance",
+        "Value": 15,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Vitality": {
+    "Id": "of Vitality",
+    "Name": "of Vitality",
+    "Effects": [
+      {
+        "Type": "HealthRegen",
+        "Value": 6,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 4,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Agility": {
+    "Id": "of Agility",
+    "Name": "of Agility",
+    "Effects": [
+      {
+        "Type": "SpeedBonus",
+        "Value": 7,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DodgeChance",
+        "Value": 10,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Tank": {
+    "Id": "of the Tank",
+    "Name": "of the Tank",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 10,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Thorns",
+        "Value": 12,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Regeneration": {
+    "Id": "of Regeneration",
+    "Name": "of Regeneration",
+    "Effects": [
+      {
+        "Type": "HealthRegen",
+        "Value": 5,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 3,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Fortress": {
+    "Id": "of the Fortress",
+    "Name": "of the Fortress",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 14,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Thorns",
+        "Value": 18,
+        "ProcChance": 100
+      },
+      {
+        "Type": "SpeedBonus",
+        "Value": 3,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Warding": {
+    "Id": "of Warding",
+    "Name": "of Warding",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 9,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 4,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Shadows": {
+    "Id": "of Shadows",
+    "Name": "of Shadows",
+    "Effects": [
+      {
+        "Type": "DodgeChance",
+        "Value": 12,
+        "ProcChance": 100
+      },
+      {
+        "Type": "SpeedBonus",
+        "Value": 6,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Colossus": {
+    "Id": "of the Colossus",
+    "Name": "of the Colossus",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 15,
+        "ProcChance": 100
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 7,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Thorns",
+        "Value": 25,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Nimbleness": {
+    "Id": "of Nimbleness",
+    "Name": "of Nimbleness",
+    "Effects": [
+      {
+        "Type": "DodgeChance",
+        "Value": 18,
+        "ProcChance": 100
+      },
+      {
+        "Type": "SpeedBonus",
+        "Value": 8,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Reflection": {
+    "Id": "of Reflection",
+    "Name": "of Reflection",
+    "Effects": [
+      {
+        "Type": "Thorns",
+        "Value": 30,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Berserker": {
+    "Id": "of the Berserker",
+    "Name": "of the Berserker",
+    "Effects": [
+      {
+        "Type": "Thorns",
+        "Value": 20,
+        "ProcChance": 100
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 8,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Eternity": {
+    "Id": "of Eternity",
+    "Name": "of Eternity",
+    "Effects": [
+      {
+        "Type": "HealthRegen",
+        "Value": 8,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 5,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 7,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Phoenix": {
+    "Id": "of the Phoenix",
+    "Name": "of the Phoenix",
+    "Effects": [
+      {
+        "Type": "HealthRegen",
+        "Value": 10,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 6,
         "ProcChance": 100
       }
     ]
