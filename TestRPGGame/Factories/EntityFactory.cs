@@ -67,6 +67,13 @@ namespace TestRPGGame.Factories
 
         private static IAbilityEffect? CreateAbilityEffect(AbilityEffectData data)
         {
+            // NEW FORMAT: Composable effects with EffectKind
+            if (data.Type.ToLower() == "effect" && !string.IsNullOrEmpty(data.EffectKind))
+            {
+                return CreateComposableEffect(data);
+            }
+
+            // OLD FORMAT: Backward compatibility
             return data.Type.ToLower() switch
             {
                 "damage" => new DamageEffect(data.Multiplier, usesMagic: data.Type == "Magic", guaranteedCrit: data.GuaranteedCrit),
@@ -83,6 +90,46 @@ namespace TestRPGGame.Factories
                 "lifesteal" => new LifeStealEffect(data.Multiplier, data.Value),
                 _ => null
             };
+        }
+
+        /// <summary>
+        /// Creates a composable effect using the new data-driven system.
+        /// Parses EffectKind (generic type) and creates effect with custom DisplayName.
+        /// </summary>
+        private static IAbilityEffect? CreateComposableEffect(AbilityEffectData data)
+        {
+            if (string.IsNullOrEmpty(data.EffectKind))
+                return null;
+
+            // Parse the generic effect kind
+            if (!Enum.TryParse<Constants.EffectKind>(data.EffectKind, true, out var effectKind))
+            {
+                throw new ArgumentException($"Unknown EffectKind: {data.EffectKind}");
+            }
+
+            // Create the effect applicator with custom display name and parameters
+            var applicator = new EffectApplicator(
+                effectKind,
+                data.DisplayName ?? data.EffectKind, // Use EffectKind as fallback
+                data.Duration,
+                data.Multiplier,
+                data.Value
+            );
+
+            // Parse composite effects if present (e.g., Banner = AttackBoost + DefenseBoost + SpeedBoost)
+            if (data.CompositeEffects != null && data.CompositeEffects.Count > 0)
+            {
+                applicator.CompositeEffects = new List<(Constants.EffectKind, double, int)>();
+                foreach (var comp in data.CompositeEffects)
+                {
+                    if (Enum.TryParse<Constants.EffectKind>(comp.EffectKind, true, out var compKind))
+                    {
+                        applicator.CompositeEffects.Add((compKind, comp.Multiplier, comp.FlatValue));
+                    }
+                }
+            }
+
+            return applicator;
         }
 
         #endregion

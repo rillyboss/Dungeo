@@ -5,41 +5,49 @@ using TestRPGGame.Constants;
 namespace TestRPGGame.Abilities.Applicators
 {
     /// <summary>
-    /// Applies named buff status effects like Battle Rage and Shield Wall.
-    /// This is an applicator that triggers actual stat modifier status effects.
+    /// OLD FORMAT: Applies named buff status effects like Battle Rage and Shield Wall.
+    /// DEPRECATED: Use EffectApplicator for new abilities.
+    /// Kept for backward compatibility with existing JSON data.
     /// </summary>
     public class BuffApplicator : IAbilityEffect
     {
-        public BuffType BuffType { get; set; }
+        private string _buffName;
         public int Duration { get; set; }
-
-        // Constructor accepting enum
-        public BuffApplicator(BuffType buffType, int duration)
-        {
-            BuffType = buffType;
-            Duration = duration;
-        }
 
         // Constructor accepting string for backward compatibility with JSON deserialization
         public BuffApplicator(string buffName, int duration)
         {
-            BuffType = ParseBuffName(buffName);
+            _buffName = buffName;
             Duration = duration;
         }
 
         public void Execute(AbilityContext context)
         {
             // Apply buff to source (caster buffs themselves)
-            switch (BuffType)
+            // Map old names to StatusEffectFactory methods
+            switch (_buffName)
             {
-                case Constants.BuffType.BattleRage:
+                case "Battle Rage":
                     context.Source.ApplyBattleRage(Duration);
                     break;
-                case Constants.BuffType.ShieldWall:
+                case "Shield Wall":
                     context.Source.ApplyShieldWall(Duration);
                     break;
-                case Constants.BuffType.SmokeScreen:
+                case "Smoke Screen":
                     context.Source.ApplySmokeScreen(Duration);
+                    break;
+                default:
+                    // Try to apply as a generic effect - some abilities might use descriptive names
+                    // For now, default to Battle Rage for attack buffs, Shield Wall for defense
+                    if (_buffName.ToLower().Contains("attack") || _buffName.ToLower().Contains("rage") ||
+                        _buffName.ToLower().Contains("fury") || _buffName.ToLower().Contains("power"))
+                    {
+                        context.Source.ApplyBattleRage(Duration);
+                    }
+                    else
+                    {
+                        context.Source.ApplyShieldWall(Duration);
+                    }
                     break;
             }
 
@@ -48,18 +56,7 @@ namespace TestRPGGame.Abilities.Applicators
 
         public string GetDescription()
         {
-            return $"Apply {BuffType.GetDisplayName()} for {Duration} turns";
-        }
-
-        private static BuffType ParseBuffName(string buffName)
-        {
-            return buffName switch
-            {
-                "Battle Rage" => Constants.BuffType.BattleRage,
-                "Shield Wall" => Constants.BuffType.ShieldWall,
-                "Smoke Screen" => Constants.BuffType.SmokeScreen,
-                _ => throw new System.ArgumentException($"Unknown buff name: {buffName}")
-            };
+            return $"Apply {_buffName} for {Duration} turns";
         }
     }
 }
