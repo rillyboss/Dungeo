@@ -106,8 +106,10 @@
         "ProcChance": 35
       },
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
+        "Duration": 1,
         "ProcChance": 15
       }
     ]
@@ -187,8 +189,10 @@
     "Name": "of Freezing",
     "Effects": [
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
+        "Duration": 1,
         "ProcChance": 25
       },
       {
@@ -267,8 +271,10 @@
         "ProcChance": 25
       },
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
+        "Duration": 1,
         "ProcChance": 20
       }
     ]

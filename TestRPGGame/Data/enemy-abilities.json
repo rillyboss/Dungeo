@@ -127,9 +127,11 @@
         "Multiplier": 1.5
       },
       {
-        "Type": "StatMod",
-        "Value": -5,
-        "Duration": 0
+        "Type": "Effect",
+        "EffectKind": "SpeedReduction",
+        "DisplayName": "Slowed",
+        "FlatValue": 5,
+        "Duration": 3
       }
     ]
   },
@@ -199,8 +201,10 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Enrage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Enraged",
+        "Multiplier": 1.5,
         "Duration": 3
       }
     ]
@@ -219,8 +223,10 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Hardened",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Hardened",
+        "Multiplier": 1.5,
         "Duration": 2
       }
     ]
