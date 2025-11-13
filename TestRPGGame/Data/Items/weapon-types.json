@@ -8,7 +8,8 @@
     "AgilityBonus": 0,
     "DamageVariance": 0.20,
     "Accuracy": 0.90,
-    "SpeedBonus": 0
+    "SpeedBonus": 0,
+    "SignatureAbility": "warrior_power_strike"
   },
   "Axe": {
     "Id": "Axe",
@@ -19,7 +20,8 @@
     "AgilityBonus": -2,
     "DamageVariance": 0.40,
     "Accuracy": 0.80,
-    "SpeedBonus": -2
+    "SpeedBonus": -2,
+    "SignatureAbility": "warrior_whirlwind"
   },
   "Dagger": {
     "Id": "Dagger",
@@ -30,7 +32,8 @@
     "AgilityBonus": 5,
     "DamageVariance": 0.10,
     "Accuracy": 0.95,
-    "SpeedBonus": 5
+    "SpeedBonus": 5,
+    "SignatureAbility": "rogue_backstab"
   },
   "Staff": {
     "Id": "Staff",
@@ -41,7 +44,8 @@
     "AgilityBonus": 0,
     "DamageVariance": 0.08,
     "Accuracy": 0.95,
-    "SpeedBonus": 0
+    "SpeedBonus": 0,
+    "SignatureAbility": "mage_fireball"
   },
   "Bow": {
     "Id": "Bow",
@@ -52,7 +56,8 @@
     "AgilityBonus": 3,
     "DamageVariance": 0.25,
     "Accuracy": 0.85,
-    "SpeedBonus": 3
+    "SpeedBonus": 3,
+    "SignatureAbility": "rogue_assassinate"
   },
   "Spear": {
     "Id": "Spear",
@@ -63,7 +68,8 @@
     "AgilityBonus": 1,
     "DamageVariance": 0.15,
     "Accuracy": 0.92,
-    "SpeedBonus": 1
+    "SpeedBonus": 1,
+    "SignatureAbility": "warrior_reckless_charge"
   },
   "Mace": {
     "Id": "Mace",
@@ -74,7 +80,8 @@
     "AgilityBonus": -1,
     "DamageVariance": 0.18,
     "Accuracy": 0.88,
-    "SpeedBonus": -1
+    "SpeedBonus": -1,
+    "SignatureAbility": "warrior_power_strike"
   },
   "Wand": {
     "Id": "Wand",
@@ -85,7 +92,8 @@
     "AgilityBonus": 2,
     "DamageVariance": 0.12,
     "Accuracy": 0.93,
-    "SpeedBonus": 2
+    "SpeedBonus": 2,
+    "SignatureAbility": "mage_mana_surge"
   },
   "Halberd": {
     "Id": "Halberd",
@@ -96,7 +104,8 @@
     "AgilityBonus": -3,
     "DamageVariance": 0.30,
     "Accuracy": 0.85,
-    "SpeedBonus": -3
+    "SpeedBonus": -3,
+    "SignatureAbility": "warrior_whirlwind"
   },
   "Scythe": {
     "Id": "Scythe",
@@ -107,7 +116,8 @@
     "AgilityBonus": 0,
     "DamageVariance": 0.22,
     "Accuracy": 0.87,
-    "SpeedBonus": 0
+    "SpeedBonus": 0,
+    "SignatureAbility": "rogue_venom_strike"
   },
   "Katana": {
     "Id": "Katana",
@@ -118,7 +128,8 @@
     "AgilityBonus": 4,
     "DamageVariance": 0.12,
     "Accuracy": 0.93,
-    "SpeedBonus": 4
+    "SpeedBonus": 4,
+    "SignatureAbility": "rogue_backstab"
   },
   "Claymore": {
     "Id": "Claymore",
@@ -129,6 +140,7 @@
     "AgilityBonus": -4,
     "DamageVariance": 0.35,
     "Accuracy": 0.82,
-    "SpeedBonus": -4
+    "SpeedBonus": -4,
+    "SignatureAbility": "warrior_whirlwind"
   }
 }

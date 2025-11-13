@@ -1,10 +1,4 @@
 {
-  "hooks": {
-    "user-prompt-submit": {
-      "command": "cat .claude/context-enrichment.md",
-      "description": "Enriches every command with essential context, testing rules, and quick references"
-    }
-  },
   "permissions": {
     "allow": [
       "Bash(dotnet build:*)",

@@ -306,5 +306,81 @@ namespace TestRPGGame.Entities.Player
             // Reset status effects for new battle
             Effects.ClearAll();
         }
+
+        /// <summary>
+        /// Loads and adds abilities granted by equipment.
+        /// Returns the list of ability IDs that were successfully added (not already learned).
+        /// </summary>
+        public List<string> AddEquipmentAbilities(List<string> abilityIds)
+        {
+            var addedAbilityIds = new List<string>();
+
+            foreach (var abilityId in abilityIds)
+            {
+                // Check if player already has this ability (learned permanently)
+                var existingAbility = Abilities.FirstOrDefault(a =>
+                    a.Name.Equals(abilityId, StringComparison.OrdinalIgnoreCase) ||
+                    GetAbilityIdFromName(a.Name).Equals(abilityId, StringComparison.OrdinalIgnoreCase));
+
+                // Only add if not already learned
+                if (existingAbility == null)
+                {
+                    // Load ability data from repository
+                    try
+                    {
+                        var abilityData = _repository.GetAbility(abilityId);
+                        if (abilityData != null)
+                        {
+                            var ability = EntityFactory.CreateAbility(abilityData);
+                            // Mark as equipment-granted so it can be removed when unequipping
+                            ability.IsEquipmentGranted = true;
+                            // Keep as unlocked so it can be used
+                            ability.IsUnlocked = true;
+                            Abilities.Add(ability);
+                            addedAbilityIds.Add(abilityId);
+                        }
+                    }
+                    catch
+                    {
+                        // Ability ID not found in data - skip it
+                    }
+                }
+            }
+
+            return addedAbilityIds;
+        }
+
+        /// <summary>
+        /// Removes equipment-granted abilities by their IDs.
+        /// Only removes if the ability is marked as equipment-granted (not learned permanently).
+        /// </summary>
+        public void RemoveEquipmentAbilities(List<string> abilityIds)
+        {
+            foreach (var abilityId in abilityIds)
+            {
+                // Find abilities matching this ID that are equipment-granted (not learned)
+                var abilityToRemove = Abilities.FirstOrDefault(a =>
+                    a.IsEquipmentGranted &&
+                    (a.Name.Equals(abilityId, StringComparison.OrdinalIgnoreCase) ||
+                     GetAbilityIdFromName(a.Name).Equals(abilityId, StringComparison.OrdinalIgnoreCase) ||
+                     abilityId.EndsWith("_" + GetAbilityIdFromName(a.Name), StringComparison.OrdinalIgnoreCase)));
+
+                if (abilityToRemove != null)
+                {
+                    Abilities.Remove(abilityToRemove);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Helper to extract ability ID from ability name for matching
+        /// </summary>
+        private string GetAbilityIdFromName(string name)
+        {
+            // Ability IDs in data are like "warrior_power_strike"
+            // Names are like "Power Strike"
+            // Convert name to potential ID format
+            return name.ToLower().Replace(" ", "_");
+        }
     }
 }

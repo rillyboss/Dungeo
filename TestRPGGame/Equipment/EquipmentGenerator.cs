@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using TestRPGGame.DataLoading;
 using TestRPGGame.Combat;
@@ -11,6 +12,7 @@ namespace TestRPGGame.Equipment
     public static class EquipmentGenerator
     {
         private static ItemGenerationData? _itemData;
+        private static EquipmentAbilityPools? _abilityPools;
         private static IDataRepository _repository = new JsonDataRepository(); // Default repository
 
         // Strategy pattern: Dictionary dispatch instead of switch statements
@@ -54,6 +56,29 @@ namespace TestRPGGame.Equipment
             {
                 _itemData = _repository.GetItemGenerationData();
             }
+
+            if (_abilityPools == null)
+            {
+                try
+                {
+                    string abilityDataPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Data", "Items", "equipment-abilities.json");
+                    if (File.Exists(abilityDataPath))
+                    {
+                        string json = File.ReadAllText(abilityDataPath);
+                        _abilityPools = System.Text.Json.JsonSerializer.Deserialize<EquipmentAbilityPools>(json,
+                            new System.Text.Json.JsonSerializerOptions
+                            {
+                                ReadCommentHandling = System.Text.Json.JsonCommentHandling.Skip,
+                                PropertyNameCaseInsensitive = true
+                            });
+                    }
+                }
+                catch
+                {
+                    // If ability data can't be loaded, equipment just won't grant abilities
+                    _abilityPools = new EquipmentAbilityPools();
+                }
+            }
         }
 
         public static EquipmentItem GenerateItem(int playerLevel, EquipmentSlot? forceSlot = null, ItemRarity? forceRarity = null)
@@ -87,6 +112,9 @@ namespace TestRPGGame.Equipment
 
             // Generate special effects based on rarity and suffix data
             GenerateSpecialEffects(item, weaponSuffix, armorSuffix);
+
+            // Generate equipment-granted abilities (signature + random for rare items)
+            GenerateAbilities(item, weaponType);
 
             // Calculate price
             item.Price = CalculatePrice(item);
@@ -525,8 +553,113 @@ namespace TestRPGGame.Equipment
             int basePrice = 50 + (item.Level * 30);
             double rarityMultiplier = 1.0 + ((int)item.Rarity * 0.8);
             int effectBonus = item.SpecialEffects.Count * 100;
+            int abilityBonus = item.GrantedAbilityIds.Count * 150; // Abilities are more valuable than effects
 
-            return (int)(basePrice * rarityMultiplier) + effectBonus;
+            return (int)(basePrice * rarityMultiplier) + effectBonus + abilityBonus;
+        }
+
+        private static void GenerateAbilities(EquipmentItem item, WeaponTypeData? weaponType)
+        {
+            // FIRST: Grant signature ability for weapons
+            if (item.Slot == EquipmentSlot.Weapon && weaponType != null && !string.IsNullOrEmpty(weaponType.SignatureAbility))
+            {
+                item.GrantedAbilityIds.Add(weaponType.SignatureAbility);
+            }
+
+            // SECOND: Grant additional random ability for Rare/Epic/Legendary items
+            if (item.Rarity < ItemRarity.Rare || _abilityPools == null)
+                return;
+
+            // Check if this rarity should grant an additional ability (based on chance)
+            if (_abilityPools.RarityChances == null)
+                return;
+
+            string rarityKey = item.Rarity.ToString();
+            if (!_abilityPools.RarityChances.TryGetValue(rarityKey, out double chance))
+                return;
+
+            // Roll for additional ability
+            double roll = RandomProvider.NextDouble();
+            if (roll >= chance)
+                return; // No additional ability granted
+
+            // Determine ability pool based on slot
+            List<string>? abilityPool = GetAbilityPoolForSlot(item.Slot);
+            if (abilityPool == null || abilityPool.Count == 0)
+                return;
+
+            // Select a random ability from the pool (make sure it's not the signature ability)
+            string abilityId = abilityPool[RandomProvider.Next(abilityPool.Count)];
+
+            // Don't add duplicate abilities
+            if (!item.GrantedAbilityIds.Contains(abilityId))
+            {
+                item.GrantedAbilityIds.Add(abilityId);
+            }
+        }
+
+        private static List<string>? GetAbilityPoolForSlot(EquipmentSlot slot)
+        {
+            if (_abilityPools == null)
+                return null;
+
+            return slot switch
+            {
+                EquipmentSlot.Weapon => GetWeaponAbilityPool(),
+                EquipmentSlot.Armor => GetArmorAbilityPool(),
+                EquipmentSlot.Helmet => GetArmorAbilityPool(),
+                EquipmentSlot.Boots => GetArmorAbilityPool(),
+                EquipmentSlot.Gloves => GetArmorAbilityPool(),
+                EquipmentSlot.Ring1 => GetAccessoryAbilityPool(),
+                EquipmentSlot.Ring2 => GetAccessoryAbilityPool(),
+                EquipmentSlot.Amulet => GetAccessoryAbilityPool(),
+                EquipmentSlot.Relic => GetAccessoryAbilityPool(),
+                _ => null
+            };
+        }
+
+        private static List<string>? GetWeaponAbilityPool()
+        {
+            if (_abilityPools?.WeaponAbilities == null)
+                return null;
+
+            // Combine all weapon ability pools into one
+            var allAbilities = new List<string>();
+            if (_abilityPools.WeaponAbilities.Physical != null)
+                allAbilities.AddRange(_abilityPools.WeaponAbilities.Physical);
+            if (_abilityPools.WeaponAbilities.Fire != null)
+                allAbilities.AddRange(_abilityPools.WeaponAbilities.Fire);
+            if (_abilityPools.WeaponAbilities.Ice != null)
+                allAbilities.AddRange(_abilityPools.WeaponAbilities.Ice);
+            if (_abilityPools.WeaponAbilities.Poison != null)
+                allAbilities.AddRange(_abilityPools.WeaponAbilities.Poison);
+            if (_abilityPools.WeaponAbilities.Shadow != null)
+                allAbilities.AddRange(_abilityPools.WeaponAbilities.Shadow);
+
+            return allAbilities.Count > 0 ? allAbilities : null;
+        }
+
+        private static List<string>? GetArmorAbilityPool()
+        {
+            if (_abilityPools?.ArmorAbilities == null)
+                return null;
+
+            // Combine defensive and offensive armor abilities
+            var allAbilities = new List<string>();
+            if (_abilityPools.ArmorAbilities.Defensive != null)
+                allAbilities.AddRange(_abilityPools.ArmorAbilities.Defensive);
+            if (_abilityPools.ArmorAbilities.Offensive != null)
+                allAbilities.AddRange(_abilityPools.ArmorAbilities.Offensive);
+
+            return allAbilities.Count > 0 ? allAbilities : null;
+        }
+
+        private static List<string>? GetAccessoryAbilityPool()
+        {
+            if (_abilityPools?.AccessoryAbilities?.Utility == null)
+                return null;
+
+            return _abilityPools.AccessoryAbilities.Utility;
         }
     }
 }

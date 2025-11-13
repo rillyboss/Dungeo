@@ -8,5 +8,6 @@ namespace TestRPGGame.DataLoading
         public double AttackWeight { get; set; } = 1.0;
         public double MagicWeight { get; set; } = 0.0;
         public int SpeedBonus { get; set; } = 0;
+        public string? SignatureAbility { get; set; }
     }
 }

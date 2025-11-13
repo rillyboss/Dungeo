@@ -37,12 +37,14 @@ namespace TestRPGGame.Equipment
         public AttackType? WeaponAttackType { get; set; }
 
         public List<SpecialEffect> SpecialEffects { get; set; }
+        public List<string> GrantedAbilityIds { get; set; }
         public int Price { get; set; }
 
         public EquipmentItem()
         {
             Name = "";
             SpecialEffects = new List<SpecialEffect>();
+            GrantedAbilityIds = new List<string>();
         }
 
         public ConsoleColor GetRarityColor()

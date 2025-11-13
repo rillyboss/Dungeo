@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TestRPGGame.Equipment;
 using TestRPGGame.Interfaces;
+using TestRPGGame.Abilities;
 
 namespace TestRPGGame.Entities.Player
 {
@@ -21,6 +22,9 @@ namespace TestRPGGame.Entities.Player
             { EquipmentSlot.Amulet, null },
             { EquipmentSlot.Relic, null }
         };
+
+        // Track which abilities are granted by which equipment (for removal on unequip)
+        private readonly Dictionary<EquipmentSlot, List<string>> _grantedAbilities = new();
 
         // Public properties that wrap dictionary access (preserve API compatibility)
         public EquipmentItem? Weapon
@@ -109,7 +113,7 @@ namespace TestRPGGame.Entities.Player
                     case InventoryActionType.UnequipItem:
                         if (action.Slot.HasValue)
                         {
-                            ProcessUnequip(action.Slot.Value, gameInterface);
+                            ProcessUnequip(player, action.Slot.Value, gameInterface);
                         }
                         break;
 
@@ -153,12 +157,15 @@ namespace TestRPGGame.Entities.Player
             // Special handling for ring slots (can use either Ring1 or Ring2)
             if (item.Slot == EquipmentSlot.Ring1 || item.Slot == EquipmentSlot.Ring2)
             {
+                EquipmentSlot targetSlot;
                 if (_slots[EquipmentSlot.Ring1] == null)
                 {
+                    targetSlot = EquipmentSlot.Ring1;
                     _slots[EquipmentSlot.Ring1] = item;
                 }
                 else if (_slots[EquipmentSlot.Ring2] == null)
                 {
+                    targetSlot = EquipmentSlot.Ring2;
                     _slots[EquipmentSlot.Ring2] = item;
                 }
                 else
@@ -166,15 +173,22 @@ namespace TestRPGGame.Entities.Player
                     // Both ring slots full, replace based on original slot preference
                     if (item.Slot == EquipmentSlot.Ring1)
                     {
+                        targetSlot = EquipmentSlot.Ring1;
                         unequipped = _slots[EquipmentSlot.Ring1];
+                        RemoveAbilitiesFromEquipment(player, EquipmentSlot.Ring1);
                         _slots[EquipmentSlot.Ring1] = item;
                     }
                     else
                     {
+                        targetSlot = EquipmentSlot.Ring2;
                         unequipped = _slots[EquipmentSlot.Ring2];
+                        RemoveAbilitiesFromEquipment(player, EquipmentSlot.Ring2);
                         _slots[EquipmentSlot.Ring2] = item;
                     }
                 }
+
+                // Grant abilities from the ring in the correct slot
+                GrantAbilitiesFromEquipment(player, item, targetSlot);
             }
             else
             {
@@ -191,7 +205,17 @@ namespace TestRPGGame.Entities.Player
                 }
 
                 unequipped = _slots[item.Slot];
+
+                // Remove abilities from old item before replacing
+                if (unequipped != null)
+                {
+                    RemoveAbilitiesFromEquipment(player, item.Slot);
+                }
+
                 _slots[item.Slot] = item;
+
+                // Grant abilities from new equipment (non-ring items)
+                GrantAbilitiesFromEquipment(player, item, item.Slot);
             }
 
             if (unequipped != null)
@@ -209,7 +233,7 @@ namespace TestRPGGame.Entities.Player
             });
         }
 
-        private void ProcessUnequip(EquipmentSlot slot, IGameInterface gameInterface)
+        private void ProcessUnequip(Player player, EquipmentSlot slot, IGameInterface gameInterface)
         {
             // Dictionary-based approach: no switch statement needed
             if (!_slots.ContainsKey(slot))
@@ -226,6 +250,9 @@ namespace TestRPGGame.Entities.Player
 
             if (item != null)
             {
+                // Remove granted abilities before unequipping
+                RemoveAbilitiesFromEquipment(player, slot);
+
                 _slots[slot] = null;
                 BackpackItems.Add(item);
                 gameInterface.OnEvent(new GameEvents.InfoMessageEvent
@@ -303,6 +330,39 @@ namespace TestRPGGame.Entities.Player
             }
 
             return effects;
+        }
+
+        /// <summary>
+        /// Grants abilities from equipped item to the player
+        /// </summary>
+        private void GrantAbilitiesFromEquipment(Player player, EquipmentItem item, EquipmentSlot slot)
+        {
+            if (item.GrantedAbilityIds.Count == 0)
+                return;
+
+            // Add abilities to player and track which ones were added
+            var addedAbilityIds = player.AddEquipmentAbilities(item.GrantedAbilityIds);
+
+            // Track which abilities this equipment slot granted
+            if (addedAbilityIds.Count > 0)
+            {
+                _grantedAbilities[slot] = addedAbilityIds;
+            }
+        }
+
+        /// <summary>
+        /// Removes abilities that were granted by equipment in this slot
+        /// </summary>
+        private void RemoveAbilitiesFromEquipment(Player player, EquipmentSlot slot)
+        {
+            if (_grantedAbilities.TryGetValue(slot, out var abilityIds))
+            {
+                // Remove the abilities from player
+                player.RemoveEquipmentAbilities(abilityIds);
+
+                // Clear tracking
+                _grantedAbilities.Remove(slot);
+            }
         }
     }
 }

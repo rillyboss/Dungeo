@@ -1,0 +1,62 @@
+{
+  // Equipment ability pools - abilities that can be granted by equipment
+  // Equipment grants temporary access to abilities while equipped
+  // Players can still learn these abilities permanently
+
+  "WeaponAbilities": {
+    "Physical": [
+      "warrior_power_strike",
+      "warrior_whirlwind",
+      "warrior_reckless_charge",
+      "rogue_backstab",
+      "rogue_assassinate"
+    ],
+    "Fire": [
+      "mage_fireball",
+      "mage_meteor_strike"
+    ],
+    "Ice": [
+      "mage_ice_lance",
+      "mage_frost_nova"
+    ],
+    "Poison": [
+      "rogue_poison_blade",
+      "rogue_venom_strike"
+    ],
+    "Shadow": [
+      "rogue_shadow_step"
+    ]
+  },
+
+  "ArmorAbilities": {
+    "Defensive": [
+      "warrior_shield_wall",
+      "mage_arcane_barrier",
+      "rogue_smoke_bomb"
+    ],
+    "Offensive": [
+      "warrior_battle_rage",
+      "warrior_blood_fury",
+      "mage_mana_surge"
+    ]
+  },
+
+  "AccessoryAbilities": {
+    // Rings, Amulets, Relics can grant utility abilities
+    "Utility": [
+      "mage_mana_surge",
+      "rogue_shadow_step",
+      "warrior_battle_rage",
+      "mage_arcane_barrier"
+    ]
+  },
+
+  // Rarity determines chance to grant an ability
+  "RarityChances": {
+    "Common": 0.00,
+    "Uncommon": 0.00,
+    "Rare": 0.15,
+    "Epic": 0.35,
+    "Legendary": 0.65
+  }
+}

@@ -20,6 +20,12 @@ namespace TestRPGGame.Abilities
         /// </summary>
         public bool Priority { get; set; }
 
+        /// <summary>
+        /// If true, this ability was granted by equipment (not learned)
+        /// Equipment-granted abilities can be removed when unequipping
+        /// </summary>
+        public bool IsEquipmentGranted { get; set; }
+
         public Ability(string name, int manaCost, int cooldown, string description, AbilityType type,
                       int unlockLevel = 1, int purchaseCost = 0)
         {
