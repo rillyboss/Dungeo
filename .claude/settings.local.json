@@ -4,7 +4,9 @@
       "WebFetch(domain:www.reddit.com)",
       "Bash(cat:*)",
       "Bash(dotnet test:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit -m \"$(cat <<''EOF''\nfeat: Add 6 new dynamic abilities + redesign hooks system (v3)\n\nNew Abilities (2 per class):\n- Warrior: Reckless Charge (priority stun), Blood Fury (life steal)\n- Mage: Frost Nova (freeze + stun), Arcane Barrier (defensive shield)\n- Rogue: Venom Strike (burst + DoT), Smoke Bomb (dodge + defense buff)\n\nSmoke Screen Buff System:\n- Added SmokeScreen to BuffType enum and StatusEffectId\n- Implemented factory methods in StatusEffectFactory\n- Integrated into BuffApplicator\n- 30% damage reduction defensive buff\n\nHooks System v3 (simplified):\n- Replaced complex bash scripts with simple \"cat .claude/context-enrichment.md\"\n- Universal enrichment on every command (~160 lines)\n- Includes testing rules, commit format, quick refs, critical don''ts\n- Removed entire scripts/ directory (10 old bash hooks)\n- New .claude/settings.json with one-line hook config\n\nTest Updates:\n- Updated PlayerTests.cs ability count expectation (4 → 6)\n- All 375 tests passing\n\nDocumentation:\n- Created HOOKS_V3_GUIDE.md (complete v3 documentation)\n- Created SESSION_SUMMARY.md (session recap)\n- Updated .claude/context-enrichment.md (universal context)\n\n🤖 Generated with [Claude Code](https://claude.com/claude-code)\n\nCo-Authored-By: Claude <noreply@anthropic.com>\nEOF\n)\")",
+      "Bash(rm:*)"
     ],
     "deny": [],
     "ask": []
