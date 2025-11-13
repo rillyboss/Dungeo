@@ -138,6 +138,568 @@
     ]
   },
 
+  // === WARRIOR EXPANSION (24 new abilities) === //
+
+  // BERSERKER TREE - Rage and high-risk offense
+  "warrior_cleave": {
+    "Id": "warrior_cleave",
+    "Name": "Cleave",
+    "Description": "Sweeping strike for 1.8x-2.2x damage (95% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 15,
+    "Cooldown": 2,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 3,
+    "PurchaseCost": 150,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.0,
+        "MinMultiplier": 1.8,
+        "MaxMultiplier": 2.2,
+        "Accuracy": 0.95
+      }
+    ]
+  },
+  "warrior_execute": {
+    "Id": "warrior_execute",
+    "Name": "Execute",
+    "Description": "Finishing blow - deals 5.0x damage if enemy below 30% HP! (90% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 50,
+    "Cooldown": 6,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 9,
+    "PurchaseCost": 400,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 5.0,
+        "MinMultiplier": 4.5,
+        "MaxMultiplier": 5.5,
+        "Accuracy": 0.90
+      }
+    ]
+  },
+  "warrior_enrage": {
+    "Id": "warrior_enrage",
+    "Name": "Enrage",
+    "Description": "Increase attack by 80% for 2 turns, but reduce defense by 30%",
+    "PlayerClass": "Warrior",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 250,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Battle Rage",
+        "Duration": 2
+      }
+    ]
+  },
+  "warrior_bloodlust": {
+    "Id": "warrior_bloodlust",
+    "Name": "Bloodlust",
+    "Description": "Heal 10 HP per hit for 3 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 30,
+    "Cooldown": 5,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 7,
+    "PurchaseCost": 300,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Battle Rage",
+        "Duration": 3
+      }
+    ]
+  },
+  "warrior_rampage": {
+    "Id": "warrior_rampage",
+    "Name": "Rampage",
+    "Description": "**ULTIMATE** - 3 rapid strikes for 2.0x damage each (92% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 60,
+    "Cooldown": 8,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 12,
+    "PurchaseCost": 500,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.0,
+        "MinMultiplier": 1.9,
+        "MaxMultiplier": 2.1,
+        "Accuracy": 0.92
+      }
+    ]
+  },
+
+  // TANK TREE - Defense and mitigation
+  "warrior_iron_skin": {
+    "Id": "warrior_iron_skin",
+    "Name": "Iron Skin",
+    "Description": "Increase defense by 60% for 3 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 30,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 4,
+    "PurchaseCost": 180,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Shield Wall",
+        "Duration": 3
+      }
+    ]
+  },
+  "warrior_last_stand": {
+    "Id": "warrior_last_stand",
+    "Name": "Last Stand",
+    "Description": "When HP drops below 30%, gain 100% defense for 2 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 40,
+    "Cooldown": 7,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 10,
+    "PurchaseCost": 450,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Shield Wall",
+        "Duration": 2
+      }
+    ]
+  },
+  "warrior_retaliate": {
+    "Id": "warrior_retaliate",
+    "Name": "Retaliate",
+    "Description": "Reflect 50% of damage taken for 3 turns (Thorns)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 270,
+    "Effects": [
+      {
+        "Type": "Thorns",
+        "Value": 50,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "warrior_second_wind": {
+    "Id": "warrior_second_wind",
+    "Name": "Second Wind",
+    "Description": "Heal 60 HP instantly",
+    "PlayerClass": "Warrior",
+    "ManaCost": 40,
+    "Cooldown": 6,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 220,
+    "Effects": [
+      {
+        "Type": "Heal",
+        "Value": 60,
+        "Duration": 0,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "warrior_fortify": {
+    "Id": "warrior_fortify",
+    "Name": "Fortify",
+    "Description": "Gain shield absorbing 120 damage for 4 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 45,
+    "Cooldown": 6,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 11,
+    "PurchaseCost": 480,
+    "Effects": [
+      {
+        "Type": "Shield",
+        "Value": 120,
+        "Duration": 4,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+
+  // WEAPON MASTER TREE - Varied weapon techniques
+  "warrior_overhead_smash": {
+    "Id": "warrior_overhead_smash",
+    "Name": "Overhead Smash",
+    "Description": "Devastating overhead strike for 2.8x-3.2x damage (88% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 30,
+    "Cooldown": 4,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 4,
+    "PurchaseCost": 190,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.0,
+        "MinMultiplier": 2.8,
+        "MaxMultiplier": 3.2,
+        "Accuracy": 0.88
+      }
+    ]
+  },
+  "warrior_impale": {
+    "Id": "warrior_impale",
+    "Name": "Impale",
+    "Description": "Pierce for 2.0x-2.4x damage + bleed for 20 damage over 4 turns (92% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 230,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.2,
+        "MinMultiplier": 2.0,
+        "MaxMultiplier": 2.4,
+        "Accuracy": 0.92
+      },
+      {
+        "Type": "DamageOverTime",
+        "Value": 20,
+        "Duration": 4,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "warrior_mortal_strike": {
+    "Id": "warrior_mortal_strike",
+    "Name": "Mortal Strike",
+    "Description": "Heavy strike for 3.5x-4.0x damage - reduces enemy healing by 50% for 3 turns (87% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 45,
+    "Cooldown": 6,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 9,
+    "PurchaseCost": 420,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.75,
+        "MinMultiplier": 3.5,
+        "MaxMultiplier": 4.0,
+        "Accuracy": 0.87
+      }
+    ]
+  },
+  "warrior_thunderous_blow": {
+    "Id": "warrior_thunderous_blow",
+    "Name": "Thunderous Blow",
+    "Description": "Thundering strike for 2.5x-3.0x damage + stun for 1 turn (90% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 40,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 8,
+    "PurchaseCost": 350,
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "Duration": 1,
+        "Multiplier": 2.75,
+        "MinMultiplier": 2.5,
+        "MaxMultiplier": 3.0,
+        "Accuracy": 0.90
+      }
+    ]
+  },
+  "warrior_blade_storm": {
+    "Id": "warrior_blade_storm",
+    "Name": "Blade Storm",
+    "Description": "**ULTIMATE** - Spin in a fury, dealing 2.5x damage and hitting 4 times! (88% accuracy per hit)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 70,
+    "Cooldown": 9,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 13,
+    "PurchaseCost": 550,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.5,
+        "MinMultiplier": 2.3,
+        "MaxMultiplier": 2.7,
+        "Accuracy": 0.88
+      }
+    ]
+  },
+
+  // WARLORD TREE - Leadership and tactics
+  "warrior_rallying_cry": {
+    "Id": "warrior_rallying_cry",
+    "Name": "Rallying Cry",
+    "Description": "Restore 40 HP and 30 mana",
+    "PlayerClass": "Warrior",
+    "ManaCost": 35,
+    "Cooldown": 6,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 7,
+    "PurchaseCost": 310,
+    "Effects": [
+      {
+        "Type": "Heal",
+        "Value": 40,
+        "Duration": 0,
+        "Multiplier": 1.0
+      },
+      {
+        "Type": "Restore",
+        "Value": 30,
+        "Duration": 0
+      }
+    ]
+  },
+  "warrior_war_cry": {
+    "Id": "warrior_war_cry",
+    "Name": "War Cry",
+    "Description": "Increase attack and speed by 30% for 3 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 30,
+    "Cooldown": 5,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 240,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Battle Rage",
+        "Duration": 3
+      }
+    ]
+  },
+  "warrior_banner": {
+    "Id": "warrior_banner",
+    "Name": "Banner of Valor",
+    "Description": "Plant banner - gain 20 HP regen per turn for 5 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 40,
+    "Cooldown": 7,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 10,
+    "PurchaseCost": 460,
+    "Effects": [
+      {
+        "Type": "HealOverTime",
+        "Value": 20,
+        "Duration": 5,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "warrior_commanding_shout": {
+    "Id": "warrior_commanding_shout",
+    "Name": "Commanding Shout",
+    "Description": "Increase all stats by 25% for 4 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 50,
+    "Cooldown": 7,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 11,
+    "PurchaseCost": 490,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Battle Rage",
+        "Duration": 4
+      }
+    ]
+  },
+  "warrior_gladiators_resolve": {
+    "Id": "warrior_gladiators_resolve",
+    "Name": "Gladiator's Resolve",
+    "Description": "**ULTIMATE** - Become unstoppable! 3x damage, 2x defense, immunity to stuns for 3 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 80,
+    "Cooldown": 10,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 14,
+    "PurchaseCost": 600,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Shield Wall",
+        "Duration": 3
+      }
+    ]
+  },
+
+  // UTILITY & HYBRID
+  "warrior_hamstring": {
+    "Id": "warrior_hamstring",
+    "Name": "Hamstring",
+    "Description": "Quick strike for 1.5x damage + slow enemy (-5 speed) for 3 turns (95% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 20,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 3,
+    "PurchaseCost": 160,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 1.5,
+        "MinMultiplier": 1.4,
+        "MaxMultiplier": 1.6,
+        "Accuracy": 0.95
+      },
+      {
+        "Type": "StatMod",
+        "Value": -5,
+        "Duration": 3
+      }
+    ]
+  },
+  "warrior_taunt": {
+    "Id": "warrior_taunt",
+    "Name": "Taunt",
+    "Description": "Force enemy to attack - reduce their accuracy by 20% for 2 turns",
+    "PlayerClass": "Warrior",
+    "ManaCost": 25,
+    "Cooldown": 4,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 4,
+    "PurchaseCost": 200,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Shield Wall",
+        "Duration": 2
+      }
+    ]
+  },
+  "warrior_revenge": {
+    "Id": "warrior_revenge",
+    "Name": "Revenge",
+    "Description": "Counter-attack! Deal 3.0x damage after taking damage (triggers automatically, 90% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 8,
+    "PurchaseCost": 380,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.0,
+        "MinMultiplier": 2.8,
+        "MaxMultiplier": 3.2,
+        "Accuracy": 0.90
+      }
+    ]
+  },
+  "warrior_heroic_leap": {
+    "Id": "warrior_heroic_leap",
+    "Name": "Heroic Leap",
+    "Description": "Leap to enemy for 2.0x-2.5x damage + dodge next attack - goes first! (92% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "Priority": true,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 280,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.25,
+        "MinMultiplier": 2.0,
+        "MaxMultiplier": 2.5,
+        "Accuracy": 0.92
+      },
+      {
+        "Type": "Dodge",
+        "Duration": 1
+      }
+    ]
+  },
+
   // Mage Abilities
   "mage_fireball": {
     "Id": "mage_fireball",
@@ -277,6 +839,580 @@
         "Type": "Shield",
         "Value": 80,
         "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+
+  // === MAGE EXPANSION (24 new abilities) === //
+
+  // PYROMANCER TREE - Fire damage and burning
+  "mage_flame_blast": {
+    "Id": "mage_flame_blast",
+    "Name": "Flame Blast",
+    "Description": "Quick fire bolt for 2.0x-2.6x magic damage (92% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 20,
+    "Cooldown": 2,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 3,
+    "PurchaseCost": 150,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.3,
+        "MinMultiplier": 2.0,
+        "MaxMultiplier": 2.6,
+        "Accuracy": 0.92
+      }
+    ]
+  },
+  "mage_ignite": {
+    "Id": "mage_ignite",
+    "Name": "Ignite",
+    "Description": "Set enemy on fire - 30 burn damage over 5 turns",
+    "PlayerClass": "Mage",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 260,
+    "Effects": [
+      {
+        "Type": "DamageOverTime",
+        "Value": 30,
+        "Duration": 5,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "mage_pyroblast": {
+    "Id": "mage_pyroblast",
+    "Name": "Pyroblast",
+    "Description": "Massive fireball for 4.0x-5.0x magic damage + 25 burn over 4 turns (82% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 55,
+    "Cooldown": 7,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 10,
+    "PurchaseCost": 450,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 4.5,
+        "MinMultiplier": 4.0,
+        "MaxMultiplier": 5.0,
+        "Accuracy": 0.82
+      },
+      {
+        "Type": "DamageOverTime",
+        "Value": 25,
+        "Duration": 4,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "mage_combustion": {
+    "Id": "mage_combustion",
+    "Name": "Combustion",
+    "Description": "Increase fire damage by 100% for next 3 fire spells",
+    "PlayerClass": "Mage",
+    "ManaCost": 40,
+    "Cooldown": 6,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 9,
+    "PurchaseCost": 420,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Battle Rage",
+        "Duration": 3
+      }
+    ]
+  },
+  "mage_inferno": {
+    "Id": "mage_inferno",
+    "Name": "Inferno",
+    "Description": "**ULTIMATE** - Summon inferno dealing 3.0x damage + 40 burn over 6 turns (88% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 70,
+    "Cooldown": 9,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 13,
+    "PurchaseCost": 550,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.0,
+        "MinMultiplier": 2.8,
+        "MaxMultiplier": 3.2,
+        "Accuracy": 0.88
+      },
+      {
+        "Type": "DamageOverTime",
+        "Value": 40,
+        "Duration": 6,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+
+  // CRYOMANCER TREE - Ice damage and freezing
+  "mage_frost_bolt": {
+    "Id": "mage_frost_bolt",
+    "Name": "Frost Bolt",
+    "Description": "Ice shard for 2.2x-2.7x magic damage (93% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 20,
+    "Cooldown": 2,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 3,
+    "PurchaseCost": 150,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.45,
+        "MinMultiplier": 2.2,
+        "MaxMultiplier": 2.7,
+        "Accuracy": 0.93
+      }
+    ]
+  },
+  "mage_blizzard": {
+    "Id": "mage_blizzard",
+    "Name": "Blizzard",
+    "Description": "Freezing storm for 3.0x-3.6x magic damage + slow enemy for 3 turns (86% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 45,
+    "Cooldown": 6,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 8,
+    "PurchaseCost": 360,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.3,
+        "MinMultiplier": 3.0,
+        "MaxMultiplier": 3.6,
+        "Accuracy": 0.86
+      },
+      {
+        "Type": "StatMod",
+        "Value": -4,
+        "Duration": 3
+      }
+    ]
+  },
+  "mage_ice_block": {
+    "Id": "mage_ice_block",
+    "Name": "Ice Block",
+    "Description": "Encase in ice - become invulnerable but can't act for 1 turn",
+    "PlayerClass": "Mage",
+    "ManaCost": 50,
+    "Cooldown": 8,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 11,
+    "PurchaseCost": 480,
+    "Effects": [
+      {
+        "Type": "Shield",
+        "Value": 999,
+        "Duration": 1,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "mage_ice_shards": {
+    "Id": "mage_ice_shards",
+    "Name": "Ice Shards",
+    "Description": "Barrage of ice for 2.5x damage, hits 3 times (90% accuracy each)",
+    "PlayerClass": "Mage",
+    "ManaCost": 45,
+    "Cooldown": 6,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 9,
+    "PurchaseCost": 410,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.5,
+        "MinMultiplier": 2.3,
+        "MaxMultiplier": 2.7,
+        "Accuracy": 0.90
+      }
+    ]
+  },
+  "mage_absolute_zero": {
+    "Id": "mage_absolute_zero",
+    "Name": "Absolute Zero",
+    "Description": "**ULTIMATE** - Freeze for 5.0x magic damage + stun for 2 turns (85% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 75,
+    "Cooldown": 10,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 14,
+    "PurchaseCost": 600,
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "Duration": 2,
+        "Multiplier": 5.0,
+        "MinMultiplier": 4.5,
+        "MaxMultiplier": 5.5,
+        "Accuracy": 0.85
+      }
+    ]
+  },
+
+  // ARCANIST TREE - Pure arcane damage
+  "mage_arcane_blast": {
+    "Id": "mage_arcane_blast",
+    "Name": "Arcane Blast",
+    "Description": "Pure magic for 2.3x-2.9x damage (91% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 25,
+    "Cooldown": 3,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 4,
+    "PurchaseCost": 180,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.6,
+        "MinMultiplier": 2.3,
+        "MaxMultiplier": 2.9,
+        "Accuracy": 0.91
+      }
+    ]
+  },
+  "mage_arcane_explosion": {
+    "Id": "mage_arcane_explosion",
+    "Name": "Arcane Explosion",
+    "Description": "Explosive arcane burst for 3.5x-4.2x magic damage (84% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 50,
+    "Cooldown": 6,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 8,
+    "PurchaseCost": 370,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.85,
+        "MinMultiplier": 3.5,
+        "MaxMultiplier": 4.2,
+        "Accuracy": 0.84
+      }
+    ]
+  },
+  "mage_time_warp": {
+    "Id": "mage_time_warp",
+    "Name": "Time Warp",
+    "Description": "Increase speed by 50% for 4 turns",
+    "PlayerClass": "Mage",
+    "ManaCost": 35,
+    "Cooldown": 6,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 7,
+    "PurchaseCost": 320,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Battle Rage",
+        "Duration": 4
+      }
+    ]
+  },
+  "mage_spell_power": {
+    "Id": "mage_spell_power",
+    "Name": "Spell Power",
+    "Description": "Increase magic damage by 70% for 3 turns",
+    "PlayerClass": "Mage",
+    "ManaCost": 40,
+    "Cooldown": 6,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 280,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Battle Rage",
+        "Duration": 3
+      }
+    ]
+  },
+  "mage_arcane_power": {
+    "Id": "mage_arcane_power",
+    "Name": "Arcane Power",
+    "Description": "**ULTIMATE** - Channel pure arcane for 6.0x magic damage (80% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 80,
+    "Cooldown": 9,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 12,
+    "PurchaseCost": 530,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 6.0,
+        "MinMultiplier": 5.5,
+        "MaxMultiplier": 6.5,
+        "Accuracy": 0.80
+      }
+    ]
+  },
+
+  // NECROMANCER TREE - Dark magic and drains
+  "mage_shadow_bolt": {
+    "Id": "mage_shadow_bolt",
+    "Name": "Shadow Bolt",
+    "Description": "Dark energy for 2.4x-3.0x magic damage (89% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 25,
+    "Cooldown": 3,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 4,
+    "PurchaseCost": 190,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.7,
+        "MinMultiplier": 2.4,
+        "MaxMultiplier": 3.0,
+        "Accuracy": 0.89
+      }
+    ]
+  },
+  "mage_life_drain": {
+    "Id": "mage_life_drain",
+    "Name": "Life Drain",
+    "Description": "Steal 2.0x-2.5x damage as HP + heal 50% of damage dealt (92% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 40,
+    "Cooldown": 5,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 7,
+    "PurchaseCost": 330,
+    "Effects": [
+      {
+        "Type": "LifeSteal",
+        "Value": 50,
+        "Duration": 0,
+        "Multiplier": 2.25,
+        "MinMultiplier": 2.0,
+        "MaxMultiplier": 2.5,
+        "Accuracy": 0.92
+      }
+    ]
+  },
+  "mage_death_coil": {
+    "Id": "mage_death_coil",
+    "Name": "Death Coil",
+    "Description": "Unholy bolt for 3.0x-3.8x magic damage + 20 shadow damage over 3 turns (87% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 45,
+    "Cooldown": 6,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 10,
+    "PurchaseCost": 440,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 3.4,
+        "MinMultiplier": 3.0,
+        "MaxMultiplier": 3.8,
+        "Accuracy": 0.87
+      },
+      {
+        "Type": "DamageOverTime",
+        "Value": 20,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "mage_curse_of_weakness": {
+    "Id": "mage_curse_of_weakness",
+    "Name": "Curse of Weakness",
+    "Description": "Curse enemy - reduce attack by 40% for 4 turns",
+    "PlayerClass": "Mage",
+    "ManaCost": 35,
+    "Cooldown": 6,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 240,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Battle Rage",
+        "Duration": 4
+      }
+    ]
+  },
+  "mage_dark_ritual": {
+    "Id": "mage_dark_ritual",
+    "Name": "Dark Ritual",
+    "Description": "**ULTIMATE** - Sacrifice 20 HP to deal 7.0x dark magic damage (95% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 60,
+    "Cooldown": 8,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 13,
+    "PurchaseCost": 560,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 7.0,
+        "MinMultiplier": 6.5,
+        "MaxMultiplier": 7.5,
+        "Accuracy": 0.95
+      }
+    ]
+  },
+
+  // UTILITY & HYBRID
+  "mage_blink": {
+    "Id": "mage_blink",
+    "Name": "Blink",
+    "Description": "Teleport away - dodge next 2 attacks",
+    "PlayerClass": "Mage",
+    "ManaCost": 30,
+    "Cooldown": 5,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 230,
+    "Effects": [
+      {
+        "Type": "Dodge",
+        "Duration": 2
+      }
+    ]
+  },
+  "mage_mana_shield": {
+    "Id": "mage_mana_shield",
+    "Name": "Mana Shield",
+    "Description": "Convert 40 mana into 100 shield for 3 turns",
+    "PlayerClass": "Mage",
+    "ManaCost": 40,
+    "Cooldown": 6,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 9,
+    "PurchaseCost": 400,
+    "Effects": [
+      {
+        "Type": "Shield",
+        "Value": 100,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "mage_evocation": {
+    "Id": "mage_evocation",
+    "Name": "Evocation",
+    "Description": "Restore 80 mana instantly",
+    "PlayerClass": "Mage",
+    "ManaCost": 30,
+    "Cooldown": 7,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 270,
+    "Effects": [
+      {
+        "Type": "Restore",
+        "Value": 80,
+        "Duration": 0
+      }
+    ]
+  },
+  "mage_polymorph": {
+    "Id": "mage_polymorph",
+    "Name": "Polymorph",
+    "Description": "Transform enemy into sheep - stun for 2 turns (88% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 45,
+    "Cooldown": 7,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 11,
+    "PurchaseCost": 490,
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "Duration": 2,
         "Multiplier": 1.0
       }
     ]
@@ -424,6 +1560,572 @@
         "Type": "Buff",
         "BuffName": "Smoke Screen",
         "Duration": 3
+      }
+    ]
+  },
+
+  // ============================================
+  // NEW ROGUE ABILITIES (Phase 5C Expansion)
+  // ============================================
+
+  // ASSASSIN TREE - Burst Damage Specialization
+  "rogue_ambush": {
+    "Id": "rogue_ambush",
+    "Name": "Ambush",
+    "Description": "Strike from stealth for massive damage",
+    "PlayerClass": "Rogue",
+    "ManaCost": 20,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "Multiplier": 2.0,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 2,
+    "PurchaseCost": 50,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 2.0
+      }
+    ]
+  },
+  "rogue_vital_strike": {
+    "Id": "rogue_vital_strike",
+    "Name": "Vital Strike",
+    "Description": "Precise strike to vital areas, guaranteed critical hit",
+    "PlayerClass": "Rogue",
+    "ManaCost": 30,
+    "Cooldown": 4,
+    "Type": "Physical",
+    "Multiplier": 1.5,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 3,
+    "PurchaseCost": 80,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 1.5
+      },
+      {
+        "Type": "GuaranteedCrit"
+      }
+    ]
+  },
+  "rogue_execution": {
+    "Id": "rogue_execution",
+    "Name": "Execution",
+    "Description": "Execute enemies below 30% health for massive damage",
+    "PlayerClass": "Rogue",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "Multiplier": 3.0,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 4,
+    "PurchaseCost": 120,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 3.0
+      }
+    ]
+  },
+  "rogue_hemorrhage": {
+    "Id": "rogue_hemorrhage",
+    "Name": "Hemorrhage",
+    "Description": "Deep cut causing severe bleeding",
+    "PlayerClass": "Rogue",
+    "ManaCost": 25,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "Multiplier": 1.3,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 150,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 1.3
+      },
+      {
+        "Type": "Bleed",
+        "Multiplier": 0.8,
+        "Duration": 5
+      }
+    ]
+  },
+  "rogue_death_mark": {
+    "Id": "rogue_death_mark",
+    "Name": "Death Mark",
+    "Description": "Mark target for death, stunning them briefly",
+    "PlayerClass": "Rogue",
+    "ManaCost": 40,
+    "Cooldown": 6,
+    "Type": "Physical",
+    "Multiplier": 1.5,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 200,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 1.5
+      },
+      {
+        "Type": "Stun",
+        "Duration": 1
+      }
+    ]
+  },
+  "rogue_assassination": {
+    "Id": "rogue_assassination",
+    "Name": "Assassination",
+    "Description": "ULTIMATE: Attempt to assassinate target with overwhelming force",
+    "PlayerClass": "Rogue",
+    "ManaCost": 60,
+    "Cooldown": 8,
+    "Type": "Physical",
+    "Multiplier": 4.0,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 10,
+    "PurchaseCost": 500,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 4.0
+      },
+      {
+        "Type": "GuaranteedCrit"
+      }
+    ]
+  },
+
+  // SHADOW TREE - Stealth and Evasion Specialization
+  "rogue_fade": {
+    "Id": "rogue_fade",
+    "Name": "Fade",
+    "Description": "Briefly become untargetable",
+    "PlayerClass": "Rogue",
+    "ManaCost": 20,
+    "Cooldown": 4,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 2,
+    "PurchaseCost": 50,
+    "Effects": [
+      {
+        "Type": "Dodge",
+        "Duration": 1
+      }
+    ]
+  },
+  "rogue_shadow_cloak": {
+    "Id": "rogue_shadow_cloak",
+    "Name": "Shadow Cloak",
+    "Description": "Wrap yourself in shadows, increasing evasion",
+    "PlayerClass": "Rogue",
+    "ManaCost": 25,
+    "Cooldown": 4,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 3,
+    "PurchaseCost": 80,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Smoke Screen",
+        "Duration": 3
+      }
+    ]
+  },
+  "rogue_vanish": {
+    "Id": "rogue_vanish",
+    "Name": "Vanish",
+    "Description": "Disappear completely, avoiding all attacks",
+    "PlayerClass": "Rogue",
+    "ManaCost": 30,
+    "Cooldown": 5,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 4,
+    "PurchaseCost": 120,
+    "Effects": [
+      {
+        "Type": "Dodge",
+        "Duration": 2
+      }
+    ]
+  },
+  "rogue_mirror_image": {
+    "Id": "rogue_mirror_image",
+    "Name": "Mirror Image",
+    "Description": "Create illusory copies that confuse enemies",
+    "PlayerClass": "Rogue",
+    "ManaCost": 35,
+    "Cooldown": 6,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 150,
+    "Effects": [
+      {
+        "Type": "Buff",
+        "BuffName": "Smoke Screen",
+        "Duration": 4
+      }
+    ]
+  },
+  "rogue_shadow_dance": {
+    "Id": "rogue_shadow_dance",
+    "Name": "Shadow Dance",
+    "Description": "Dance through shadows, dodging attacks and increasing speed",
+    "PlayerClass": "Rogue",
+    "ManaCost": 40,
+    "Cooldown": 6,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 200,
+    "Effects": [
+      {
+        "Type": "Dodge",
+        "Duration": 2
+      },
+      {
+        "Type": "Buff",
+        "BuffName": "Smoke Screen",
+        "Duration": 3
+      }
+    ]
+  },
+  "rogue_shadow_realm": {
+    "Id": "rogue_shadow_realm",
+    "Name": "Shadow Realm",
+    "Description": "ULTIMATE: Enter the shadow realm, becoming nearly impossible to hit",
+    "PlayerClass": "Rogue",
+    "ManaCost": 60,
+    "Cooldown": 8,
+    "Type": "Buff",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 10,
+    "PurchaseCost": 500,
+    "Effects": [
+      {
+        "Type": "Dodge",
+        "Duration": 3
+      },
+      {
+        "Type": "Buff",
+        "BuffName": "Smoke Screen",
+        "Duration": 4
+      }
+    ]
+  },
+
+  // POISON MASTER TREE - DoT Specialization
+  "rogue_envenom": {
+    "Id": "rogue_envenom",
+    "Name": "Envenom",
+    "Description": "Coat weapon in deadly poison",
+    "PlayerClass": "Rogue",
+    "ManaCost": 20,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "Multiplier": 1.0,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 2,
+    "PurchaseCost": 50,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 1.0
+      },
+      {
+        "Type": "Poison",
+        "Multiplier": 0.5,
+        "Duration": 4
+      }
+    ]
+  },
+  "rogue_toxic_blade": {
+    "Id": "rogue_toxic_blade",
+    "Name": "Toxic Blade",
+    "Description": "Strike with highly toxic blade",
+    "PlayerClass": "Rogue",
+    "ManaCost": 25,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "Multiplier": 1.2,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 3,
+    "PurchaseCost": 80,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 1.2
+      },
+      {
+        "Type": "Poison",
+        "Multiplier": 0.7,
+        "Duration": 5
+      }
+    ]
+  },
+  "rogue_poison_cloud": {
+    "Id": "rogue_poison_cloud",
+    "Name": "Poison Cloud",
+    "Description": "Release a cloud of poison gas",
+    "PlayerClass": "Rogue",
+    "ManaCost": 30,
+    "Cooldown": 4,
+    "Type": "Physical",
+    "Multiplier": 0.8,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 4,
+    "PurchaseCost": 120,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 0.8
+      },
+      {
+        "Type": "Poison",
+        "Multiplier": 0.6,
+        "Duration": 6
+      }
+    ]
+  },
+  "rogue_neurotoxin": {
+    "Id": "rogue_neurotoxin",
+    "Name": "Neurotoxin",
+    "Description": "Paralyzing poison that stuns and damages",
+    "PlayerClass": "Rogue",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "Multiplier": 1.0,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 150,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 1.0
+      },
+      {
+        "Type": "Poison",
+        "Multiplier": 0.5,
+        "Duration": 4
+      },
+      {
+        "Type": "Stun",
+        "Duration": 1
+      }
+    ]
+  },
+  "rogue_deadly_concoction": {
+    "Id": "rogue_deadly_concoction",
+    "Name": "Deadly Concoction",
+    "Description": "Mix multiple poisons for devastating effect",
+    "PlayerClass": "Rogue",
+    "ManaCost": 40,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "Multiplier": 1.5,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 200,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 1.5
+      },
+      {
+        "Type": "Poison",
+        "Multiplier": 1.0,
+        "Duration": 5
+      }
+    ]
+  },
+  "rogue_plague_strike": {
+    "Id": "rogue_plague_strike",
+    "Name": "Plague Strike",
+    "Description": "ULTIMATE: Infect target with a deadly plague",
+    "PlayerClass": "Rogue",
+    "ManaCost": 60,
+    "Cooldown": 8,
+    "Type": "Physical",
+    "Multiplier": 2.0,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 10,
+    "PurchaseCost": 500,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 2.0
+      },
+      {
+        "Type": "Poison",
+        "Multiplier": 1.5,
+        "Duration": 8
+      }
+    ]
+  },
+
+  // TRICKSTER TREE - Utility and Tricks
+  "rogue_feint": {
+    "Id": "rogue_feint",
+    "Name": "Feint",
+    "Description": "Fake attack that briefly stuns",
+    "PlayerClass": "Rogue",
+    "ManaCost": 15,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "Multiplier": 0.8,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 2,
+    "PurchaseCost": 50,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 0.8
+      },
+      {
+        "Type": "Stun",
+        "Duration": 1
+      }
+    ]
+  },
+  "rogue_distract": {
+    "Id": "rogue_distract",
+    "Name": "Distract",
+    "Description": "Confuse and briefly stun enemy",
+    "PlayerClass": "Rogue",
+    "ManaCost": 20,
+    "Cooldown": 3,
+    "Type": "Physical",
+    "Multiplier": 0.5,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 3,
+    "PurchaseCost": 80,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 0.5
+      },
+      {
+        "Type": "Stun",
+        "Duration": 1
+      }
+    ]
+  },
+  "rogue_cheap_shot": {
+    "Id": "rogue_cheap_shot",
+    "Name": "Cheap Shot",
+    "Description": "Dirty trick that stuns the target",
+    "PlayerClass": "Rogue",
+    "ManaCost": 25,
+    "Cooldown": 4,
+    "Type": "Physical",
+    "Multiplier": 1.0,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 4,
+    "PurchaseCost": 120,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 1.0
+      },
+      {
+        "Type": "Stun",
+        "Duration": 1
+      }
+    ]
+  },
+  "rogue_crippling_strike": {
+    "Id": "rogue_crippling_strike",
+    "Name": "Crippling Strike",
+    "Description": "Attack that severely reduces enemy speed",
+    "PlayerClass": "Rogue",
+    "ManaCost": 25,
+    "Cooldown": 4,
+    "Type": "Physical",
+    "Multiplier": 1.2,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 5,
+    "PurchaseCost": 150,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 1.2
+      },
+      {
+        "Type": "Stun",
+        "Duration": 1
+      }
+    ]
+  },
+  "rogue_sap": {
+    "Id": "rogue_sap",
+    "Name": "Sap",
+    "Description": "Knock out target, stunning for extended duration",
+    "PlayerClass": "Rogue",
+    "ManaCost": 35,
+    "Cooldown": 6,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 6,
+    "PurchaseCost": 200,
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Duration": 2
+      }
+    ]
+  },
+  "rogue_master_of_deception": {
+    "Id": "rogue_master_of_deception",
+    "Name": "Master of Deception",
+    "Description": "ULTIMATE: Overwhelm enemy with tricks, causing confusion and massive damage",
+    "PlayerClass": "Rogue",
+    "ManaCost": 60,
+    "Cooldown": 8,
+    "Type": "Physical",
+    "Multiplier": 3.5,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 10,
+    "PurchaseCost": 500,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Multiplier": 3.5
+      },
+      {
+        "Type": "Stun",
+        "Duration": 2
       }
     ]
   },
