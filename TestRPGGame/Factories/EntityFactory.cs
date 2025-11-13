@@ -101,6 +101,13 @@ namespace TestRPGGame.Factories
                 data.Value
             );
 
+            // Set random damage range if specified (e.g., 2.2x-2.8x)
+            if (data.MinMultiplier > 0 && data.MaxMultiplier > 0)
+            {
+                applicator.MinMultiplier = data.MinMultiplier;
+                applicator.MaxMultiplier = data.MaxMultiplier;
+            }
+
             // Parse composite effects if present (e.g., Banner = AttackBoost + DefenseBoost + SpeedBoost)
             if (data.CompositeEffects != null && data.CompositeEffects.Count > 0)
             {

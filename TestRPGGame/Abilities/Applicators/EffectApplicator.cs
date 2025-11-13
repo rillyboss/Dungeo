@@ -28,6 +28,10 @@ namespace TestRPGGame.Abilities.Applicators
         public double Multiplier { get; set; } = 1.0;
         public int FlatValue { get; set; }
 
+        // For random damage ranges (e.g., 2.2x-2.8x damage)
+        public double MinMultiplier { get; set; }
+        public double MaxMultiplier { get; set; }
+
         // For composite effects (e.g., Banner = AttackBoost + DefenseBoost + SpeedBoost)
         public List<(EffectKind kind, double multiplier, int flatValue)>? CompositeEffects { get; set; }
 
@@ -249,7 +253,15 @@ namespace TestRPGGame.Abilities.Applicators
                     {
                         if (context.Target != null)
                         {
-                            int baseDamage = (int)(context.Source.Attack * multiplier);
+                            // Support random damage ranges (e.g., 2.2x-2.8x)
+                            double actualMultiplier = multiplier;
+                            if (MinMultiplier > 0 && MaxMultiplier > 0)
+                            {
+                                // Random range between min and max
+                                actualMultiplier = MinMultiplier + (Utils.RandomProvider.NextDouble() * (MaxMultiplier - MinMultiplier));
+                            }
+
+                            int baseDamage = (int)(context.Source.Attack * actualMultiplier);
                             context.Target.ApplyDamage(baseDamage, applyShieldAbsorption: true, attacker: context.Source);
                         }
                         break;
