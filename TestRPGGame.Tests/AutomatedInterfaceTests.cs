@@ -320,7 +320,7 @@ namespace TestRPGGame.Tests
         }
 
         [Fact]
-        public void AutomatedInterface_RequestAbilityUnlock_ChoosesFirstUnlockable()
+        public void AutomatedInterface_RequestAbilityUnlock_ChoosesCheapestAffordable()
         {
             // Arrange
             var autoInterface = new AutomatedInterface();
@@ -334,7 +334,81 @@ namespace TestRPGGame.Tests
             int selected = autoInterface.RequestAbilityUnlock(abilities, playerGold: 100, playerLevel: 1);
 
             // Assert
-            Assert.Equal(1, selected); // Should choose affordable one
+            Assert.Equal(1, selected); // Should choose affordable one (lower cost)
+        }
+
+        [Fact]
+        public void AutomatedInterface_RequestAbilityUnlock_PrioritizesLowestUnlockLevel()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var abilities = new List<AbilityInfo>
+            {
+                new AbilityInfo { Index = 0, Name = "HighLevel", UnlockLevel = 10, PurchaseCost = 100 },
+                new AbilityInfo { Index = 1, Name = "LowLevel", UnlockLevel = 3, PurchaseCost = 200 },
+                new AbilityInfo { Index = 2, Name = "MidLevel", UnlockLevel = 5, PurchaseCost = 150 }
+            };
+
+            // Act
+            int selected = autoInterface.RequestAbilityUnlock(abilities, playerGold: 500, playerLevel: 10);
+
+            // Assert
+            Assert.Equal(1, selected); // Should choose lowest unlock level (3) even though it costs more
+        }
+
+        [Fact]
+        public void AutomatedInterface_RequestAbilityUnlock_PrioritizesCostWhenSameLevel()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var abilities = new List<AbilityInfo>
+            {
+                new AbilityInfo { Index = 0, Name = "Expensive", UnlockLevel = 5, PurchaseCost = 300 },
+                new AbilityInfo { Index = 1, Name = "Cheap", UnlockLevel = 5, PurchaseCost = 150 },
+                new AbilityInfo { Index = 2, Name = "Medium", UnlockLevel = 5, PurchaseCost = 200 }
+            };
+
+            // Act
+            int selected = autoInterface.RequestAbilityUnlock(abilities, playerGold: 400, playerLevel: 5);
+
+            // Assert
+            Assert.Equal(1, selected); // Should choose cheapest when same unlock level
+        }
+
+        [Fact]
+        public void AutomatedInterface_RequestAbilityUnlock_ReturnsNegativeWhenNothingAffordable()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var abilities = new List<AbilityInfo>
+            {
+                new AbilityInfo { Index = 0, Name = "TooExpensive", UnlockLevel = 1, PurchaseCost = 1000 },
+                new AbilityInfo { Index = 1, Name = "AlsoExpensive", UnlockLevel = 1, PurchaseCost = 500 }
+            };
+
+            // Act
+            int selected = autoInterface.RequestAbilityUnlock(abilities, playerGold: 100, playerLevel: 1);
+
+            // Assert
+            Assert.Equal(-1, selected); // Should return -1 when nothing affordable
+        }
+
+        [Fact]
+        public void AutomatedInterface_RequestAbilityUnlock_ReturnsNegativeWhenLevelTooLow()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var abilities = new List<AbilityInfo>
+            {
+                new AbilityInfo { Index = 0, Name = "HighLevelAbility", UnlockLevel = 10, PurchaseCost = 100 },
+                new AbilityInfo { Index = 1, Name = "MidLevelAbility", UnlockLevel = 5, PurchaseCost = 50 }
+            };
+
+            // Act
+            int selected = autoInterface.RequestAbilityUnlock(abilities, playerGold: 200, playerLevel: 3);
+
+            // Assert
+            Assert.Equal(-1, selected); // Should return -1 when player level too low for all abilities
         }
     }
 }

@@ -6,6 +6,7 @@ using TestRPGGame.DataLoading;
 using TestRPGGame.Combat;
 using TestRPGGame.Utils;
 using TestRPGGame.Equipment.StatGenerators;
+using TestRPGGame.Systems;
 
 namespace TestRPGGame.Equipment
 {
@@ -124,65 +125,39 @@ namespace TestRPGGame.Equipment
 
         private static ItemRarity DetermineRarity(int level)
         {
-            // Data-driven rarity system
-            // Load thresholds from items.json
-            var thresholds = _itemData!.RarityThresholds;
-            if (thresholds == null || thresholds.Count == 0)
-            {
-                // Fallback to simple system if no data
-                return ItemRarity.Common;
-            }
-
+            // Use GameConfig for configurable rarity thresholds
             int roll = RandomProvider.Next(100);
 
             // Check rarities in order from highest to lowest
-            // Legendary
-            if (thresholds.TryGetValue("Legendary", out var legendaryThreshold) &&
-                level >= legendaryThreshold.MinLevel &&
-                level <= legendaryThreshold.MaxLevel &&
-                roll >= legendaryThreshold.RollThreshold)
+            // Legendary (min level 10)
+            if (level >= 10 && roll >= GameConfig.Config.RarityLegendaryThreshold)
             {
                 return ItemRarity.Legendary;
             }
 
-            // Epic
-            if (thresholds.TryGetValue("Epic", out var epicThreshold) &&
-                level >= epicThreshold.MinLevel &&
-                level <= epicThreshold.MaxLevel &&
-                roll >= epicThreshold.RollThreshold)
+            // Epic (min level 7)
+            if (level >= 7 && roll >= GameConfig.Config.RarityEpicThreshold)
             {
                 return ItemRarity.Epic;
             }
 
-            // Rare (check special low-level rare first)
-            if (thresholds.TryGetValue("RareLowLevel", out var rareLowLevel) &&
-                level >= rareLowLevel.MinLevel &&
-                level <= rareLowLevel.MaxLevel &&
-                roll >= rareLowLevel.RollThreshold)
+            // Rare (check special low-level rare first - very rare at levels 1-3)
+            if (level < 4 && roll >= 95)
             {
                 return ItemRarity.Rare;
             }
 
-            // Rare (normal)
-            if (thresholds.TryGetValue("Rare", out var rareThreshold) &&
-                level >= rareThreshold.MinLevel &&
-                level <= rareThreshold.MaxLevel &&
-                roll >= rareThreshold.RollThreshold)
+            // Rare (normal - min level 4)
+            if (level >= 4 && roll >= GameConfig.Config.RarityRareThreshold)
             {
                 return ItemRarity.Rare;
             }
 
-            // Uncommon (scale with level)
-            if (thresholds.TryGetValue("Uncommon", out var uncommonThreshold))
+            // Uncommon (scale threshold with level for better loot at higher levels)
+            int uncommonThreshold = Math.Max(GameConfig.Config.RarityUncommonThreshold, 65 - (level * 3));
+            if (roll >= uncommonThreshold)
             {
-                // Make uncommon more common as level increases
-                int adjustedThreshold = Math.Max(uncommonThreshold.RollThreshold, 65 - (level * 3));
-                if (level >= uncommonThreshold.MinLevel &&
-                    level <= uncommonThreshold.MaxLevel &&
-                    roll >= adjustedThreshold)
-                {
-                    return ItemRarity.Uncommon;
-                }
+                return ItemRarity.Uncommon;
             }
 
             // Default to Common
@@ -651,17 +626,21 @@ namespace TestRPGGame.Equipment
                 item.GrantedAbilityIds.Add(weaponType.SignatureAbility);
             }
 
-            // SECOND: Grant additional random ability for Rare/Epic/Legendary items
-            if (item.Rarity < ItemRarity.Rare || _abilityPools == null)
+            // SECOND: Grant additional random ability based on rarity chance
+            if (_abilityPools == null)
                 return;
 
-            // Check if this rarity should grant an additional ability (based on chance)
-            if (_abilityPools.RarityChances == null)
-                return;
-
-            string rarityKey = item.Rarity.ToString();
-            if (!_abilityPools.RarityChances.TryGetValue(rarityKey, out double chance))
-                return;
+            // Get ADDITIONAL ability grant chance from GameConfig based on rarity
+            // Note: Weapons already have their signature ability, this is for a bonus ability
+            double chance = item.Rarity switch
+            {
+                ItemRarity.Common => GameConfig.Config.AdditionalAbilityChanceCommon,
+                ItemRarity.Uncommon => GameConfig.Config.AdditionalAbilityChanceUncommon,
+                ItemRarity.Rare => GameConfig.Config.AdditionalAbilityChanceRare,
+                ItemRarity.Epic => GameConfig.Config.AdditionalAbilityChanceEpic,
+                ItemRarity.Legendary => GameConfig.Config.AdditionalAbilityChanceLegendary,
+                _ => 0.0
+            };
 
             // Roll for additional ability
             double roll = RandomProvider.NextDouble();

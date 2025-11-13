@@ -33,7 +33,6 @@ namespace TestRPGGame.Systems
 
         // Abilities & Progression
         public int RestingCost { get; set; } = 10; // Cost in gold to rest
-        public int AbilityPurchaseCostMultiplier { get; set; } = 100; // Base cost multiplier for abilities
         public int AbilityUnlockLevel { get; set; } = 5; // Level required to unlock new abilities
 
         // Economy Multipliers (for easy balance tuning)
@@ -43,6 +42,23 @@ namespace TestRPGGame.Systems
         public double EquipmentSellPriceMultiplier { get; set; } = 1.0; // Multiply equipment sell prices
         public double AbilityPurchasePriceMultiplier { get; set; } = 1.0; // Multiply ability purchase costs
         public double EnemyDamageMultiplier { get; set; } = 1.0; // Multiply enemy damage output
+
+        // Additional Equipment Ability Chances by Rarity
+        // Note: Weapons always grant their signature ability based on type
+        // These chances determine if an ADDITIONAL ability is granted on top of the signature
+        public double AdditionalAbilityChanceCommon { get; set; } = 0.05; // 5% chance for Common to grant extra ability
+        public double AdditionalAbilityChanceUncommon { get; set; } = 0.10; // 10% chance for Uncommon to grant extra ability
+        public double AdditionalAbilityChanceRare { get; set; } = 0.25; // 25% chance for Rare to grant extra ability
+        public double AdditionalAbilityChanceEpic { get; set; } = 0.50; // 50% chance for Epic to grant extra ability
+        public double AdditionalAbilityChanceLegendary { get; set; } = 0.75; // 75% chance for Legendary to grant extra ability
+
+        // Equipment Rarity Drop Thresholds (0-100 roll)
+        // Higher threshold = rarer items (need higher roll to get them)
+        public int RarityLegendaryThreshold { get; set; } = 98; // 2% chance for Legendary
+        public int RarityEpicThreshold { get; set; } = 92; // 6% chance for Epic (92-97)
+        public int RarityRareThreshold { get; set; } = 80; // 12% chance for Rare (80-91)
+        public int RarityUncommonThreshold { get; set; } = 30; // 50% chance for Uncommon (30-79)
+        public int RarityCommonThreshold { get; set; } = 0; // 30% chance for Common (0-29)
 
         // System Settings
         public bool CombatAutosave { get; set; } = true; // Autosave after combat

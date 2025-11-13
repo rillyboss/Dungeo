@@ -1571,7 +1571,7 @@
     "IsStarting": false,
     "IsUnlockable": true,
     "UnlockLevel": 2,
-    "PurchaseCost": 50,
+    "PurchaseCost": 150,
     "Effects": [
       {
         "Type": "Effect",
@@ -1713,7 +1713,7 @@
     "IsStarting": false,
     "IsUnlockable": true,
     "UnlockLevel": 2,
-    "PurchaseCost": 50,
+    "PurchaseCost": 150,
     "Effects": [
       {
         "Type": "Effect",
@@ -1848,7 +1848,7 @@
     "IsStarting": false,
     "IsUnlockable": true,
     "UnlockLevel": 2,
-    "PurchaseCost": 50,
+    "PurchaseCost": 150,
     "Effects": [
       {
         "Type": "Effect",
@@ -2028,7 +2028,7 @@
     "IsStarting": false,
     "IsUnlockable": true,
     "UnlockLevel": 2,
-    "PurchaseCost": 50,
+    "PurchaseCost": 150,
     "Effects": [
       {
         "Type": "Effect",

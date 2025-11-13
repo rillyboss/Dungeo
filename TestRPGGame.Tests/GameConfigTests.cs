@@ -18,7 +18,6 @@ namespace TestRPGGame.Tests
             Assert.Equal(10, config.RestingCost);
             Assert.True(config.CombatAutosave);
             Assert.Equal(0.5, config.PotionHealPercent);
-            Assert.Equal(100, config.AbilityPurchaseCostMultiplier);
             Assert.Equal(5, config.AbilityUnlockLevel);
 
             // Assert - Phase 2: Shop properties
@@ -153,6 +152,71 @@ namespace TestRPGGame.Tests
 
             // Assert
             Assert.Equal(shouldBeValid, isValid);
+        }
+
+        [Fact]
+        public void GameConfig_AdditionalAbilityChances_AreCorrect()
+        {
+            // Arrange & Act
+            var config = GameConfig.Config;
+
+            // Assert - Equipment additional ability chances by rarity
+            Assert.Equal(0.05, config.AdditionalAbilityChanceCommon);
+            Assert.Equal(0.10, config.AdditionalAbilityChanceUncommon);
+            Assert.Equal(0.25, config.AdditionalAbilityChanceRare);
+            Assert.Equal(0.50, config.AdditionalAbilityChanceEpic);
+            Assert.Equal(0.75, config.AdditionalAbilityChanceLegendary);
+        }
+
+        [Fact]
+        public void GameConfig_RarityThresholds_AreCorrect()
+        {
+            // Arrange & Act
+            var config = GameConfig.Config;
+
+            // Assert - Equipment rarity drop thresholds
+            Assert.Equal(98, config.RarityLegendaryThreshold);
+            Assert.Equal(92, config.RarityEpicThreshold);
+            Assert.Equal(80, config.RarityRareThreshold);
+            Assert.Equal(30, config.RarityUncommonThreshold);
+            Assert.Equal(0, config.RarityCommonThreshold);
+        }
+
+        [Fact]
+        public void GameConfig_RarityThresholds_AreInDescendingOrder()
+        {
+            // Arrange & Act
+            var config = GameConfig.Config;
+
+            // Assert - Thresholds should be in descending order for proper rarity distribution
+            Assert.True(config.RarityLegendaryThreshold > config.RarityEpicThreshold);
+            Assert.True(config.RarityEpicThreshold > config.RarityRareThreshold);
+            Assert.True(config.RarityRareThreshold > config.RarityUncommonThreshold);
+            Assert.True(config.RarityUncommonThreshold >= config.RarityCommonThreshold);
+        }
+
+        [Fact]
+        public void GameConfig_AbilityPurchasePriceMultiplier_IsReduced()
+        {
+            // Arrange & Act
+            var config = GameConfig.Config;
+
+            // Assert - Should be reduced to 5.0 (half of original 10.0)
+            Assert.Equal(5.0, config.AbilityPurchasePriceMultiplier);
+        }
+
+        [Fact]
+        public void GameConfig_EconomyMultipliers_HaveValidDefaults()
+        {
+            // Arrange & Act
+            var config = GameConfig.Config;
+
+            // Assert - Economy multipliers should default to 1.0 (neutral)
+            Assert.Equal(1.0, config.CombatGoldMultiplier);
+            Assert.Equal(1.0, config.DungeonGoldMultiplier);
+            Assert.Equal(1.0, config.EquipmentPurchasePriceMultiplier);
+            Assert.Equal(1.0, config.EquipmentSellPriceMultiplier);
+            Assert.Equal(1.0, config.EnemyDamageMultiplier);
         }
     }
 }

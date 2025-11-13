@@ -36,9 +36,9 @@ namespace TestRPGGame
 
             if (useAutomated)
             {
-                // Run automated playtest with UltraThink analysis: 3 runs per class to level 15
+                // Run automated playtest with gameplay analysis: 3 runs per class to level 15
                 Console.WriteLine("╔═══════════════════════════════════════════════════════════════════════════════╗");
-                Console.WriteLine("║           ULTRATHINK GAMEPLAY ANALYSIS - 3 RUNS PER CLASS TO LEVEL 15        ║");
+                Console.WriteLine("║        AUTOMATED GAMEPLAY ANALYSIS - 3 RUNS PER CLASS TO LEVEL 15            ║");
                 Console.WriteLine("╚═══════════════════════════════════════════════════════════════════════════════╝\n");
 
                 var classes = new[]
@@ -83,7 +83,7 @@ namespace TestRPGGame
 
                             Console.WriteLine($"\n✅ {characterName} ({Class}) Run {runNumber} - Completed!");
                             Console.WriteLine($"   Final Level: {analytics.FinalLevel}");
-                            Console.WriteLine($"   Time Played: {(analytics.EndTime ?? analytics.StartTime).Subtract(analytics.StartTime).TotalMinutes:F1} minutes");
+                            Console.WriteLine($"   Total Combats: {analytics.TotalCombats}");
                             Console.WriteLine($"   Combat Win Rate: {analytics.GetWinRate():F1}%");
                         }
                         catch (Exception ex)
@@ -144,7 +144,7 @@ namespace TestRPGGame
                 try
                 {
                     string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
-                    string filename = $"UltraThink_Analysis_{timestamp}.txt";
+                    string filename = $"Automated_Gameplay_Analysis_{timestamp}.txt";
                     System.IO.File.WriteAllText(filename, report);
                     Console.WriteLine($"\n📄 Full report saved to: {filename}");
                 }

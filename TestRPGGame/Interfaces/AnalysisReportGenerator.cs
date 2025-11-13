@@ -16,8 +16,8 @@ namespace TestRPGGame.Interfaces
             var report = new StringBuilder();
 
             report.AppendLine("╔═══════════════════════════════════════════════════════════════════════════════╗");
-            report.AppendLine("║                    ULTRATHINK GAMEPLAY ANALYSIS REPORT                        ║");
-            report.AppendLine("║                     9 Complete Playthroughs to Level 15                       ║");
+            report.AppendLine("║                 AUTOMATED GAMEPLAY ANALYSIS REPORT                            ║");
+            report.AppendLine($"║                   {allRuns.Count} Complete Playthroughs to Level 15                         ║");
             report.AppendLine("╚═══════════════════════════════════════════════════════════════════════════════╝");
             report.AppendLine();
 
@@ -27,16 +27,16 @@ namespace TestRPGGame.Interfaces
             report.AppendLine("═══════════════════════════════════════════════════════════════════════════════");
             report.AppendLine();
 
-            var avgPlaytime = TimeSpan.FromTicks((long)allRuns.Average(r => (r.EndTime ?? r.StartTime).Subtract(r.StartTime).Ticks));
             var totalCombats = allRuns.Sum(r => r.TotalCombats);
+            var avgCombats = allRuns.Average(r => r.TotalCombats);
             var avgWinRate = allRuns.Average(r => r.GetWinRate());
 
-            report.AppendLine($"Total Runs Completed:       {allRuns.Count}");
-            report.AppendLine($"Average Time to Level 15:   {avgPlaytime.TotalMinutes:F1} minutes");
-            report.AppendLine($"Total Combats Across Runs:  {totalCombats}");
-            report.AppendLine($"Average Win Rate:           {avgWinRate:F1}%");
-            report.AppendLine($"Total Dungeon Attempts:     {allRuns.Sum(r => r.DungeonAttempts)}");
-            report.AppendLine($"Dungeon Success Rate:       {allRuns.Average(r => r.GetDungeonSuccessRate()):F1}%");
+            report.AppendLine($"Total Runs Completed:          {allRuns.Count}");
+            report.AppendLine($"Total Combats Across Runs:     {totalCombats}");
+            report.AppendLine($"Average Combats to Level 15:   {avgCombats:F1}");
+            report.AppendLine($"Average Win Rate:              {avgWinRate:F1}%");
+            report.AppendLine($"Total Dungeon Attempts:        {allRuns.Sum(r => r.DungeonAttempts)}");
+            report.AppendLine($"Dungeon Success Rate:          {allRuns.Average(r => r.GetDungeonSuccessRate()):F1}%");
             report.AppendLine();
 
             // Per-Class Analysis
@@ -91,13 +91,11 @@ namespace TestRPGGame.Interfaces
             report.AppendLine($"--- {playerClass} Class ({runs.Count} runs) ---");
             report.AppendLine();
 
-            var avgTime = TimeSpan.FromTicks((long)runs.Average(r => (r.EndTime ?? r.StartTime).Subtract(r.StartTime).Ticks));
             var avgWinRate = runs.Average(r => r.GetWinRate());
             var avgDungeonSuccess = runs.Average(r => r.GetDungeonSuccessRate());
             var avgCombats = (int)runs.Average(r => r.TotalCombats);
 
-            report.AppendLine($"  Average Time to Level 15:    {avgTime.TotalMinutes:F1} minutes");
-            report.AppendLine($"  Average Combats:             {avgCombats}");
+            report.AppendLine($"  Average Combats to Level 15: {avgCombats}");
             report.AppendLine($"  Combat Win Rate:             {avgWinRate:F1}%");
             report.AppendLine($"  Dungeon Success Rate:        {avgDungeonSuccess:F1}%");
             report.AppendLine($"  Average Gold Earned:         {runs.Average(r => r.TotalGoldEarned):F0}");
@@ -107,6 +105,85 @@ namespace TestRPGGame.Interfaces
             report.AppendLine($"  Average Near-Death Moments:  {runs.Average(r => r.TimesNearDeath):F1}");
             report.AppendLine($"  Average Abilities Unlocked:  {runs.Average(r => r.AbilitiesUnlocked):F1}");
             report.AppendLine();
+
+            // Combats per level analysis
+            var allLevels = runs.SelectMany(r => r.CombatsPerLevel.Keys).Distinct().OrderBy(l => l).ToList();
+            if (allLevels.Any())
+            {
+                report.AppendLine($"  Average Combats Per Level:");
+                foreach (var level in allLevels.Take(15))
+                {
+                    var avgCombatsAtLevel = runs
+                        .Where(r => r.CombatsPerLevel.ContainsKey(level))
+                        .Average(r => r.CombatsPerLevel[level]);
+                    report.AppendLine($"    • Level {level}: {avgCombatsAtLevel:F1} combats");
+                }
+                report.AppendLine();
+            }
+
+            // Dungeons per level analysis
+            var dungeonLevels = runs.SelectMany(r => r.DungeonsPerLevel.Keys).Distinct().OrderBy(l => l).ToList();
+            if (dungeonLevels.Any())
+            {
+                report.AppendLine($"  Average Dungeon Attempts Per Level:");
+                foreach (var level in dungeonLevels.Take(15))
+                {
+                    var avgDungeonsAtLevel = runs
+                        .Where(r => r.DungeonsPerLevel.ContainsKey(level))
+                        .Average(r => r.DungeonsPerLevel[level]);
+                    report.AppendLine($"    • Level {level}: {avgDungeonsAtLevel:F1} attempts");
+                }
+                report.AppendLine();
+            }
+
+            // Damage taken per level analysis
+            var damageLevels = runs.SelectMany(r => r.DamageTakenPerLevel.Keys).Distinct().OrderBy(l => l).ToList();
+            if (damageLevels.Any())
+            {
+                report.AppendLine($"  Average Damage Taken Per Combat By Level:");
+                foreach (var level in damageLevels.Take(15))
+                {
+                    var allDamageAtLevel = runs
+                        .Where(r => r.DamageTakenPerLevel.ContainsKey(level))
+                        .SelectMany(r => r.DamageTakenPerLevel[level])
+                        .ToList();
+
+                    if (allDamageAtLevel.Any())
+                    {
+                        var avgDamage = allDamageAtLevel.Average();
+                        report.AppendLine($"    • Level {level}: {avgDamage:F1} damage/combat");
+                    }
+                }
+                report.AppendLine();
+            }
+
+            // Equipment analysis at key levels
+            var equipLevels = new[] { 5, 10, 15 };
+            var hasEquipmentData = runs.Any(r => r.EquippedGearByLevel.Any());
+
+            if (hasEquipmentData)
+            {
+                report.AppendLine($"  Equipment at Key Levels:");
+                foreach (var level in equipLevels)
+                {
+                    var equipmentAtLevel = runs
+                        .Where(r => r.EquippedGearByLevel.ContainsKey(level))
+                        .SelectMany(r => r.EquippedGearByLevel[level].Values)
+                        .Where(item => item != null)
+                        .ToList();
+
+                    if (equipmentAtLevel.Any())
+                    {
+                        var avgLevel = equipmentAtLevel.Average(i => i!.Level);
+                        var avgAttack = equipmentAtLevel.Average(i => i!.AttackBonus);
+                        var avgDefense = equipmentAtLevel.Average(i => i!.DefenseBonus);
+                        var avgMagic = equipmentAtLevel.Average(i => i!.MagicBonus);
+
+                        report.AppendLine($"    • Level {level}: Avg gear level {avgLevel:F1} (Atk+{avgAttack:F0}, Def+{avgDefense:F0}, Mag+{avgMagic:F0})");
+                    }
+                }
+                report.AppendLine();
+            }
 
             // Ability usage
             var allAbilities = runs.SelectMany(r => r.AbilityUsageCount).GroupBy(kvp => kvp.Key)
@@ -154,12 +231,18 @@ namespace TestRPGGame.Interfaces
             var totalCrits = allRuns.Sum(r => r.CriticalHits);
             var totalMisses = allRuns.Sum(r => r.MissedAttacks);
 
-            report.AppendLine($"  Total Damage Dealt:          {totalDamageDealt:N0}");
-            report.AppendLine($"  Total Damage Taken:          {totalDamageTaken:N0}");
-            report.AppendLine($"  Average Damage Per Combat:   {avgDamagePerCombat:F1}");
-            report.AppendLine($"  Total Critical Hits:         {totalCrits}");
-            report.AppendLine($"  Total Missed Attacks:        {totalMisses}");
-            report.AppendLine($"  Average Combat Win Rate:     {allRuns.Average(r => r.GetWinRate()):F1}%");
+            report.AppendLine($"  Total Damage Dealt:           {totalDamageDealt:N0}");
+            report.AppendLine($"  Total Damage Taken:           {totalDamageTaken:N0}");
+            report.AppendLine($"  Average Damage Dealt/Combat:  {avgDamagePerCombat:F1}");
+            report.AppendLine($"  Average Damage Taken/Combat:  {allRuns.Average(r => r.GetAverageDamageTakenPerCombat()):F1}");
+            report.AppendLine($"  Total Critical Hits:          {totalCrits}");
+            report.AppendLine($"  Total Missed Attacks:         {totalMisses}");
+            report.AppendLine();
+
+            report.AppendLine($"  Combat Outcomes:");
+            report.AppendLine($"    • Win Rate:    {allRuns.Average(r => r.GetWinRate()):F1}%");
+            report.AppendLine($"    • Flee Rate:   {allRuns.Average(r => r.GetFleeRate()):F1}%");
+            report.AppendLine($"    • Death Rate:  {allRuns.Average(r => r.GetDeathRate()):F1}%");
             report.AppendLine();
 
             // Status effects analysis
@@ -185,19 +268,38 @@ namespace TestRPGGame.Interfaces
             report.AppendLine("📈 PROGRESSION SYSTEM");
             report.AppendLine();
 
-            var avgLevel5Time = allRuns.Average(r => r.TimeToLevel5.TotalMinutes);
-            var avgLevel10Time = allRuns.Average(r => r.TimeToLevel10.TotalMinutes);
-            var avgLevel15Time = allRuns.Average(r => r.TimeToLevel15.TotalMinutes);
+            // Calculate average combats needed to reach key levels
+            var avgCombatsToLevel5 = allRuns
+                .Select(r => r.CombatsPerLevel.Where(kvp => kvp.Key <= 5).Sum(kvp => kvp.Value))
+                .Where(c => c > 0)
+                .DefaultIfEmpty(0)
+                .Average();
 
-            report.AppendLine($"  Average Time to Level 5:     {avgLevel5Time:F1} minutes");
-            report.AppendLine($"  Average Time to Level 10:    {avgLevel10Time:F1} minutes");
-            report.AppendLine($"  Average Time to Level 15:    {avgLevel15Time:F1} minutes");
+            var avgCombatsToLevel10 = allRuns
+                .Select(r => r.CombatsPerLevel.Where(kvp => kvp.Key <= 10).Sum(kvp => kvp.Value))
+                .Where(c => c > 0)
+                .DefaultIfEmpty(0)
+                .Average();
+
+            var avgCombatsToLevel15 = allRuns
+                .Select(r => r.CombatsPerLevel.Where(kvp => kvp.Key <= 15).Sum(kvp => kvp.Value))
+                .Where(c => c > 0)
+                .DefaultIfEmpty(0)
+                .Average();
+
+            report.AppendLine($"  Average Combats to Level 5:  {avgCombatsToLevel5:F1}");
+            report.AppendLine($"  Average Combats to Level 10: {avgCombatsToLevel10:F1}");
+            report.AppendLine($"  Average Combats to Level 15: {avgCombatsToLevel15:F1}");
             report.AppendLine();
 
-            report.AppendLine($"  Average Pace:");
-            report.AppendLine($"    • Levels 1-5:   {avgLevel5Time / 5:F1} min/level");
-            report.AppendLine($"    • Levels 5-10:  {(avgLevel10Time - avgLevel5Time) / 5:F1} min/level");
-            report.AppendLine($"    • Levels 10-15: {(avgLevel15Time - avgLevel10Time) / 5:F1} min/level");
+            report.AppendLine($"  Average Combats Per Level Range:");
+            var combats1to5 = avgCombatsToLevel5 / 5;
+            var combats5to10 = (avgCombatsToLevel10 - avgCombatsToLevel5) / 5;
+            var combats10to15 = (avgCombatsToLevel15 - avgCombatsToLevel10) / 5;
+
+            report.AppendLine($"    • Levels 1-5:   {combats1to5:F1} combats/level");
+            report.AppendLine($"    • Levels 5-10:  {combats5to10:F1} combats/level");
+            report.AppendLine($"    • Levels 10-15: {combats10to15:F1} combats/level");
             report.AppendLine();
         }
 
@@ -212,12 +314,33 @@ namespace TestRPGGame.Interfaces
             var avgShopVisits = allRuns.Average(r => r.ShopVisits);
             var avgItemsPurchased = allRuns.Average(r => r.ItemsPurchased);
 
-            report.AppendLine($"  Average Gold Earned:         {avgGoldEarned:F0}");
-            report.AppendLine($"  Average Gold Spent:          {avgGoldSpent:F0}");
-            report.AppendLine($"  Average Final Gold:          {avgFinalGold:F0}");
-            report.AppendLine($"  Average Shop Visits:         {avgShopVisits:F1}");
-            report.AppendLine($"  Average Items Purchased:     {avgItemsPurchased:F1}");
-            report.AppendLine($"  Gold Efficiency:             {allRuns.Average(r => r.GetGoldEfficiency()):F1}%");
+            report.AppendLine($"  Total Gold Earned (All Sources):  {avgGoldEarned:F0}");
+            report.AppendLine();
+
+            report.AppendLine($"  Gold Sources Breakdown:");
+            report.AppendLine($"    • Starting Gold:       {allRuns.Average(r => r.GoldFromStarting):F0} ({allRuns.Average(r => r.GoldFromStarting / (double)r.TotalGoldEarned * 100):F1}%)");
+            report.AppendLine($"    • From Combat:         {allRuns.Average(r => r.GoldFromCombat):F0} ({allRuns.Average(r => r.GoldFromCombat / (double)r.TotalGoldEarned * 100):F1}%)");
+            report.AppendLine($"    • From Dungeons:       {allRuns.Average(r => r.GoldFromDungeons):F0} ({allRuns.Average(r => r.GoldFromDungeons / (double)r.TotalGoldEarned * 100):F1}%)");
+            report.AppendLine($"    • From Achievements:   {allRuns.Average(r => r.GoldFromAchievements):F0} ({allRuns.Average(r => r.GoldFromAchievements / (double)r.TotalGoldEarned * 100):F1}%)");
+            report.AppendLine($"    • From Shop Sales:     {allRuns.Average(r => r.GoldFromShopSales):F0} ({allRuns.Average(r => r.GoldFromShopSales / (double)r.TotalGoldEarned * 100):F1}%)");
+            report.AppendLine();
+
+            report.AppendLine($"  Total Gold Spent:              {avgGoldSpent:F0}");
+            report.AppendLine();
+
+            report.AppendLine($"  Gold Expenditures Breakdown:");
+            report.AppendLine($"    • Weapons:             {allRuns.Average(r => r.GoldSpentOnWeapons):F0} ({allRuns.Average(r => r.GoldSpentOnWeapons / (double)r.TotalGoldSpent * 100):F1}%)");
+            report.AppendLine($"    • Armor:               {allRuns.Average(r => r.GoldSpentOnArmor):F0} ({allRuns.Average(r => r.GoldSpentOnArmor / (double)r.TotalGoldSpent * 100):F1}%)");
+            report.AppendLine($"    • Accessories:         {allRuns.Average(r => r.GoldSpentOnAccessories):F0} ({allRuns.Average(r => r.GoldSpentOnAccessories / (double)r.TotalGoldSpent * 100):F1}%)");
+            report.AppendLine($"    • Potions:             {allRuns.Average(r => r.GoldSpentOnPotions):F0} ({allRuns.Average(r => r.GoldSpentOnPotions / (double)r.TotalGoldSpent * 100):F1}%)");
+            report.AppendLine($"    • Rest/Inn:            {allRuns.Average(r => r.GoldSpentOnRest):F0} ({allRuns.Average(r => r.GoldSpentOnRest / (double)r.TotalGoldSpent * 100):F1}%)");
+            report.AppendLine($"    • Abilities:           {allRuns.Average(r => r.GoldSpentOnAbilities):F0} ({allRuns.Average(r => r.GoldSpentOnAbilities / (double)r.TotalGoldSpent * 100):F1}%)");
+            report.AppendLine();
+
+            report.AppendLine($"  Final Gold Remaining:          {avgFinalGold:F0}");
+            report.AppendLine($"  Shop Visits:                   {avgShopVisits:F1}");
+            report.AppendLine($"  Items Purchased:               {avgItemsPurchased:F1}");
+            report.AppendLine($"  Gold Efficiency (Spent/Earned): {allRuns.Average(r => r.GetGoldEfficiency()):F1}%");
             report.AppendLine();
         }
 
@@ -251,6 +374,44 @@ namespace TestRPGGame.Interfaces
             report.AppendLine($"  Total Ability Usages:        {totalUsages}");
             report.AppendLine($"  Average Usages Per Run:      {totalUsages / (double)allRuns.Count:F1}");
             report.AppendLine();
+
+            // Ability Store Visit Analysis
+            var totalStoreVisits = allRuns.Sum(r => r.AbilityStoreVisits.Count);
+            if (totalStoreVisits > 0)
+            {
+                var avgStoreVisits = allRuns.Average(r => r.AbilityStoreVisits.Count);
+                var successfulVisits = allRuns.Sum(r => r.AbilityStoreVisits.Count(v => v.PurchasedAbility));
+                var successRate = (double)successfulVisits / totalStoreVisits * 100;
+
+                report.AppendLine($"  Ability Store Visits:");
+                report.AppendLine($"    • Total Visits:             {totalStoreVisits}");
+                report.AppendLine($"    • Average Visits Per Run:   {avgStoreVisits:F1}");
+                report.AppendLine($"    • Successful Purchases:     {successfulVisits} ({successRate:F1}%)");
+                report.AppendLine();
+
+                // Analyze reasons for not purchasing
+                var allReasons = allRuns.SelectMany(r => r.AbilityStoreVisits)
+                    .Where(v => !v.PurchasedAbility)
+                    .SelectMany(v => v.ReasonsNotPurchased)
+                    .GroupBy(r => r.Contains("afford") ? "Insufficient Gold" :
+                                  r.Contains("Level too low") ? "Level Too Low" :
+                                  r.Contains("All abilities") ? "All Unlocked" :
+                                  "Other")
+                    .Select(g => new { Reason = g.Key, Count = g.Count() })
+                    .OrderByDescending(x => x.Count)
+                    .ToList();
+
+                if (allReasons.Any())
+                {
+                    report.AppendLine($"  Reasons for Not Purchasing:");
+                    foreach (var reason in allReasons)
+                    {
+                        var percentage = (double)reason.Count / (totalStoreVisits - successfulVisits) * 100;
+                        report.AppendLine($"    • {reason.Reason}: {reason.Count} times ({percentage:F1}%)");
+                    }
+                    report.AppendLine();
+                }
+            }
 
             var topAbilities = allRuns.SelectMany(r => r.AbilityUsageCount)
                 .GroupBy(kvp => kvp.Key)
@@ -291,6 +452,28 @@ namespace TestRPGGame.Interfaces
                 report.AppendLine($"    • {rarity.Rarity}: {rarity.Count} ({percentage:F1}%)");
             }
             report.AppendLine();
+
+            // Equipment-Granted Abilities Analysis
+            var totalItemsWithAbilities = allRuns.Sum(r => r.ItemsWithAbilitiesReceived);
+            if (totalItemsWithAbilities > 0)
+            {
+                var avgItemsWithAbilities = allRuns.Average(r => r.ItemsWithAbilitiesReceived);
+                var totalEquipped = allRuns.Sum(r => r.ItemsWithAbilitiesEquipped);
+                var avgEquipped = allRuns.Average(r => r.ItemsWithAbilitiesEquipped);
+                var equipRate = totalItemsWithAbilities > 0 ? (double)totalEquipped / totalItemsWithAbilities * 100 : 0;
+
+                report.AppendLine($"  Equipment-Granted Abilities:");
+                report.AppendLine($"    • Items with Abilities Received:  {totalItemsWithAbilities} ({avgItemsWithAbilities:F1} per run)");
+                report.AppendLine($"    • Items with Abilities Equipped:  {totalEquipped} ({avgEquipped:F1} per run)");
+                report.AppendLine($"    • Equip Rate:                      {equipRate:F1}%");
+                report.AppendLine();
+
+                if (equipRate < 50)
+                {
+                    report.AppendLine($"    ⚠️  Low equip rate suggests ability-granting items may not be competitive");
+                    report.AppendLine();
+                }
+            }
         }
 
         private static void GenerateResourceManagementAnalysis(StringBuilder report, List<GameplayAnalytics> allRuns)

@@ -49,6 +49,9 @@ namespace TestRPGGame.Interfaces
                     Log($"  Enemy: HP={e.EnemyMaxHP}, Atk={e.EnemyAttack}, Def={e.EnemyDefense}");
                     currentCombatDamageDealt = 0;
                     currentCombatDamageTaken = 0;
+
+                    if (strategy is UltraThinkStrategy ultraThinkStart)
+                        ultraThinkStart.TrackCombatStart();
                     break;
 
                 case GameEvents.CombatTurnStartEvent e:
@@ -103,7 +106,15 @@ namespace TestRPGGame.Interfaces
                         {
                             Log($"  Loot: [{e.LootDropped.Rarity}] {e.LootDropped.Name}");
                             if (strategy is UltraThinkStrategy ultraThink4)
+                            {
                                 ultraThink4.AnalyzeLootDrop(e.LootDropped.Name, e.LootDropped.Rarity.ToString());
+
+                                // Track if item grants abilities
+                                if (e.LootDropped.GrantedAbilityIds.Any())
+                                {
+                                    ultraThink4.TrackItemWithAbilityReceived(e.LootDropped.Name, e.LootDropped.GrantedAbilityIds.Count);
+                                }
+                            }
                         }
                     }
                     else
@@ -119,7 +130,7 @@ namespace TestRPGGame.Interfaces
                         if (e.PlayerVictory)
                         {
                             var analytics = ultraThink5.GetAnalytics();
-                            analytics.TotalGoldEarned += e.GoldEarned;
+                            analytics.GoldFromCombat += e.GoldEarned;
                         }
                     }
                     break;
@@ -127,6 +138,12 @@ namespace TestRPGGame.Interfaces
                 case GameEvents.PlayerLeveledUpEvent e:
                     Log($"\n🎉 LEVEL UP! → Level {e.NewLevel}");
                     Log($"  New Stats: HP={e.NewMaxHP}, Mana={e.NewMaxMana}, Atk={e.NewAttack}, Def={e.NewDefense}");
+
+                    // Trigger inventory check after leveling up (items might be better now)
+                    if (strategy is UltraThinkStrategy ultraThinkLevelUp)
+                    {
+                        ultraThinkLevelUp.TriggerInventoryCheck("leveled up");
+                    }
                     break;
 
                 case GameEvents.PlayerStatsChangedEvent e:
@@ -135,6 +152,15 @@ namespace TestRPGGame.Interfaces
 
                 case GameEvents.ItemReceivedEvent e:
                     Log($"  Received: [{e.Rarity}] {e.ItemName} ({e.ItemType})");
+                    // Trigger inventory check after receiving loot
+                    if (strategy is UltraThinkStrategy ultraThink9)
+                    {
+                        ultraThink9.TriggerInventoryCheck("received loot");
+                    }
+                    break;
+
+                case GameEvents.ItemEquippedEvent e:
+                    // Equipment changed - tracking happens in inventory action
                     break;
 
                 case GameEvents.InfoMessageEvent e:
@@ -162,13 +188,35 @@ namespace TestRPGGame.Interfaces
                         // DungeonName will need to be tracked from DungeonEnteredEvent
                         ultraThink6.AnalyzeDungeonResult("Dungeon", e.Success);
                         if (e.Success)
-                            ultraThink6.GetAnalytics().TotalGoldEarned += e.TotalGoldEarned;
+                            ultraThink6.GetAnalytics().GoldFromDungeons += e.TotalGoldEarned;
                     }
                     break;
 
                 case GameEvents.GameSavedEvent e:
                     if (e.Success)
                         Log($"  💾 Game saved to slot {e.SlotNumber}");
+                    break;
+
+                case GameEvents.AchievementUnlockedEvent e:
+                    if (strategy is UltraThinkStrategy ultraThink7)
+                    {
+                        ultraThink7.GetAnalytics().GoldFromAchievements += e.GoldReward;
+                    }
+                    break;
+
+                case GameEvents.ItemSoldEvent e:
+                    if (strategy is UltraThinkStrategy ultraThink8)
+                    {
+                        ultraThink8.GetAnalytics().GoldFromShopSales += e.Price;
+                    }
+                    break;
+
+                case GameEvents.ItemPurchasedEvent e:
+                    // Trigger inventory check after purchasing items
+                    if (strategy is UltraThinkStrategy ultraThink10)
+                    {
+                        ultraThink10.TriggerInventoryCheck("purchased item");
+                    }
                     break;
             }
         }
@@ -255,10 +303,37 @@ namespace TestRPGGame.Interfaces
 
         public ShopAction RequestShopAction(List<ShopItemInfo> forSale, List<EquipmentItem> inventory, int playerGold)
         {
-            // Simple strategy: buy if affordable and good value
+            // Get currently equipped items from strategy if available
+            Dictionary<EquipmentSlot, EquipmentItem?>? equippedItems = null;
+            if (strategy is UltraThinkStrategy ultraThinkStrat)
+            {
+                equippedItems = ultraThinkStrat.GetCurrentlyEquipped();
+            }
+
+            Log($"  💼 Backpack: {inventory.Count} items, Gold: {playerGold}");
+
+            // First, try to sell items that are worse than what we have equipped
+            if (equippedItems != null && inventory.Any())
+            {
+                foreach (var item in inventory)
+                {
+                    var equipped = equippedItems.GetValueOrDefault(item.Slot);
+
+                    // Sell if we have something better equipped
+                    if (equipped != null && !IsItemBetter(item, equipped))
+                    {
+                        int itemIndex = inventory.IndexOf(item);
+                        Log($"  Shop: Sell {item.Name} (Lvl {item.Level}) - have better {equipped.Name}");
+                        return new ShopAction { ActionType = ShopActionType.SellItem, ItemIndex = itemIndex };
+                    }
+                }
+            }
+
+            // Try to buy upgrades if affordable
             var affordableItems = forSale.Where(i => i.Price <= playerGold).ToList();
             if (affordableItems.Any())
             {
+                // Prioritize items that would be upgrades
                 var bestItem = affordableItems.OrderByDescending(i => i.Level).First();
                 Log($"  Shop: Buy {bestItem.Name} for {bestItem.Price} gold");
 
@@ -268,7 +343,7 @@ namespace TestRPGGame.Interfaces
                 return new ShopAction { ActionType = ShopActionType.BuyItem, ItemIndex = bestItem.Index };
             }
 
-            Log($"  Shop: Exit (nothing affordable)");
+            Log($"  Shop: Exit (nothing to do)");
             return new ShopAction { ActionType = ShopActionType.Exit };
         }
 
@@ -276,21 +351,72 @@ namespace TestRPGGame.Interfaces
         {
             inventoryActionCount++;
 
-            // Equip first unequipped item, but exit after 3 actions to avoid infinite loops
-            if (backpack.Any() && inventoryActionCount <= 3)
+            // Smart equipping: Evaluate ALL items in backpack for upgrades
+            if (backpack.Any())
             {
-                Log($"  Inventory: Equip {backpack.First().Name}");
-                return new InventoryAction { ActionType = InventoryActionType.EquipItem, ItemIndex = 0 };
+                // Find the best upgrade in our backpack
+                for (int i = 0; i < backpack.Count; i++)
+                {
+                    var item = backpack[i];
+                    var currentlyEquipped = equipped.GetValueOrDefault(item.Slot);
+
+                    // If slot is empty or new item is better, equip it
+                    if (currentlyEquipped == null || IsItemBetter(item, currentlyEquipped))
+                    {
+                        Log($"  Inventory: Equip {item.Name} (Lvl {item.Level}, {item.Slot}) - upgrade from {currentlyEquipped?.Name ?? "empty"}");
+
+                        // Track if item grants abilities
+                        if (strategy is UltraThinkStrategy ultraThink && item.GrantedAbilityIds.Any())
+                        {
+                            string abilityList = string.Join(", ", item.GrantedAbilityIds);
+                            ultraThink.TrackItemWithAbilityEquipped(item.Name, item.GrantedAbilityIds.Count);
+                            Log($"  ⚡ Item grants {item.GrantedAbilityIds.Count} ability(ies): {abilityList}");
+                        }
+
+                        inventoryActionCount = 0; // Reset for next session
+                        return new InventoryAction { ActionType = InventoryActionType.EquipItem, ItemIndex = i };
+                    }
+                }
             }
 
             inventoryActionCount = 0; // Reset for next time
-            Log($"  Inventory: Exit");
+
+            // Track final equipped state before exiting inventory
+            if (strategy is UltraThinkStrategy ultraThink2)
+            {
+                ultraThink2.UpdateEquippedGear(equipped);
+            }
+
+            Log($"  Inventory: Exit - {backpack.Count} items remaining in backpack");
             return new InventoryAction { ActionType = InventoryActionType.Exit };
+        }
+
+        /// <summary>
+        /// Determines if newItem is better than currentItem by comparing total stat bonuses
+        /// </summary>
+        private bool IsItemBetter(EquipmentItem newItem, EquipmentItem currentItem)
+        {
+            // Calculate total value of each item
+            int newValue = newItem.AttackBonus + newItem.DefenseBonus + newItem.MagicBonus +
+                          newItem.HPBonus / 10 + newItem.ManaBonus / 10 + newItem.AgilityBonus +
+                          (int)(newItem.CritBonus * 100) + (newItem.MinDamage + newItem.MaxDamage) / 2;
+
+            int currentValue = currentItem.AttackBonus + currentItem.DefenseBonus + currentItem.MagicBonus +
+                              currentItem.HPBonus / 10 + currentItem.ManaBonus / 10 + currentItem.AgilityBonus +
+                              (int)(currentItem.CritBonus * 100) + (currentItem.MinDamage + currentItem.MaxDamage) / 2;
+
+            return newValue > currentValue;
         }
 
         public void DisplayCharacterSheet(CharacterSheetInfo info)
         {
             Log($"  Character Sheet: {info.Name} (Lv {info.Level} {info.Class}) - {info.CurrentHP}/{info.MaxHP} HP, {info.Gold} gold");
+
+            // Track equipped gear for smart selling/equipping
+            if (strategy is UltraThinkStrategy ultraThink)
+            {
+                ultraThink.UpdateEquippedGear(info.Equipment);
+            }
         }
 
         public int RequestDungeonSelection(List<DungeonSelectionInfo> dungeons)
@@ -308,21 +434,93 @@ namespace TestRPGGame.Interfaces
 
         public int RequestAbilityUnlock(List<AbilityInfo> lockedAbilities, int playerGold, int playerLevel)
         {
+            // Track this ability store visit
+            var storeVisit = new AbilityStoreVisit
+            {
+                PlayerLevel = playerLevel,
+                PlayerGold = playerGold,
+                AvailableAbilitiesCount = lockedAbilities.Count
+            };
+
             var canUnlock = lockedAbilities.Where(a =>
                 playerLevel >= a.UnlockLevel && playerGold >= a.PurchaseCost).ToList();
 
             if (canUnlock.Any())
             {
-                var ability = canUnlock.First();
-                Log($"  Unlock: {ability.Name} for {ability.PurchaseCost} gold");
+                // Smart selection: Prioritize lowest unlock level, then lowest cost
+                // This ensures we unlock abilities ASAP and save gold for other things
+                var ability = canUnlock
+                    .OrderBy(a => a.UnlockLevel)
+                    .ThenBy(a => a.PurchaseCost)
+                    .First();
+
+                Log($"  Unlock: {ability.Name} (Lvl {ability.UnlockLevel}, {ability.PurchaseCost}g) - {ability.Description}");
+
+                // Track successful purchase
+                storeVisit.PurchasedAbility = true;
+                storeVisit.PurchasedAbilityName = ability.Name;
+                storeVisit.PurchasedAbilityCost = ability.PurchaseCost;
 
                 if (strategy is UltraThinkStrategy ultraThink)
+                {
                     ultraThink.AnalyzeAbilityUnlock(ability.Name, ability.PurchaseCost);
+                    ultraThink.GetAnalytics().AbilityStoreVisits.Add(storeVisit);
+                }
 
                 return ability.Index;
             }
 
-            return -1;
+            // Track why we didn't purchase
+            storeVisit.PurchasedAbility = false;
+
+            if (lockedAbilities.Count == 0)
+            {
+                storeVisit.ReasonsNotPurchased.Add("All abilities already unlocked");
+                Log($"  Ability Store: All abilities unlocked!");
+            }
+            else
+            {
+                // Analyze why we couldn't purchase
+                var affordableAbilities = lockedAbilities.Where(a => playerGold >= a.PurchaseCost).ToList();
+                var levelRequiredAbilities = lockedAbilities.Where(a => playerLevel >= a.UnlockLevel).ToList();
+
+                if (affordableAbilities.Count == 0)
+                {
+                    var cheapestAbility = lockedAbilities.OrderBy(a => a.PurchaseCost).First();
+                    storeVisit.ReasonsNotPurchased.Add($"Can't afford cheapest ability (need {cheapestAbility.PurchaseCost}g, have {playerGold}g)");
+                    Log($"  Ability Store: Can't afford any abilities (need {cheapestAbility.PurchaseCost}g, have {playerGold}g)");
+                }
+
+                if (levelRequiredAbilities.Count == 0)
+                {
+                    var lowestLevelAbility = lockedAbilities.OrderBy(a => a.UnlockLevel).First();
+                    storeVisit.ReasonsNotPurchased.Add($"Level too low (need level {lowestLevelAbility.UnlockLevel}, currently {playerLevel})");
+                    Log($"  Ability Store: Level too low (need level {lowestLevelAbility.UnlockLevel}, currently {playerLevel})");
+                }
+
+                // Specifically check if level and gold are both issues
+                if (affordableAbilities.Any() && levelRequiredAbilities.Any())
+                {
+                    // Have money and level, but not for the same ability
+                    var cheapestAtLevel = lockedAbilities
+                        .Where(a => playerLevel >= a.UnlockLevel)
+                        .OrderBy(a => a.PurchaseCost)
+                        .FirstOrDefault();
+
+                    if (cheapestAtLevel != null)
+                    {
+                        storeVisit.ReasonsNotPurchased.Add($"Can't afford level-appropriate abilities (need {cheapestAtLevel.PurchaseCost}g, have {playerGold}g)");
+                        Log($"  Ability Store: Can't afford level-appropriate abilities (need {cheapestAtLevel.PurchaseCost}g for {cheapestAtLevel.Name})");
+                    }
+                }
+            }
+
+            if (strategy is UltraThinkStrategy ultraThink2)
+            {
+                ultraThink2.GetAnalytics().AbilityStoreVisits.Add(storeVisit);
+            }
+
+            return -1; // No affordable abilities
         }
 
         public bool RequestConfirmation(string message)
@@ -453,6 +651,7 @@ namespace TestRPGGame.Interfaces
         private int abilitiesUnlocked = 0;
         private int totalCombats = 0;
         private int totalDeaths = 0;
+        private int lastAbilityCheckLevel = 0; // Track last level we checked abilities to prevent infinite loops
 
         public Level15Strategy(string characterName, PlayerClass playerClass)
         {
@@ -494,11 +693,14 @@ namespace TestRPGGame.Interfaces
                 return MainMenuChoice.Rest;
             }
 
-            // TODO: Ability unlocking system not yet implemented - skip for now
-            // if (level >= 3 && (level % 3 == 0 || gold > 500))
-            // {
-            //     return MainMenuChoice.UnlockAbilities;
-            // }
+            // Check for ability unlocks every 2 levels starting at level 3
+            // Only check ONCE per level to prevent infinite loops
+            // Only check if we have reasonable gold (150+ for cheapest abilities)
+            if (level >= 3 && level % 2 == 0 && gold >= 150 && lastAbilityCheckLevel != level)
+            {
+                lastAbilityCheckLevel = level; // Mark that we've checked this level
+                return MainMenuChoice.UnlockAbilities;
+            }
 
             // Visit shop every 8-10 combats if we have gold
             combatsSinceShop++;
@@ -598,8 +800,6 @@ namespace TestRPGGame.Interfaces
     {
         public PlayerClass Class { get; set; }
         public int RunNumber { get; set; }
-        public DateTime StartTime { get; set; }
-        public DateTime? EndTime { get; set; }
 
         // Combat Metrics
         public int TotalCombats { get; set; }
@@ -616,11 +816,26 @@ namespace TestRPGGame.Interfaces
 
         // Progression Metrics
         public int FinalLevel { get; set; }
-        public TimeSpan TimeToLevel5 { get; set; }
-        public TimeSpan TimeToLevel10 { get; set; }
-        public TimeSpan TimeToLevel15 { get; set; }
-        public int TotalGoldEarned { get; set; }
-        public int TotalGoldSpent { get; set; }
+        public Dictionary<int, int> CombatsPerLevel { get; } = new(); // Level -> Combat count
+        public Dictionary<int, int> DungeonsPerLevel { get; } = new(); // Level -> Dungeon attempt count
+
+        // Gold Tracking - Sources
+        public int GoldFromStarting { get; set; } = 100;
+        public int GoldFromCombat { get; set; }
+        public int GoldFromDungeons { get; set; }
+        public int GoldFromAchievements { get; set; }
+        public int GoldFromShopSales { get; set; }
+        public int TotalGoldEarned => GoldFromStarting + GoldFromCombat + GoldFromDungeons + GoldFromAchievements + GoldFromShopSales;
+
+        // Gold Tracking - Expenditures
+        public int GoldSpentOnPotions { get; set; }
+        public int GoldSpentOnRest { get; set; }
+        public int GoldSpentOnWeapons { get; set; }
+        public int GoldSpentOnArmor { get; set; }
+        public int GoldSpentOnAccessories { get; set; }
+        public int GoldSpentOnAbilities { get; set; }
+        public int TotalGoldSpent => GoldSpentOnPotions + GoldSpentOnRest + GoldSpentOnWeapons + GoldSpentOnArmor + GoldSpentOnAccessories + GoldSpentOnAbilities;
+
         public int FinalGold { get; set; }
 
         // Resource Management
@@ -641,9 +856,18 @@ namespace TestRPGGame.Interfaces
         public int DungeonsFailed { get; set; }
         public Dictionary<string, bool> DungeonResults { get; } = new();
 
+        // Dungeon Failure Analysis
+        public List<DungeonFailureInfo> DungeonFailures { get; } = new();
+
         // Abilities
         public int AbilitiesUnlocked { get; set; }
         public List<string> UnlockedAbilityNames { get; } = new();
+        public List<AbilityStoreVisit> AbilityStoreVisits { get; } = new();
+
+        // Equipment-Granted Abilities
+        public int ItemsWithAbilitiesReceived { get; set; }
+        public int ItemsWithAbilitiesEquipped { get; set; }
+        public List<string> EquipmentAbilitiesUsed { get; } = new();
 
         // Observations & Insights
         public List<string> PositiveObservations { get; } = new();
@@ -674,11 +898,55 @@ namespace TestRPGGame.Interfaces
             }
         }
 
+        // Combat Damage Per Level
+        public Dictionary<int, List<int>> DamageTakenPerLevel { get; } = new(); // Level -> List of damage taken per combat
+
+        // Equipment Tracking
+        public Dictionary<int, Dictionary<EquipmentSlot, EquipmentItem?>> EquippedGearByLevel { get; } = new(); // Level -> Equipped items
+
         public double GetWinRate() => TotalCombats > 0 ? (double)CombatsWon / TotalCombats * 100 : 0;
+        public double GetFleeRate() => TotalCombats > 0 ? (double)CombatsFled / TotalCombats * 100 : 0;
+        public double GetDeathRate() => TotalCombats > 0 ? (double)CombatsLost / TotalCombats * 100 : 0;
         public double GetCritRate() => (TotalDamageDealt > 0) ? (double)CriticalHits / (CombatsWon * 10) * 100 : 0; // Rough estimate
         public double GetDungeonSuccessRate() => DungeonAttempts > 0 ? (double)DungeonsCompleted / DungeonAttempts * 100 : 0;
         public double GetAverageDamagePerCombat() => CombatsWon > 0 ? (double)TotalDamageDealt / CombatsWon : 0;
+        public double GetAverageDamageTakenPerCombat() => TotalCombats > 0 ? (double)TotalDamageTaken / TotalCombats : 0;
         public double GetGoldEfficiency() => TotalGoldEarned > 0 ? (double)TotalGoldSpent / TotalGoldEarned * 100 : 0;
+    }
+
+    /// <summary>
+    /// Details about a dungeon failure for analysis
+    /// </summary>
+    public class DungeonFailureInfo
+    {
+        public string DungeonName { get; set; } = "";
+        public int PlayerLevel { get; set; }
+        public int PlayerHP { get; set; }
+        public int PlayerMaxHP { get; set; }
+        public int PlayerMana { get; set; }
+        public int PlayerMaxMana { get; set; }
+        public int PotionsAvailable { get; set; }
+        public int EncounterNumber { get; set; } // Which encounter in the dungeon
+        public bool WasBossFight { get; set; }
+        public bool WasFlee { get; set; } // True if fled, false if died
+        public int EnemyHPRemaining { get; set; }
+        public int EnemyMaxHP { get; set; }
+        public string FailureReason { get; set; } = "";
+    }
+
+    /// <summary>
+    /// Details about an ability store visit for analysis
+    /// </summary>
+    public class AbilityStoreVisit
+    {
+        public int PlayerLevel { get; set; }
+        public int PlayerGold { get; set; }
+        public int AvailableAbilitiesCount { get; set; }
+        public bool PurchasedAbility { get; set; }
+        public string? PurchasedAbilityName { get; set; }
+        public int? PurchasedAbilityCost { get; set; }
+        public List<string> ReasonsNotPurchased { get; } = new();
+        // Reasons: "No gold", "Level too low", "All already unlocked", "Can't afford cheapest"
     }
 
     /// <summary>
@@ -694,17 +962,27 @@ namespace TestRPGGame.Interfaces
         private int lastLoggedLevel = 0;
         private int combatsSinceShop = 0;
         private int combatsSinceDungeon = 0;
-        private bool levelMilestone5Logged = false;
-        private bool levelMilestone10Logged = false;
-        private bool levelMilestone15Logged = false;
 
         // Contextual state for analysis
         private int consecutiveCombatWins = 0;
         private int consecutiveCombatLosses = 0;
         private string? currentDungeon = null;
-        private int currentDungeonCombats = 0;
+        private int currentDungeonEncounter = 0;
+        private bool inDungeon = false;
+        private int dungeonEntryHP = 0;
+        private int dungeonEntryMaxHP = 0;
+        private int dungeonEntryMana = 0;
+        private int dungeonEntryMaxMana = 0;
+        private int dungeonEntryPotions = 0;
         private int lowHealthCombats = 0;
         private int lowManaCombats = 0;
+
+        // Current equipment state
+        private Dictionary<EquipmentSlot, EquipmentItem?> currentlyEquipped = new();
+
+        // Flags to trigger inventory management
+        private bool shouldManageInventory = false;
+        private int lastAbilityCheckLevel = 0; // Track last level we checked abilities to prevent infinite loops
 
         public UltraThinkStrategy(string characterName, PlayerClass playerClass, GameplayAnalytics analytics)
         {
@@ -712,10 +990,22 @@ namespace TestRPGGame.Interfaces
             this.playerClass = playerClass;
             this.analytics = analytics;
             this.analytics.Class = playerClass;
-            this.analytics.StartTime = DateTime.Now;
         }
 
         public GameplayAnalytics GetAnalytics() => analytics;
+
+        public Dictionary<EquipmentSlot, EquipmentItem?> GetCurrentlyEquipped() => currentlyEquipped;
+
+        public void UpdateEquippedGear(Dictionary<EquipmentSlot, EquipmentItem?> equipped)
+        {
+            currentlyEquipped = new Dictionary<EquipmentSlot, EquipmentItem?>(equipped);
+
+            // Track equipped gear by level
+            if (!analytics.EquippedGearByLevel.ContainsKey(currentLevel))
+            {
+                analytics.EquippedGearByLevel[currentLevel] = new Dictionary<EquipmentSlot, EquipmentItem?>(equipped);
+            }
+        }
 
         public override (string name, PlayerClass playerClass) ChooseCharacterClass()
         {
@@ -724,40 +1014,25 @@ namespace TestRPGGame.Interfaces
 
         public override MainMenuChoice ChooseMainMenuAction(int combatCount, int level, int gold, int hp, int maxHp)
         {
+            // Track level changes
+            if (level > currentLevel)
+            {
+                // Initialize tracking for new level
+                if (!analytics.CombatsPerLevel.ContainsKey(level))
+                    analytics.CombatsPerLevel[level] = 0;
+                if (!analytics.DungeonsPerLevel.ContainsKey(level))
+                    analytics.DungeonsPerLevel[level] = 0;
+            }
+
             currentLevel = level;
             analytics.FinalLevel = level;
             analytics.FinalGold = gold;
-
-            // Track level progression time
-            var elapsed = DateTime.Now - analytics.StartTime;
-            if (level >= 5 && !levelMilestone5Logged)
-            {
-                analytics.TimeToLevel5 = elapsed;
-                levelMilestone5Logged = true;
-                LogUltraThink($"📊 Level 5 Analysis: Reached in {elapsed.TotalMinutes:F1} minutes");
-                AnalyzeLevelingSpeed(5, elapsed);
-            }
-            if (level >= 10 && !levelMilestone10Logged)
-            {
-                analytics.TimeToLevel10 = elapsed;
-                levelMilestone10Logged = true;
-                LogUltraThink($"📊 Level 10 Analysis: Reached in {elapsed.TotalMinutes:F1} minutes");
-                AnalyzeLevelingSpeed(10, elapsed);
-            }
-            if (level >= 15 && !levelMilestone15Logged)
-            {
-                analytics.TimeToLevel15 = elapsed;
-                analytics.EndTime = DateTime.Now;
-                levelMilestone15Logged = true;
-                LogUltraThink($"📊 Level 15 Analysis: Reached in {elapsed.TotalMinutes:F1} minutes");
-                AnalyzeLevelingSpeed(15, elapsed);
-            }
 
             // Log progress milestones
             if (level > lastLoggedLevel)
             {
                 Console.WriteLine($"\n🎯 MILESTONE: {characterName} reached Level {level}! [Gold: {gold}, HP: {hp}/{maxHp}]");
-                LogUltraThink($"Level up to {level}: Currently at {hp}/{maxHp} HP, {gold} gold");
+                LogAnalysis($"Level up to {level}: Currently at {hp}/{maxHp} HP, {gold} gold");
                 AnalyzeHealthState(hp, maxHp, level);
                 lastLoggedLevel = level;
             }
@@ -769,14 +1044,24 @@ namespace TestRPGGame.Interfaces
                 return MainMenuChoice.Exit;
             }
 
-            // Rest if HP is below 60% and we have enough gold (costs 10)
+            // PRIORITY 1: Manage inventory FIRST - equip loot before doing anything else
+            // This ensures we're properly geared before shop/dungeon/combat
+            if (shouldManageInventory)
+            {
+                shouldManageInventory = false; // Reset flag
+                LogAnalysis("Managing inventory - checking for equipment upgrades");
+                return MainMenuChoice.Inventory;
+            }
+
+            // PRIORITY 2: Rest if HP is below 60% and we have enough gold (costs 10)
             double hpPercent = (double)hp / maxHp;
             if (hpPercent < 0.6 && gold >= 10)
             {
                 analytics.TimesRested++;
+                analytics.GoldSpentOnRest += 10; // Rest costs 10 gold
                 if (hpPercent < 0.3)
                 {
-                    LogUltraThink($"Emergency rest needed at {hpPercent:P0} HP - combat may be too dangerous");
+                    LogAnalysis($"Emergency rest needed at {hpPercent:P0} HP - combat may be too dangerous");
                     analytics.AddObservation("negative", $"Frequently at critically low HP ({hpPercent:P0})");
                 }
                 return MainMenuChoice.Rest;
@@ -785,46 +1070,69 @@ namespace TestRPGGame.Interfaces
             // If HP is low but can't afford rest, note this as a problem
             if (hpPercent < 0.6 && gold < 10)
             {
-                LogUltraThink($"Need to rest at {hpPercent:P0} HP but only have {gold} gold (need 10) - forced to continue");
+                LogAnalysis($"Need to rest at {hpPercent:P0} HP but only have {gold} gold (need 10) - forced to continue");
                 analytics.AddObservation("balance", $"Stuck at low HP with insufficient gold for rest - economy too tight");
             }
 
-            // TODO: Ability unlocking system not yet implemented - skip for now
-            // if (level >= 3 && (level % 3 == 0 || gold > 500))
-            // {
-            //     return MainMenuChoice.UnlockAbilities;
-            // }
+            // PRIORITY 2.5: Check for ability unlocks every 2 levels starting at level 3
+            // Only check ONCE per level to prevent infinite loops if no affordable abilities
+            // Only check if we have reasonable gold (150+ for cheapest abilities)
+            // This gives players meaningful progression rewards
+            if (level >= 3 && level % 2 == 0 && gold >= 150 && lastAbilityCheckLevel != level)
+            {
+                lastAbilityCheckLevel = level; // Mark that we've checked this level
+                LogAnalysis($"Level {level} reached - checking for ability unlock opportunities with {gold} gold");
+                return MainMenuChoice.UnlockAbilities;
+            }
 
-            // Visit shop every 8-10 combats if we have gold
+            // PRIORITY 3: Visit shop every 8-10 combats if we have gold
             combatsSinceShop++;
             if (combatsSinceShop >= 8 && gold >= 100)
             {
                 analytics.ShopVisits++;
                 combatsSinceShop = 0;
-                LogUltraThink($"Visiting shop with {gold} gold - equipment upgrade opportunity");
+                LogAnalysis($"Visiting shop with {gold} gold - equipment upgrade opportunity");
                 return MainMenuChoice.Shop;
             }
 
-            // Try dungeons every 6-8 combats starting at level 3
+            // PRIORITY 4: Try dungeons every 6-8 combats starting at level 3
             combatsSinceDungeon++;
             if (level >= 3 && combatsSinceDungeon >= 6 && hpPercent >= 0.7)
             {
                 analytics.DungeonAttempts++;
                 combatsSinceDungeon = 0;
-                LogUltraThink($"Attempting dungeon at level {level} with {hpPercent:P0} HP");
+
+                // Track dungeons per level
+                if (!analytics.DungeonsPerLevel.ContainsKey(currentLevel))
+                    analytics.DungeonsPerLevel[currentLevel] = 0;
+                analytics.DungeonsPerLevel[currentLevel]++;
+
+                // Track dungeon entry state (we'll get the dungeon name from the event later)
+                // For now, just mark that we're attempting a dungeon
+                TrackDungeonEntry("Dungeon", hp, maxHp, 0, 0, 0); // We don't have mana/potions here
+
+                LogAnalysis($"Attempting dungeon at level {level} with {hpPercent:P0} HP");
                 return MainMenuChoice.Dungeon;
             }
 
-            // Manage inventory occasionally
-            if (combatCount % 15 == 0 && combatCount > 0)
-            {
-                LogUltraThink("Checking inventory - equipment management");
-                return MainMenuChoice.Inventory;
-            }
-
             // Main activity: combat to gain XP
-            analytics.TotalCombats++;
             return MainMenuChoice.Combat;
+        }
+
+        public void TriggerInventoryCheck(string reason)
+        {
+            shouldManageInventory = true;
+            LogAnalysis($"Inventory check scheduled: {reason}");
+        }
+
+        public void TrackCombatStart()
+        {
+            analytics.TotalCombats++;
+
+            // Track combats per level
+            if (!analytics.CombatsPerLevel.ContainsKey(currentLevel))
+                analytics.CombatsPerLevel[currentLevel] = 0;
+            analytics.CombatsPerLevel[currentLevel]++;
         }
 
         public override CombatAction ChooseCombatAction(CombatState state)
@@ -854,7 +1162,7 @@ namespace TestRPGGame.Interfaces
             if (hpPercent < 0.25 && state.PlayerPotions > 0)
             {
                 analytics.PotionsUsed++;
-                LogUltraThink($"Emergency potion use at {hpPercent:P0} HP");
+                LogAnalysis($"Emergency potion use at {hpPercent:P0} HP");
                 return new CombatAction { ActionType = CombatActionType.UsePotion };
             }
 
@@ -862,7 +1170,7 @@ namespace TestRPGGame.Interfaces
             if (hpPercent < 0.15 && state.PlayerPotions == 0)
             {
                 analytics.CombatsFled++;
-                LogUltraThink($"Fleeing combat - critically low HP ({hpPercent:P0}) and no potions");
+                LogAnalysis($"Fleeing combat - critically low HP ({hpPercent:P0}) and no potions");
                 analytics.AddObservation("missing", "No way to know if fleeing will succeed - success rate info would be helpful");
                 return new CombatAction { ActionType = CombatActionType.Flee };
             }
@@ -895,7 +1203,7 @@ namespace TestRPGGame.Interfaces
             }
             else if (manaPercent < 0.2 && usableAbilities.Any())
             {
-                LogUltraThink($"Low mana ({manaPercent:P0}) - forced to basic attack despite abilities available");
+                LogAnalysis($"Low mana ({manaPercent:P0}) - forced to basic attack despite abilities available");
                 analytics.AddObservation("negative", "Mana constraints limit ability usage - may need mana regeneration improvements");
             }
 
@@ -914,28 +1222,9 @@ namespace TestRPGGame.Interfaces
             };
         }
 
-        private void LogUltraThink(string thought)
+        private void LogAnalysis(string thought)
         {
-            Console.WriteLine($"  💭 [UltraThink] {thought}");
-        }
-
-        private void AnalyzeLevelingSpeed(int level, TimeSpan elapsed)
-        {
-            double minutesPerLevel = elapsed.TotalMinutes / level;
-
-            if (minutesPerLevel < 1.0)
-            {
-                analytics.AddObservation("positive", $"Fast leveling pace ({minutesPerLevel:F1} min/level) - good XP balance");
-            }
-            else if (minutesPerLevel > 3.0)
-            {
-                analytics.AddObservation("negative", $"Slow leveling pace ({minutesPerLevel:F1} min/level) - may feel grindy");
-                analytics.AddObservation("balance", $"Consider increasing XP rewards or reducing level requirements");
-            }
-            else
-            {
-                analytics.AddObservation("positive", $"Balanced leveling pace ({minutesPerLevel:F1} min/level)");
-            }
+            Console.WriteLine($"  💭 [Analysis] {thought}");
         }
 
         private void AnalyzeHealthState(int hp, int maxHp, int level)
@@ -954,6 +1243,11 @@ namespace TestRPGGame.Interfaces
 
         public void AnalyzeCombatResult(bool victory, int damageDealt, int damageTaken)
         {
+            // Track damage taken per level
+            if (!analytics.DamageTakenPerLevel.ContainsKey(currentLevel))
+                analytics.DamageTakenPerLevel[currentLevel] = new List<int>();
+            analytics.DamageTakenPerLevel[currentLevel].Add(damageTaken);
+
             if (victory)
             {
                 analytics.CombatsWon++;
@@ -987,9 +1281,9 @@ namespace TestRPGGame.Interfaces
         {
             analytics.AbilitiesUnlocked++;
             analytics.UnlockedAbilityNames.Add(abilityName);
-            analytics.TotalGoldSpent += cost;
+            analytics.GoldSpentOnAbilities += cost;
 
-            LogUltraThink($"Unlocked ability: {abilityName} for {cost} gold");
+            LogAnalysis($"Unlocked ability: {abilityName} for {cost} gold");
             analytics.AddObservation("positive", $"Unlocked {abilityName} - ability progression feels rewarding");
         }
 
@@ -1003,7 +1297,7 @@ namespace TestRPGGame.Interfaces
 
             if (rarity == "Legendary" || rarity == "Epic")
             {
-                LogUltraThink($"Rare loot drop: {rarity} {itemName} - exciting moment!");
+                LogAnalysis($"Rare loot drop: {rarity} {itemName} - exciting moment!");
                 analytics.AddObservation("positive", $"Received {rarity} item - loot system creates exciting moments");
             }
         }
@@ -1011,9 +1305,82 @@ namespace TestRPGGame.Interfaces
         public void AnalyzeShopPurchase(string itemName, int cost)
         {
             analytics.ItemsPurchased++;
-            analytics.TotalGoldSpent += cost;
 
-            LogUltraThink($"Purchased {itemName} for {cost} gold");
+            // Categorize expenditure by item type
+            string itemLower = itemName.ToLower();
+            if (itemLower.Contains("sword") || itemLower.Contains("axe") || itemLower.Contains("mace") ||
+                itemLower.Contains("staff") || itemLower.Contains("dagger") || itemLower.Contains("bow"))
+            {
+                analytics.GoldSpentOnWeapons += cost;
+            }
+            else if (itemLower.Contains("armor") || itemLower.Contains("helm") || itemLower.Contains("chest") ||
+                     itemLower.Contains("greaves") || itemLower.Contains("boots") || itemLower.Contains("hood") ||
+                     itemLower.Contains("slippers") || itemLower.Contains("gauntlets"))
+            {
+                analytics.GoldSpentOnArmor += cost;
+            }
+            else if (itemLower.Contains("ring") || itemLower.Contains("amulet") || itemLower.Contains("talisman") ||
+                     itemLower.Contains("band") || itemLower.Contains("orb") || itemLower.Contains("circle") ||
+                     itemLower.Contains("medallion"))
+            {
+                analytics.GoldSpentOnAccessories += cost;
+            }
+            else if (itemLower.Contains("potion"))
+            {
+                analytics.GoldSpentOnPotions += cost;
+            }
+
+            LogAnalysis($"Purchased {itemName} for {cost} gold");
+        }
+
+        public void TrackRestExpenditure(int cost)
+        {
+            analytics.GoldSpentOnRest += cost;
+        }
+
+        public void TrackDungeonEntry(string dungeonName, int hp, int maxHp, int mana, int maxMana, int potions)
+        {
+            currentDungeon = dungeonName;
+            currentDungeonEncounter = 0;
+            inDungeon = true;
+            dungeonEntryHP = hp;
+            dungeonEntryMaxHP = maxHp;
+            dungeonEntryMana = mana;
+            dungeonEntryMaxMana = maxMana;
+            dungeonEntryPotions = potions;
+        }
+
+        public void TrackDungeonCombatStart(bool isBoss)
+        {
+            if (inDungeon)
+            {
+                currentDungeonEncounter++;
+            }
+        }
+
+        public void TrackDungeonFailure(bool wasFlee, int enemyHP, int enemyMaxHP, string failureReason)
+        {
+            if (inDungeon && currentDungeon != null)
+            {
+                var failure = new DungeonFailureInfo
+                {
+                    DungeonName = currentDungeon,
+                    PlayerLevel = currentLevel,
+                    PlayerHP = dungeonEntryHP,
+                    PlayerMaxHP = dungeonEntryMaxHP,
+                    PlayerMana = dungeonEntryMana,
+                    PlayerMaxMana = dungeonEntryMaxMana,
+                    PotionsAvailable = dungeonEntryPotions,
+                    EncounterNumber = currentDungeonEncounter,
+                    WasBossFight = currentDungeonEncounter >= 4, // Assuming boss is encounter 4+
+                    WasFlee = wasFlee,
+                    EnemyHPRemaining = enemyHP,
+                    EnemyMaxHP = enemyMaxHP,
+                    FailureReason = failureReason
+                };
+
+                analytics.DungeonFailures.Add(failure);
+            }
         }
 
         public void AnalyzeDungeonResult(string dungeonName, bool success)
@@ -1030,6 +1397,11 @@ namespace TestRPGGame.Interfaces
             }
 
             analytics.DungeonResults[dungeonName] = success;
+
+            // Reset dungeon tracking
+            inDungeon = false;
+            currentDungeon = null;
+            currentDungeonEncounter = 0;
         }
 
         public void AnalyzeStatusEffect(string effectName, string targetType)
@@ -1050,18 +1422,31 @@ namespace TestRPGGame.Interfaces
             analytics.MissedAttacks++;
         }
 
+        public void TrackItemWithAbilityReceived(string itemName, int abilityCount)
+        {
+            analytics.ItemsWithAbilitiesReceived++;
+            LogAnalysis($"Received item with {abilityCount} ability grant(s): {itemName}");
+            analytics.AddObservation("positive", $"Found equipment with {abilityCount} granted ability(ies) - loot system creates excitement");
+        }
+
+        public void TrackItemWithAbilityEquipped(string itemName, int abilityCount)
+        {
+            analytics.ItemsWithAbilitiesEquipped++;
+            LogAnalysis($"Equipped item with {abilityCount} ability grant(s): {itemName}");
+            analytics.AddObservation("positive", $"Equipped item grants {abilityCount} ability(ies): {itemName} - equipment feels more impactful");
+        }
+
         public void FinalizeAnalysis()
         {
-            analytics.EndTime = DateTime.Now;
-
             // Final summary observations
-            LogUltraThink("=== Final Analysis ===");
-            LogUltraThink($"Win Rate: {analytics.GetWinRate():F1}%");
-            LogUltraThink($"Dungeon Success: {analytics.GetDungeonSuccessRate():F1}%");
-            LogUltraThink($"Gold Efficiency: {analytics.GetGoldEfficiency():F1}%");
-            LogUltraThink($"Near-Death Situations: {analytics.TimesNearDeath}");
-            LogUltraThink($"Potions Used: {analytics.PotionsUsed}");
-            LogUltraThink($"Abilities Unlocked: {analytics.AbilitiesUnlocked}");
+            LogAnalysis("=== Final Analysis ===");
+            LogAnalysis($"Total Combats: {analytics.TotalCombats}");
+            LogAnalysis($"Win Rate: {analytics.GetWinRate():F1}%");
+            LogAnalysis($"Dungeon Success: {analytics.GetDungeonSuccessRate():F1}%");
+            LogAnalysis($"Gold Efficiency: {analytics.GetGoldEfficiency():F1}%");
+            LogAnalysis($"Near-Death Situations: {analytics.TimesNearDeath}");
+            LogAnalysis($"Potions Used: {analytics.PotionsUsed}");
+            LogAnalysis($"Abilities Unlocked: {analytics.AbilitiesUnlocked}");
 
             // Add final observations based on overall performance
             if (analytics.GetWinRate() > 90)
