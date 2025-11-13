@@ -36,77 +36,121 @@ namespace TestRPGGame
 
             if (useAutomated)
             {
-                // Run automated playtest to level 10 for all 3 classes
-                Console.WriteLine("╔═══════════════════════════════════════════════════════════╗");
-                Console.WriteLine("║     AUTOMATED PLAYTEST TO LEVEL 10 (ALL CLASSES)         ║");
-                Console.WriteLine("╚═══════════════════════════════════════════════════════════╝\n");
+                // Run automated playtest with UltraThink analysis: 3 runs per class to level 15
+                Console.WriteLine("╔═══════════════════════════════════════════════════════════════════════════════╗");
+                Console.WriteLine("║           ULTRATHINK GAMEPLAY ANALYSIS - 3 RUNS PER CLASS TO LEVEL 15        ║");
+                Console.WriteLine("╚═══════════════════════════════════════════════════════════════════════════════╝\n");
 
                 var classes = new[]
                 {
-                    (Name: "Thorin", Class: Entities.Player.PlayerClass.Warrior),
-                    (Name: "Gandalf", Class: Entities.Player.PlayerClass.Mage),
-                    (Name: "Legolas", Class: Entities.Player.PlayerClass.Rogue)
+                    (BaseName: "Thorin", Class: Entities.Player.PlayerClass.Warrior),
+                    (BaseName: "Gandalf", Class: Entities.Player.PlayerClass.Mage),
+                    (BaseName: "Legolas", Class: Entities.Player.PlayerClass.Rogue)
                 };
 
-                var results = new System.Collections.Generic.List<(string Name, Entities.Player.PlayerClass Class, bool Success, int FinalLevel, string Summary)>();
+                var allAnalytics = new System.Collections.Generic.List<GameplayAnalytics>();
+                var results = new System.Collections.Generic.List<(string Name, Entities.Player.PlayerClass Class, int Run, bool Success, int FinalLevel)>();
 
-                foreach (var (Name, Class) in classes)
+                // Run 3 playthroughs per class
+                foreach (var (BaseName, Class) in classes)
                 {
-                    Console.WriteLine($"\n╔═══════════════════════════════════════════════════════════╗");
-                    Console.WriteLine($"║  Testing: {Name} the {Class,-10}                          ║");
-                    Console.WriteLine($"╚═══════════════════════════════════════════════════════════╝\n");
-
-                    try
+                    for (int runNumber = 1; runNumber <= 3; runNumber++)
                     {
-                        var strategy = new Level10Strategy(Name, Class);
-                        var automatedInterface = new AutomatedInterface(strategy);
-                        var gameCore = new GameCore(automatedInterface);
-                        gameCore.Start();
+                        string characterName = $"{BaseName}{runNumber}";
 
-                        var log = automatedInterface.GetLog();
+                        Console.WriteLine($"\n╔═══════════════════════════════════════════════════════════════════════════════╗");
+                        Console.WriteLine($"║  Run {runNumber}/3: {characterName} the {Class,-10}                                        ║");
+                        Console.WriteLine($"╚═══════════════════════════════════════════════════════════════════════════════╝\n");
 
-                        // Parse results from log
-                        bool reachedLevel10 = log.Contains("LEVEL UP! → Level 10") || log.Contains("TEST COMPLETE");
-                        int finalLevel = 10; // Assume success if test completed
+                        try
+                        {
+                            var analytics = new GameplayAnalytics { RunNumber = runNumber };
+                            var strategy = new UltraThinkStrategy(characterName, Class, analytics);
+                            var automatedInterface = new AutomatedInterface(strategy);
+                            var gameCore = new GameCore(automatedInterface);
 
-                        string summary = $"✅ SUCCESS - Reached Level 10";
-                        results.Add((Name, Class, true, finalLevel, summary));
+                            Console.WriteLine($"🎮 Starting playthrough: {characterName} ({Class})");
+                            Console.WriteLine($"🎯 Goal: Reach Level 15 while analyzing all game systems\n");
 
-                        Console.WriteLine($"\n✅ {Name} ({Class}) - Test completed successfully!");
+                            gameCore.Start();
+
+                            // Finalize analytics
+                            strategy.FinalizeAnalysis();
+                            allAnalytics.Add(analytics);
+
+                            bool success = analytics.FinalLevel >= 15;
+                            results.Add((characterName, Class, runNumber, success, analytics.FinalLevel));
+
+                            Console.WriteLine($"\n✅ {characterName} ({Class}) Run {runNumber} - Completed!");
+                            Console.WriteLine($"   Final Level: {analytics.FinalLevel}");
+                            Console.WriteLine($"   Time Played: {(analytics.EndTime ?? analytics.StartTime).Subtract(analytics.StartTime).TotalMinutes:F1} minutes");
+                            Console.WriteLine($"   Combat Win Rate: {analytics.GetWinRate():F1}%");
+                        }
+                        catch (Exception ex)
+                        {
+                            results.Add((characterName, Class, runNumber, false, 0));
+                            Console.WriteLine($"\n❌ {characterName} ({Class}) Run {runNumber} - FAILED: {ex.Message}");
+                            Console.WriteLine($"Stack Trace: {ex.StackTrace}");
+                        }
+
+                        // Brief pause between runs
+                        System.Threading.Thread.Sleep(500);
                     }
-                    catch (Exception ex)
-                    {
-                        string summary = $"❌ FAILED - {ex.Message}";
-                        results.Add((Name, Class, false, 0, summary));
-                        Console.WriteLine($"\n❌ {Name} ({Class}) - Test failed: {ex.Message}");
-                    }
 
-                    // Pause between tests
-                    System.Threading.Thread.Sleep(1000);
+                    Console.WriteLine($"\n{new string('=', 85)}");
+                    Console.WriteLine($"Completed all 3 runs for {Class}");
+                    Console.WriteLine($"{new string('=', 85)}\n");
                 }
 
-                // Print final summary
-                Console.WriteLine("\n\n╔═══════════════════════════════════════════════════════════╗");
-                Console.WriteLine("║                  TEST RESULTS SUMMARY                     ║");
-                Console.WriteLine("╚═══════════════════════════════════════════════════════════╝\n");
+                // Generate and display comprehensive analysis report
+                Console.WriteLine("\n\n");
+                Console.WriteLine("╔═══════════════════════════════════════════════════════════════════════════════╗");
+                Console.WriteLine("║                    GENERATING COMPREHENSIVE REPORT...                         ║");
+                Console.WriteLine("╚═══════════════════════════════════════════════════════════════════════════════╝\n");
 
-                foreach (var (Name, Class, Success, FinalLevel, Summary) in results)
+                string report = AnalysisReportGenerator.GenerateFullReport(allAnalytics);
+                Console.WriteLine(report);
+
+                // Print quick results summary
+                Console.WriteLine("\n╔═══════════════════════════════════════════════════════════════════════════════╗");
+                Console.WriteLine("║                         PLAYTHROUGH RESULTS                                   ║");
+                Console.WriteLine("╚═══════════════════════════════════════════════════════════════════════════════╝\n");
+
+                foreach (var classGroup in results.GroupBy(r => r.Class))
                 {
-                    string status = Success ? "✅ PASS" : "❌ FAIL";
-                    Console.WriteLine($"{status} - {Name} ({Class}): {Summary}");
+                    Console.WriteLine($"{classGroup.Key}:");
+                    foreach (var result in classGroup)
+                    {
+                        string status = result.Success ? "✅" : "❌";
+                        Console.WriteLine($"  {status} Run {result.Run}: {result.Name} - Level {result.FinalLevel}");
+                    }
+                    Console.WriteLine();
                 }
 
-                int passCount = results.Count(r => r.Success);
-                int totalCount = results.Count;
-                Console.WriteLine($"\n📊 Overall: {passCount}/{totalCount} classes passed");
+                int successCount = results.Count(r => r.Success);
+                int totalRuns = results.Count;
+                Console.WriteLine($"\n📊 Overall Success: {successCount}/{totalRuns} runs completed successfully");
 
-                if (passCount == totalCount)
+                if (successCount == totalRuns)
                 {
-                    Console.WriteLine("\n🎉 ALL TESTS PASSED! Game is stable across all classes.");
+                    Console.WriteLine("🎉 ALL PLAYTHROUGHS SUCCESSFUL! Review the detailed analysis above.");
                 }
                 else
                 {
-                    Console.WriteLine("\n⚠️  Some tests failed. Please review the logs above.");
+                    Console.WriteLine("⚠️  Some playthroughs failed. Review the logs above for details.");
+                }
+
+                // Save report to file
+                try
+                {
+                    string timestamp = DateTime.Now.ToString("yyyyMMdd_HHmmss");
+                    string filename = $"UltraThink_Analysis_{timestamp}.txt";
+                    System.IO.File.WriteAllText(filename, report);
+                    Console.WriteLine($"\n📄 Full report saved to: {filename}");
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"\n⚠️  Could not save report to file: {ex.Message}");
                 }
             }
             else
