@@ -191,13 +191,37 @@ namespace TestRPGGame.Combat
             {
                 DamageEffect => "damage",
                 PoisonEffect => "damage",
-                BuffApplicator => "buff",
                 RestoreEffect => "heal",
-                ShieldApplicator => "defensive",
-                ThornsApplicator => "defensive",
-                StunApplicator => "control",
-                RegenerationApplicator => "heal",
                 LifeStealEffect => "damage",
+                EffectApplicator => GetEffectApplicatorCategory((EffectApplicator)effect),
+                _ => "other"
+            };
+        }
+
+        /// <summary>
+        /// Categorize an EffectApplicator based on its EffectKind.
+        /// </summary>
+        private string GetEffectApplicatorCategory(EffectApplicator effect)
+        {
+            return effect.EffectKind switch
+            {
+                Constants.EffectKind.AttackBoost => "buff",
+                Constants.EffectKind.DefenseBoost => "defensive",
+                Constants.EffectKind.SpeedBoost => "buff",
+                Constants.EffectKind.DamageBoost => "buff",
+                Constants.EffectKind.EvasionBoost => "defensive",
+                Constants.EffectKind.AttackReduction => "control",
+                Constants.EffectKind.DefenseReduction => "control",
+                Constants.EffectKind.SpeedReduction => "control",
+                Constants.EffectKind.AccuracyReduction => "control",
+                Constants.EffectKind.Regeneration => "heal",
+                Constants.EffectKind.Shield => "defensive",
+                Constants.EffectKind.Stun => "control",
+                Constants.EffectKind.DamageOverTime => "damage",
+                Constants.EffectKind.Thorns => "defensive",
+                Constants.EffectKind.LifeSteal => "damage",
+                Constants.EffectKind.Dodge => "defensive",
+                Constants.EffectKind.Composite => "buff",
                 _ => "other"
             };
         }

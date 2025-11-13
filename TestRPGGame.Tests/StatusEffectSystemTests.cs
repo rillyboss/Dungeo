@@ -88,7 +88,8 @@ namespace TestRPGGame.Tests
 
             player.ApplyBurning(enemy, 3, 10);
             player.ApplyPoison(enemy, 2, 5);
-            player.ApplyStun(1);
+            var stunEffect = new StunEffect("stun", "Stunned", "⚡", 1);
+            player.Effects.AddEffect(stunEffect);
 
             Assert.Equal(3, player.Effects.ActiveEffects.Count);
 
@@ -104,8 +105,10 @@ namespace TestRPGGame.Tests
             var enemy = CreateTestEnemy();
 
             player.ApplyBurning(enemy, 3, 10); // Debuff
-            player.ApplyShield(2, 50); // Buff
-            player.ApplyRegeneration(2, 10); // Buff
+            var shieldEffect = new ShieldEffect("shield", "Shield", "🛡️", 2, 50);
+            player.Effects.AddEffect(shieldEffect); // Buff
+            var regenEffect = new HealOverTimeEffect("regeneration", "Regeneration", "💚", 2, 10);
+            player.Effects.AddEffect(regenEffect); // Buff
 
             var buffs = player.Effects.GetBuffs();
 
@@ -121,7 +124,8 @@ namespace TestRPGGame.Tests
 
             player.ApplyBurning(enemy, 3, 10); // Debuff
             player.ApplyPoison(enemy, 2, 5); // Debuff
-            player.ApplyShield(2, 50); // Buff
+            var shieldEffect = new ShieldEffect("shield", "Shield", "🛡️", 2, 50);
+            player.Effects.AddEffect(shieldEffect); // Buff
 
             var debuffs = player.Effects.GetDebuffs();
 
@@ -153,7 +157,8 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
 
-            player.ApplyStun(2);
+            var stunEffect = new StunEffect("stun", "Stunned", "⚡", 2);
+            player.Effects.AddEffect(stunEffect);
 
             Assert.True(player.Effects.IsStunned());
         }
@@ -274,7 +279,8 @@ namespace TestRPGGame.Tests
             player.ApplyDamage(50);
             int damagedHP = player.CurrentHP;
 
-            player.ApplyRegeneration(3, 10);
+            var regenEffect = new HealOverTimeEffect("regeneration", "Regeneration", "💚", 3, 10);
+            player.Effects.AddEffect(regenEffect);
             player.Effects.ProcessTurnStart();
 
             Assert.Equal(damagedHP + 10, player.CurrentHP);
@@ -286,7 +292,8 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             int maxHP = player.MaxHP;
 
-            player.ApplyRegeneration(3, 10);
+            var regenEffect = new HealOverTimeEffect("regeneration", "Regeneration", "💚", 3, 10);
+            player.Effects.AddEffect(regenEffect);
             player.Effects.ProcessTurnStart();
 
             Assert.Equal(maxHP, player.CurrentHP);
@@ -295,7 +302,7 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateRegeneration_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateRegeneration(4, 15);
+            var effect = new HealOverTimeEffect("regeneration", "Regeneration", "💚", 4, 15);
 
             Assert.Equal("regeneration", effect.EffectId);
             Assert.Equal("Regeneration", effect.Name);
@@ -315,7 +322,8 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             int initialHP = player.CurrentHP;
 
-            player.ApplyShield(3, 50);
+            var shieldEffect = new ShieldEffect("shield", "Shield", "🛡️", 3, 50);
+            player.Effects.AddEffect(shieldEffect);
             player.ApplyDamage(30);
 
             Assert.Equal(initialHP, player.CurrentHP); // No HP damage
@@ -332,7 +340,8 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             int initialHP = player.CurrentHP;
 
-            player.ApplyShield(3, 30);
+            var shieldEffect = new ShieldEffect("shield", "Shield", "🛡️", 3, 30);
+            player.Effects.AddEffect(shieldEffect);
             player.ApplyDamage(50);
 
             // Damage after defense (percentage-based)
@@ -348,7 +357,8 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
 
-            player.ApplyShield(2, 50);
+            var shieldEffect = new ShieldEffect("shield", "Shield", "🛡️", 2, 50);
+            player.Effects.AddEffect(shieldEffect);
 
             player.Effects.ProcessTurnStart(); // Turn 1
             Assert.NotNull(player.Effects.GetActiveShield());
@@ -360,14 +370,14 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateShield_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateShield(3, 100);
+            var effect = new ShieldEffect("shield", "Shield", "🛡️", 3, 100);
 
             Assert.Equal("shield", effect.EffectId);
             Assert.Equal("Shield", effect.Name);
             Assert.Equal("🛡️", effect.Icon);
             Assert.Equal(StatusEffectType.Buff, effect.Type);
             Assert.Equal(3, effect.RemainingTurns);
-            Assert.Equal(100, ((ShieldEffect)effect).CurrentShieldValue);
+            Assert.Equal(100, effect.CurrentShieldValue);
         }
 
         #endregion
@@ -379,7 +389,8 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
 
-            player.ApplyThorns(2, 10);
+            var thornsEffect = new ThornsEffect("thorns", "Thorns", "🌵", 2, 10);
+            player.Effects.AddEffect(thornsEffect);
 
             player.Effects.ProcessTurnStart();
             Assert.NotNull(player.Effects.GetEffect("thorns"));
@@ -391,7 +402,7 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateThorns_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateThorns(3, 15);
+            var effect = new ThornsEffect("thorns", "Thorns", "🌵", 3, 15);
 
             Assert.Equal("thorns", effect.EffectId);
             Assert.Equal("Thorns", effect.Name);
@@ -410,7 +421,8 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
 
-            player.ApplyStun(1);
+            var stunEffect = new StunEffect("stun", "Stunned", "⚡", 1);
+            player.Effects.AddEffect(stunEffect);
 
             Assert.True(player.Effects.IsStunned());
         }
@@ -420,7 +432,8 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
 
-            player.ApplyStun(1);
+            var stunEffect = new StunEffect("stun", "Stunned", "⚡", 1);
+            player.Effects.AddEffect(stunEffect);
             Assert.True(player.Effects.IsStunned());
 
             player.Effects.ProcessTurnStart();
@@ -430,7 +443,7 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateStun_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateStun(2);
+            var effect = new StunEffect("stun", "Stunned", "⚡", 2);
 
             Assert.Equal("stun", effect.EffectId);
             Assert.Equal("Stunned", effect.Name);
@@ -448,7 +461,9 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
 
-            player.ApplyBattleRage(3);
+            var battleRageEffect = new StatModifierEffect("battle_rage", "Battle Rage", "😤",
+                StatusEffectType.Buff, 3, StatModifierEffect.StatType.Attack, 1.5, true);
+            player.Effects.AddEffect(battleRageEffect);
 
             // Battle rage should be active
             Assert.True(player.Effects.HasEffect("battle_rage"));
@@ -459,7 +474,9 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
 
-            player.ApplySpeedBuff(2, 20);
+            var speedBuffEffect = new StatModifierEffect("speed_buff", "Speed Boost", "⚡",
+                StatusEffectType.Buff, 2, StatModifierEffect.StatType.Speed, 20, false);
+            player.Effects.AddEffect(speedBuffEffect);
 
             // Speed buff should add to the speed modifier
             Assert.Equal(20, player.Effects.GetSpeedModifier());
@@ -470,7 +487,9 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
 
-            player.ApplyBattleRage(1);
+            var battleRageEffect = new StatModifierEffect("battle_rage", "Battle Rage", "😤",
+                StatusEffectType.Buff, 1, StatModifierEffect.StatType.Attack, 1.5, true);
+            player.Effects.AddEffect(battleRageEffect);
             Assert.True(player.Effects.HasEffect("battle_rage"));
 
             player.Effects.ProcessTurnStart();
@@ -481,7 +500,8 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateBattleRage_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateBattleRage(3);
+            var effect = new StatModifierEffect("battle_rage", "Battle Rage", "😤",
+                StatusEffectType.Buff, 3, StatModifierEffect.StatType.Attack, 1.5, true);
 
             Assert.Equal("battle_rage", effect.EffectId);
             Assert.Equal("Battle Rage", effect.Name);
@@ -493,7 +513,8 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateEnrage_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateEnrage(4, 2.0);
+            var effect = new StatModifierEffect("enrage", "Enraged", "💢",
+                StatusEffectType.Buff, 4, StatModifierEffect.StatType.Damage, 2.0, true);
 
             Assert.Equal("enrage", effect.EffectId);
             Assert.Equal("Enraged", effect.Name);
@@ -505,7 +526,8 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateSpeedBuff_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateSpeedBuff(2, 15);
+            var effect = new StatModifierEffect("speed_buff", "Speed Boost", "⚡",
+                StatusEffectType.Buff, 2, StatModifierEffect.StatType.Speed, 15, false);
 
             Assert.Equal("speed_buff", effect.EffectId);
             Assert.Equal("Speed Boost", effect.Name);
@@ -517,7 +539,8 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateShieldWall_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateShieldWall(3);
+            var effect = new StatModifierEffect("shield_wall", "Shield Wall", "🛡️",
+                StatusEffectType.Buff, 3, StatModifierEffect.StatType.Defense, 15, false);
 
             Assert.Equal("shield_wall", effect.EffectId);
             Assert.Equal("Shield Wall", effect.Name);
@@ -541,7 +564,8 @@ namespace TestRPGGame.Tests
             int damagedHP = player.CurrentHP;
 
             player.ApplyBurning(enemy, 3, 10);
-            player.ApplyRegeneration(3, 15);
+            var regenEffect = new HealOverTimeEffect("regeneration", "Regeneration", "💚", 3, 15);
+            player.Effects.AddEffect(regenEffect);
 
             player.Effects.ProcessTurnStart();
 
@@ -569,9 +593,13 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
 
-            player.ApplyShield(3, 50);
-            player.ApplyThorns(2, 10);
-            player.ApplyBattleRage(4);
+            var shieldEffect = new ShieldEffect("shield", "Shield", "🛡️", 3, 50);
+            player.Effects.AddEffect(shieldEffect);
+            var thornsEffect = new ThornsEffect("thorns", "Thorns", "🌵", 2, 10);
+            player.Effects.AddEffect(thornsEffect);
+            var battleRageEffect = new StatModifierEffect("battle_rage", "Battle Rage", "😤",
+                StatusEffectType.Buff, 4, StatModifierEffect.StatType.Attack, 1.5, true);
+            player.Effects.AddEffect(battleRageEffect);
 
             Assert.Equal(3, player.Effects.GetBuffs().Count);
         }

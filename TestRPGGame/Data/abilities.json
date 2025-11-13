@@ -38,8 +38,10 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Shield Wall",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Shield Wall",
+        "Multiplier": 2.0,
         "Duration": 2
       }
     ]
@@ -58,8 +60,10 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Battle Rage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Battle Rage",
+        "Multiplier": 1.5,
         "Duration": 3
       }
     ]
@@ -103,8 +107,9 @@
     "PurchaseCost": 250,
     "Effects": [
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1,
         "Multiplier": 2.25,
         "MinMultiplier": 2.0,
@@ -203,8 +208,10 @@
     "PurchaseCost": 250,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Battle Rage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Battle Rage",
+        "Multiplier": 1.5,
         "Duration": 2
       }
     ]
@@ -223,8 +230,10 @@
     "PurchaseCost": 300,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Battle Rage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Battle Rage",
+        "Multiplier": 1.5,
         "Duration": 3
       }
     ]
@@ -269,8 +278,10 @@
     "PurchaseCost": 180,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Shield Wall",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Shield Wall",
+        "Multiplier": 2.0,
         "Duration": 3
       }
     ]
@@ -289,8 +300,10 @@
     "PurchaseCost": 450,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Shield Wall",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Shield Wall",
+        "Multiplier": 2.0,
         "Duration": 2
       }
     ]
@@ -309,10 +322,11 @@
     "PurchaseCost": 270,
     "Effects": [
       {
-        "Type": "Thorns",
-        "Value": 50,
-        "Duration": 3,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 50,
+        "Duration": 3
       }
     ]
   },
@@ -351,10 +365,11 @@
     "PurchaseCost": 480,
     "Effects": [
       {
-        "Type": "Shield",
-        "Value": 120,
-        "Duration": 4,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Shield",
+        "DisplayName": "Shield",
+        "FlatValue": 120,
+        "Duration": 4
       }
     ]
   },
@@ -452,8 +467,9 @@
     "PurchaseCost": 350,
     "Effects": [
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1,
         "Multiplier": 2.75,
         "MinMultiplier": 2.5,
@@ -528,8 +544,10 @@
     "PurchaseCost": 240,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Battle Rage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Battle Rage",
+        "Multiplier": 1.5,
         "Duration": 3
       }
     ]
@@ -548,10 +566,11 @@
     "PurchaseCost": 460,
     "Effects": [
       {
-        "Type": "HealOverTime",
-        "Value": 20,
-        "Duration": 5,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Regeneration",
+        "DisplayName": "Regeneration",
+        "FlatValue": 20,
+        "Duration": 5
       }
     ]
   },
@@ -569,8 +588,10 @@
     "PurchaseCost": 490,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Battle Rage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Battle Rage",
+        "Multiplier": 1.5,
         "Duration": 4
       }
     ]
@@ -589,8 +610,10 @@
     "PurchaseCost": 600,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Shield Wall",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Shield Wall",
+        "Multiplier": 2.0,
         "Duration": 3
       }
     ]
@@ -620,8 +643,10 @@
         "Accuracy": 0.95
       },
       {
-        "Type": "StatMod",
-        "Value": -5,
+        "Type": "Effect",
+        "EffectKind": "SpeedBoost",
+        "DisplayName": "Speed Boost",
+        "FlatValue": -5,
         "Duration": 3
       }
     ]
@@ -640,8 +665,10 @@
     "PurchaseCost": 200,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Shield Wall",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Shield Wall",
+        "Multiplier": 2.0,
         "Duration": 2
       }
     ]
@@ -748,8 +775,10 @@
         "Accuracy": 0.90
       },
       {
-        "Type": "StatMod",
-        "Value": -3,
+        "Type": "Effect",
+        "EffectKind": "SpeedBoost",
+        "DisplayName": "Speed Boost",
+        "FlatValue": -3,
         "Duration": 0
       }
     ]
@@ -812,8 +841,9 @@
     "PurchaseCost": 250,
     "Effects": [
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1,
         "Multiplier": 2.75,
         "MinMultiplier": 2.5,
@@ -836,10 +866,11 @@
     "PurchaseCost": 300,
     "Effects": [
       {
-        "Type": "Shield",
-        "Value": 80,
-        "Duration": 3,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Shield",
+        "DisplayName": "Shield",
+        "FlatValue": 80,
+        "Duration": 3
       }
     ]
   },
@@ -936,8 +967,10 @@
     "PurchaseCost": 420,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Battle Rage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Battle Rage",
+        "Multiplier": 1.5,
         "Duration": 3
       }
     ]
@@ -1021,8 +1054,10 @@
         "Accuracy": 0.86
       },
       {
-        "Type": "StatMod",
-        "Value": -4,
+        "Type": "Effect",
+        "EffectKind": "SpeedBoost",
+        "DisplayName": "Speed Boost",
+        "FlatValue": -4,
         "Duration": 3
       }
     ]
@@ -1041,10 +1076,11 @@
     "PurchaseCost": 480,
     "Effects": [
       {
-        "Type": "Shield",
-        "Value": 999,
-        "Duration": 1,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Shield",
+        "DisplayName": "Shield",
+        "FlatValue": 999,
+        "Duration": 1
       }
     ]
   },
@@ -1086,8 +1122,9 @@
     "PurchaseCost": 600,
     "Effects": [
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 2,
         "Multiplier": 5.0,
         "MinMultiplier": 4.5,
@@ -1160,8 +1197,10 @@
     "PurchaseCost": 320,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Battle Rage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Battle Rage",
+        "Multiplier": 1.5,
         "Duration": 4
       }
     ]
@@ -1180,8 +1219,10 @@
     "PurchaseCost": 280,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Battle Rage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Battle Rage",
+        "Multiplier": 1.5,
         "Duration": 3
       }
     ]
@@ -1304,8 +1345,10 @@
     "PurchaseCost": 240,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Battle Rage",
+        "Type": "Effect",
+        "EffectKind": "AttackBoost",
+        "DisplayName": "Battle Rage",
+        "Multiplier": 1.5,
         "Duration": 4
       }
     ]
@@ -1369,10 +1412,11 @@
     "PurchaseCost": 400,
     "Effects": [
       {
-        "Type": "Shield",
-        "Value": 100,
-        "Duration": 3,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Shield",
+        "DisplayName": "Shield",
+        "FlatValue": 100,
+        "Duration": 3
       }
     ]
   },
@@ -1410,8 +1454,9 @@
     "PurchaseCost": 490,
     "Effects": [
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 2,
         "Multiplier": 1.0
       }
@@ -1557,8 +1602,10 @@
         "Duration": 2
       },
       {
-        "Type": "Buff",
-        "BuffName": "Smoke Screen",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Smoke Screen",
+        "Multiplier": 1.3,
         "Duration": 3
       }
     ]
@@ -1676,7 +1723,9 @@
         "Multiplier": 1.5
       },
       {
-        "Type": "Stun",
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1
       }
     ]
@@ -1739,8 +1788,10 @@
     "PurchaseCost": 80,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Smoke Screen",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Smoke Screen",
+        "Multiplier": 1.3,
         "Duration": 3
       }
     ]
@@ -1778,8 +1829,10 @@
     "PurchaseCost": 150,
     "Effects": [
       {
-        "Type": "Buff",
-        "BuffName": "Smoke Screen",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Smoke Screen",
+        "Multiplier": 1.3,
         "Duration": 4
       }
     ]
@@ -1802,8 +1855,10 @@
         "Duration": 2
       },
       {
-        "Type": "Buff",
-        "BuffName": "Smoke Screen",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Smoke Screen",
+        "Multiplier": 1.3,
         "Duration": 3
       }
     ]
@@ -1826,8 +1881,10 @@
         "Duration": 3
       },
       {
-        "Type": "Buff",
-        "BuffName": "Smoke Screen",
+        "Type": "Effect",
+        "EffectKind": "DefenseBoost",
+        "DisplayName": "Smoke Screen",
+        "Multiplier": 1.3,
         "Duration": 4
       }
     ]
@@ -1933,7 +1990,9 @@
         "Duration": 4
       },
       {
-        "Type": "Stun",
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1
       }
     ]
@@ -2009,7 +2068,9 @@
         "Multiplier": 0.8
       },
       {
-        "Type": "Stun",
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1
       }
     ]
@@ -2033,7 +2094,9 @@
         "Multiplier": 0.5
       },
       {
-        "Type": "Stun",
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1
       }
     ]
@@ -2057,7 +2120,9 @@
         "Multiplier": 1.0
       },
       {
-        "Type": "Stun",
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1
       }
     ]
@@ -2081,7 +2146,9 @@
         "Multiplier": 1.2
       },
       {
-        "Type": "Stun",
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1
       }
     ]
@@ -2100,7 +2167,9 @@
     "PurchaseCost": 200,
     "Effects": [
       {
-        "Type": "Stun",
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 2
       }
     ]
@@ -2124,7 +2193,9 @@
         "Multiplier": 3.5
       },
       {
-        "Type": "Stun",
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 2
       }
     ]
@@ -2167,10 +2238,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Thorns",
-        "Value": 15,
-        "Duration": 3,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 15,
+        "Duration": 3
       }
     ]
   },
@@ -2209,10 +2281,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "HealOverTime",
-        "Value": 20,
-        "Duration": 4,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Regeneration",
+        "DisplayName": "Regeneration",
+        "FlatValue": 20,
+        "Duration": 4
       }
     ]
   },
@@ -2254,10 +2327,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Shield",
-        "Value": 50,
-        "Duration": 3,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Shield",
+        "DisplayName": "Shield",
+        "FlatValue": 50,
+        "Duration": 3
       }
     ]
   },
@@ -2320,10 +2394,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Thorns",
-        "Value": 20,
-        "Duration": 4,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 20,
+        "Duration": 4
       }
     ]
   },
@@ -2386,10 +2461,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Thorns",
-        "Value": 25,
-        "Duration": 3,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 25,
+        "Duration": 3
       }
     ]
   },
@@ -2428,8 +2504,9 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 1,
         "Multiplier": 1.5,
         "MinMultiplier": 1.4,
@@ -2452,10 +2529,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Shield",
-        "Value": 100,
-        "Duration": 3,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Shield",
+        "DisplayName": "Shield",
+        "FlatValue": 100,
+        "Duration": 3
       }
     ]
   },
@@ -2497,10 +2575,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "HealOverTime",
-        "Value": 30,
-        "Duration": 5,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Regeneration",
+        "DisplayName": "Regeneration",
+        "FlatValue": 30,
+        "Duration": 5
       }
     ]
   },
@@ -2518,8 +2597,9 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 2,
         "Multiplier": 1.0
       }
@@ -2539,10 +2619,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Shield",
-        "Value": 120,
-        "Duration": 3,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Shield",
+        "DisplayName": "Shield",
+        "FlatValue": 120,
+        "Duration": 3
       }
     ]
   },
@@ -2611,10 +2692,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Thorns",
-        "Value": 30,
-        "Duration": 4,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 30,
+        "Duration": 4
       }
     ]
   },
@@ -2680,10 +2762,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "HealOverTime",
-        "Value": 40,
-        "Duration": 5,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Regeneration",
+        "DisplayName": "Regeneration",
+        "FlatValue": 40,
+        "Duration": 5
       }
     ]
   },
@@ -2701,8 +2784,9 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Stun",
-        "Value": 0,
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
         "Duration": 2,
         "Multiplier": 2.5,
         "MinMultiplier": 2.3,
@@ -2725,10 +2809,11 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Shield",
-        "Value": 150,
-        "Duration": 3,
-        "Multiplier": 1.0
+        "Type": "Effect",
+        "EffectKind": "Shield",
+        "DisplayName": "Shield",
+        "FlatValue": 150,
+        "Duration": 3
       }
     ]
   },
