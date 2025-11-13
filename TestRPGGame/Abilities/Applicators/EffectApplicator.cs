@@ -206,6 +206,19 @@ namespace TestRPGGame.Abilities.Applicators
                         break;
                     }
 
+                case EffectKind.DamageOverTime:
+                    {
+                        var effect = new DamageOverTimeEffect(
+                            name.ToLower().Replace(" ", "_"),
+                            name,
+                            icon,
+                            duration,
+                            flatValue > 0 ? flatValue : 10  // Default 10 dmg/turn
+                        );
+                        target.Effects.AddEffect(effect);
+                        break;
+                    }
+
                 case EffectKind.Shield:
                     {
                         var effect = new ShieldEffect(
@@ -256,6 +269,7 @@ namespace TestRPGGame.Abilities.Applicators
                 EffectKind.DefenseReduction => "🎯",
                 EffectKind.SpeedReduction => "🦶",
                 EffectKind.Regeneration => "💚",
+                EffectKind.DamageOverTime => "☠️",
                 EffectKind.Shield => "🛡️",
                 EffectKind.Stun => "⚡",
                 _ => "✨"

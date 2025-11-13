@@ -1,5 +1,4 @@
 {
-  // Enemy Abilities - Physical Attackers
   "enemy_fierce_strike": {
     "Id": "enemy_fierce_strike",
     "Name": "Fierce Strike",
@@ -63,8 +62,6 @@
       }
     ]
   },
-
-  // Enemy Abilities - Magical Attackers
   "enemy_dark_bolt": {
     "Id": "enemy_dark_bolt",
     "Name": "Dark Bolt",
@@ -135,8 +132,6 @@
       }
     ]
   },
-
-  // Enemy Abilities - Status Effects
   "enemy_poison_spit": {
     "Id": "enemy_poison_spit",
     "Name": "Poison Spit",
@@ -151,10 +146,12 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Poison",
-        "Value": 15,
+        "Type": "Effect",
+        "EffectKind": "DamageOverTime",
+        "DisplayName": "Poisoned",
+        "Icon": "☠️",
         "Duration": 3,
-        "DamagePerTurn": 10
+        "FlatValue": 10
       }
     ]
   },
@@ -178,15 +175,15 @@
         "Multiplier": 1.5
       },
       {
-        "Type": "Poison",
-        "Value": 10,
+        "Type": "Effect",
+        "EffectKind": "DamageOverTime",
+        "DisplayName": "Poisoned",
+        "Icon": "☠️",
         "Duration": 4,
-        "DamagePerTurn": 12
+        "FlatValue": 12
       }
     ]
   },
-
-  // Enemy Abilities - Defensive/Buff
   "enemy_enrage": {
     "Id": "enemy_enrage",
     "Name": "Enrage",
@@ -231,8 +228,6 @@
       }
     ]
   },
-
-  // Enemy Abilities - Special/Fast
   "enemy_quick_strike": {
     "Id": "enemy_quick_strike",
     "Name": "Quick Strike",

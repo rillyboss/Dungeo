@@ -79,8 +79,6 @@ namespace TestRPGGame.Factories
                 "damage" => new DamageEffect(data.Multiplier, usesMagic: data.Type == "Magic", guaranteedCrit: data.GuaranteedCrit),
                 "restore" => new RestoreEffect(data.Value, isMana: data.Value > 0),
                 "dodge" => new DodgeEffect(),
-                "poison" => new PoisonEffect(data.DamagePerTurn, data.Duration, data.Value),
-                "damageovertime" => new PoisonEffect(data.Value, data.Duration, data.Value), // Burning/DOT effect
                 "lifesteal" => new LifeStealEffect(data.Multiplier, data.Value),
                 _ => null
             };

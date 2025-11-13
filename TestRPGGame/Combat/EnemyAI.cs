@@ -190,7 +190,6 @@ namespace TestRPGGame.Combat
             return effect switch
             {
                 DamageEffect => "damage",
-                PoisonEffect => "damage",
                 RestoreEffect => "heal",
                 LifeStealEffect => "damage",
                 EffectApplicator => GetEffectApplicatorCategory((EffectApplicator)effect),

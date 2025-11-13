@@ -41,7 +41,7 @@ namespace TestRPGGame.Tests
         public void AddEffect_AddsEffectToManager()
         {
             var player = CreateTestPlayer();
-            var effect = StatusEffectFactory.CreateBurning(3, 10);
+            var effect = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
 
             player.Effects.AddEffect(effect);
 
@@ -54,8 +54,8 @@ namespace TestRPGGame.Tests
         {
             var player = CreateTestPlayer();
             var enemy = CreateTestEnemy();
-            var effect1 = StatusEffectFactory.CreateBurning(3, 10);
-            var effect2 = StatusEffectFactory.CreateBurning(5, 15);
+            var effect1 = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            var effect2 = new DamageOverTimeEffect("burning", "Burning", "🔥", 5, 15);
             effect1.Source = enemy;
             effect2.Source = enemy;
 
@@ -72,7 +72,7 @@ namespace TestRPGGame.Tests
         public void RemoveEffect_RemovesSpecificEffect()
         {
             var player = CreateTestPlayer();
-            var effect = StatusEffectFactory.CreateBurning(3, 10);
+            var effect = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
 
             player.Effects.AddEffect(effect);
             player.Effects.RemoveEffect(effect);
@@ -86,8 +86,14 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             var enemy = CreateTestEnemy();
 
-            player.ApplyBurning(enemy, 3, 10);
-            player.ApplyPoison(enemy, 2, 5);
+            var burningEffect = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            burningEffect.Source = enemy;
+            player.Effects.AddEffect(burningEffect);
+
+            var poisonEffect = new DamageOverTimeEffect("poison", "Poisoned", "☠️", 2, 5);
+            poisonEffect.Source = enemy;
+            player.Effects.AddEffect(poisonEffect);
+
             var stunEffect = new StunEffect("stun", "Stunned", "⚡", 1);
             player.Effects.AddEffect(stunEffect);
 
@@ -104,7 +110,9 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             var enemy = CreateTestEnemy();
 
-            player.ApplyBurning(enemy, 3, 10); // Debuff
+            var burningEffect1 = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            burningEffect1.Source = enemy;
+            player.Effects.AddEffect(burningEffect1); // Debuff
             var shieldEffect = new ShieldEffect("shield", "Shield", "🛡️", 2, 50);
             player.Effects.AddEffect(shieldEffect); // Buff
             var regenEffect = new HealOverTimeEffect("regeneration", "Regeneration", "💚", 2, 10);
@@ -122,8 +130,12 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             var enemy = CreateTestEnemy();
 
-            player.ApplyBurning(enemy, 3, 10); // Debuff
-            player.ApplyPoison(enemy, 2, 5); // Debuff
+            var burningEffect2 = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            burningEffect2.Source = enemy;
+            player.Effects.AddEffect(burningEffect2); // Debuff
+            var poisonEffect1 = new DamageOverTimeEffect("poison", "Poisoned", "☠️", 2, 5);
+            poisonEffect1.Source = enemy;
+            player.Effects.AddEffect(poisonEffect1); // Debuff
             var shieldEffect = new ShieldEffect("shield", "Shield", "🛡️", 2, 50);
             player.Effects.AddEffect(shieldEffect); // Buff
 
@@ -139,7 +151,9 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             var enemy = CreateTestEnemy();
 
-            player.ApplyBurning(enemy, 3, 10);
+            var burningEffect3 = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            burningEffect3.Source = enemy;
+            player.Effects.AddEffect(burningEffect3);
 
             Assert.True(player.Effects.HasEffect("burning"));
         }
@@ -182,7 +196,9 @@ namespace TestRPGGame.Tests
             var enemy = CreateTestEnemy();
             int initialHP = player.CurrentHP;
 
-            player.ApplyBurning(enemy, 3, 10);
+            var burningEffect4 = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            burningEffect4.Source = enemy;
+            player.Effects.AddEffect(burningEffect4);
             player.Effects.ProcessTurnStart();
 
             // DOT bypasses shields but still applies defense (percentage-based)
@@ -196,7 +212,9 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             var enemy = CreateTestEnemy();
 
-            player.ApplyBurning(enemy, 3, 10);
+            var burningEffect5 = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            burningEffect5.Source = enemy;
+            player.Effects.AddEffect(burningEffect5);
 
             var effectBefore = player.Effects.ActiveEffects.First();
             Assert.Equal(3, effectBefore.RemainingTurns);
@@ -218,7 +236,9 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             var enemy = CreateTestEnemy();
 
-            player.ApplyBurning(enemy, 2, 10);
+            var burningEffect6 = new DamageOverTimeEffect("burning", "Burning", "🔥", 2, 10);
+            burningEffect6.Source = enemy;
+            player.Effects.AddEffect(burningEffect6);
 
             player.Effects.ProcessTurnStart(); // Turn 1: 2->1
             Assert.Single(player.Effects.ActiveEffects);
@@ -230,7 +250,7 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateBurning_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateBurning(3, 10);
+            var effect = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
 
             Assert.Equal("burning", effect.EffectId);
             Assert.Equal("Burning", effect.Name);
@@ -243,7 +263,7 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreatePoison_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreatePoison(4, 8);
+            var effect = new DamageOverTimeEffect("poison", "Poisoned", "☠️", 4, 8);
 
             Assert.Equal("poison", effect.EffectId);
             Assert.Equal("Poisoned", effect.Name);
@@ -256,7 +276,7 @@ namespace TestRPGGame.Tests
         [Fact]
         public void CreateBleed_CreatesCorrectEffect()
         {
-            var effect = StatusEffectFactory.CreateBleed(2, 12);
+            var effect = new DamageOverTimeEffect("bleed", "Bleeding", "🩸", 2, 12);
 
             Assert.Equal("bleed", effect.EffectId);
             Assert.Equal("Bleeding", effect.Name);
@@ -563,7 +583,9 @@ namespace TestRPGGame.Tests
             player.ApplyDamage(50);
             int damagedHP = player.CurrentHP;
 
-            player.ApplyBurning(enemy, 3, 10);
+            var burningEffect7 = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            burningEffect7.Source = enemy;
+            player.Effects.AddEffect(burningEffect7);
             var regenEffect = new HealOverTimeEffect("regeneration", "Regeneration", "💚", 3, 15);
             player.Effects.AddEffect(regenEffect);
 
@@ -581,9 +603,15 @@ namespace TestRPGGame.Tests
             var player = CreateTestPlayer();
             var enemy = CreateTestEnemy();
 
-            player.ApplyBurning(enemy, 3, 10);
-            player.ApplyPoison(enemy, 2, 5);
-            player.ApplyBleed(enemy, 4, 8);
+            var burningEffect8 = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            burningEffect8.Source = enemy;
+            player.Effects.AddEffect(burningEffect8);
+            var poisonEffect2 = new DamageOverTimeEffect("poison", "Poisoned", "☠️", 2, 5);
+            poisonEffect2.Source = enemy;
+            player.Effects.AddEffect(poisonEffect2);
+            var bleedEffect1 = new DamageOverTimeEffect("bleed", "Bleeding", "🩸", 4, 8);
+            bleedEffect1.Source = enemy;
+            player.Effects.AddEffect(bleedEffect1);
 
             Assert.Equal(3, player.Effects.GetDebuffs().Count);
         }
@@ -611,9 +639,15 @@ namespace TestRPGGame.Tests
             var enemy = CreateTestEnemy();
             int initialHP = player.CurrentHP;
 
-            player.ApplyBurning(enemy, 3, 10);
-            player.ApplyPoison(enemy, 3, 5);
-            player.ApplyBleed(enemy, 3, 8);
+            var burningEffect9 = new DamageOverTimeEffect("burning", "Burning", "🔥", 3, 10);
+            burningEffect9.Source = enemy;
+            player.Effects.AddEffect(burningEffect9);
+            var poisonEffect3 = new DamageOverTimeEffect("poison", "Poisoned", "☠️", 3, 5);
+            poisonEffect3.Source = enemy;
+            player.Effects.AddEffect(poisonEffect3);
+            var bleedEffect2 = new DamageOverTimeEffect("bleed", "Bleeding", "🩸", 3, 8);
+            bleedEffect2.Source = enemy;
+            player.Effects.AddEffect(bleedEffect2);
 
             player.Effects.ProcessTurnStart();
 
