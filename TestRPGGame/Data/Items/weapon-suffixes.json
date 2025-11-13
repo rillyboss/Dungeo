@@ -58,9 +58,9 @@
     "Name": "of the Phoenix",
     "Effects": [
       {
-        "Type": "LifeSteal",
-        "Value": 25,
-        "ProcChance": 30
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
+        "FlatValue": 25
       }
     ]
   },
@@ -156,9 +156,9 @@
         "ProcChance": 100
       },
       {
-        "Type": "LifeSteal",
-        "Value": 15,
-        "ProcChance": 20
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
+        "FlatValue": 15
       }
     ]
   },
@@ -167,9 +167,9 @@
     "Name": "of the Vampire",
     "Effects": [
       {
-        "Type": "LifeSteal",
-        "Value": 40,
-        "ProcChance": 50
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
+        "FlatValue": 40
       }
     ]
   },
@@ -284,9 +284,9 @@
     "Name": "of Immortality",
     "Effects": [
       {
-        "Type": "LifeSteal",
-        "Value": 30,
-        "ProcChance": 35
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
+        "FlatValue": 30
       },
       {
         "Type": "HealthRegen",

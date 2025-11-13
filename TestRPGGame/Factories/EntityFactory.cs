@@ -67,21 +67,14 @@ namespace TestRPGGame.Factories
 
         private static IAbilityEffect? CreateAbilityEffect(AbilityEffectData data)
         {
-            // NEW FORMAT: Composable effects with EffectKind
+            // All effects now use the composable EffectApplicator system
             if (data.Type.ToLower() == "effect" && !string.IsNullOrEmpty(data.EffectKind))
             {
                 return CreateComposableEffect(data);
             }
 
-            // Legacy effects not handled by EffectApplicator
-            return data.Type.ToLower() switch
-            {
-                "damage" => new DamageEffect(data.Multiplier, usesMagic: data.Type == "Magic", guaranteedCrit: data.GuaranteedCrit),
-                "restore" => new RestoreEffect(data.Value, isMana: data.Value > 0),
-                "dodge" => new DodgeEffect(),
-                "lifesteal" => new LifeStealEffect(data.Multiplier, data.Value),
-                _ => null
-            };
+            // No legacy effects remain - all should be migrated to Effect format
+            return null;
         }
 
         /// <summary>

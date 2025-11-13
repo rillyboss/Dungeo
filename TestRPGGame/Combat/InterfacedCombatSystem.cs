@@ -167,30 +167,9 @@ namespace TestRPGGame.Combat
                 ManaCost = ability.ManaCost
             });
 
-            // Simple damage calculation for now
-            foreach (var effect in ability.Effects)
-            {
-                if (effect is Abilities.Effects.DamageEffect damageEffect)
-                {
-                    int damage = CalculateAbilityDamage(player, ability, damageEffect);
-                    enemy.CurrentHP = Math.Max(0, enemy.CurrentHP - damage);
-
-                    gameInterface.OnEvent(new GameEvents.DamageDealtEvent
-                    {
-                        Attacker = "Player",
-                        Target = enemy.Name,
-                        Damage = damage,
-                        IsCritical = false,
-                        AttackType = ability.Type.ToString()
-                    });
-                }
-            }
-        }
-
-        private int CalculateAbilityDamage(Player player, Ability ability, Abilities.Effects.DamageEffect effect)
-        {
-            int baseDamage = ability.Type == AbilityType.Physical ? player.Attack : player.MagicPower;
-            return (int)(baseDamage * effect.Multiplier);
+            // Execute ability effects through the proper system
+            var context = new Abilities.Effects.AbilityContext(player, enemy, gameInterface);
+            ability.Execute(context);
         }
 
         private void ExecuteEnemyTurn(Player player, Enemy enemy)

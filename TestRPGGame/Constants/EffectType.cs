@@ -25,7 +25,11 @@ namespace TestRPGGame.Constants
         SpeedReduction,   // Slow/cripple
         AccuracyReduction, // Miss chance increase
 
-        // Special Mechanics
+        // Immediate Actions
+        InstantDamage,    // Deal damage immediately
+        Heal,             // Restore HP/Mana immediately
+
+        // Special Mechanics (Over Time)
         LifeSteal,        // Heal on damage dealt
         Thorns,           // Reflect damage
         Regeneration,     // Heal over time
@@ -60,6 +64,8 @@ namespace TestRPGGame.Constants
                 EffectKind.DefenseReduction => "Defense Reduction",
                 EffectKind.SpeedReduction => "Speed Reduction",
                 EffectKind.AccuracyReduction => "Accuracy Reduction",
+                EffectKind.InstantDamage => "Instant Damage",
+                EffectKind.Heal => "Heal",
                 EffectKind.LifeSteal => "Life Steal",
                 EffectKind.Thorns => "Thorns",
                 EffectKind.Regeneration => "Regeneration",

@@ -13,9 +13,8 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.5,
         "MinMultiplier": 2.2,
         "MaxMultiplier": 2.8,
@@ -81,9 +80,8 @@
     "PurchaseCost": 200,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.5,
         "MinMultiplier": 3.0,
         "MaxMultiplier": 4.0,
@@ -131,13 +129,10 @@
     "PurchaseCost": 300,
     "Effects": [
       {
-        "Type": "LifeSteal",
-        "Value": 100,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
         "Multiplier": 2.3,
-        "MinMultiplier": 2.0,
-        "MaxMultiplier": 2.6,
-        "Accuracy": 0.92
+        "FlatValue": 100
       }
     ]
   },
@@ -155,9 +150,8 @@
     "PurchaseCost": 150,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.0,
         "MinMultiplier": 1.8,
         "MaxMultiplier": 2.2,
@@ -179,9 +173,8 @@
     "PurchaseCost": 400,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 5.0,
         "MinMultiplier": 4.5,
         "MaxMultiplier": 5.5,
@@ -247,9 +240,8 @@
     "PurchaseCost": 500,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.0,
         "MinMultiplier": 1.9,
         "MaxMultiplier": 2.1,
@@ -380,9 +372,8 @@
     "PurchaseCost": 190,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.0,
         "MinMultiplier": 2.8,
         "MaxMultiplier": 3.2,
@@ -404,9 +395,8 @@
     "PurchaseCost": 230,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.2,
         "MinMultiplier": 2.0,
         "MaxMultiplier": 2.4,
@@ -436,9 +426,8 @@
     "PurchaseCost": 420,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.75,
         "MinMultiplier": 3.5,
         "MaxMultiplier": 4.0,
@@ -485,9 +474,8 @@
     "PurchaseCost": 550,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.5,
         "MinMultiplier": 2.3,
         "MaxMultiplier": 2.7,
@@ -515,9 +503,9 @@
         "Multiplier": 1.0
       },
       {
-        "Type": "Restore",
-        "Value": 30,
-        "Duration": 0
+        "Type": "Effect",
+        "EffectKind": "Heal",
+        "FlatValue": 30
       }
     ]
   },
@@ -623,9 +611,8 @@
     "PurchaseCost": 160,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.5,
         "MinMultiplier": 1.4,
         "MaxMultiplier": 1.6,
@@ -676,9 +663,8 @@
     "PurchaseCost": 380,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.0,
         "MinMultiplier": 2.8,
         "MaxMultiplier": 3.2,
@@ -701,17 +687,16 @@
     "PurchaseCost": 280,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.25,
         "MinMultiplier": 2.0,
         "MaxMultiplier": 2.5,
         "Accuracy": 0.92
       },
       {
-        "Type": "Dodge",
-        "Duration": 1
+        "Type": "Effect",
+        "EffectKind": "Dodge"
       }
     ]
   },
@@ -729,9 +714,8 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.0,
         "MinMultiplier": 2.5,
         "MaxMultiplier": 3.5,
@@ -753,9 +737,8 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.5,
         "MinMultiplier": 2.2,
         "MaxMultiplier": 2.8,
@@ -784,9 +767,9 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Restore",
-        "Value": 50,
-        "Duration": 0
+        "Type": "Effect",
+        "EffectKind": "Heal",
+        "FlatValue": 50
       }
     ]
   },
@@ -804,9 +787,8 @@
     "PurchaseCost": 200,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 4.0,
         "MinMultiplier": 3.5,
         "MaxMultiplier": 4.5,
@@ -875,9 +857,8 @@
     "PurchaseCost": 150,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.3,
         "MinMultiplier": 2.0,
         "MaxMultiplier": 2.6,
@@ -922,9 +903,8 @@
     "PurchaseCost": 450,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 4.5,
         "MinMultiplier": 4.0,
         "MaxMultiplier": 5.0,
@@ -976,9 +956,8 @@
     "PurchaseCost": 550,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.0,
         "MinMultiplier": 2.8,
         "MaxMultiplier": 3.2,
@@ -1008,9 +987,8 @@
     "PurchaseCost": 150,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.45,
         "MinMultiplier": 2.2,
         "MaxMultiplier": 2.7,
@@ -1032,9 +1010,8 @@
     "PurchaseCost": 360,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.3,
         "MinMultiplier": 3.0,
         "MaxMultiplier": 3.6,
@@ -1085,9 +1062,8 @@
     "PurchaseCost": 410,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.5,
         "MinMultiplier": 2.3,
         "MaxMultiplier": 2.7,
@@ -1134,9 +1110,8 @@
     "PurchaseCost": 180,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.6,
         "MinMultiplier": 2.3,
         "MaxMultiplier": 2.9,
@@ -1158,9 +1133,8 @@
     "PurchaseCost": 370,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.85,
         "MinMultiplier": 3.5,
         "MaxMultiplier": 4.2,
@@ -1226,9 +1200,8 @@
     "PurchaseCost": 530,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 6.0,
         "MinMultiplier": 5.5,
         "MaxMultiplier": 6.5,
@@ -1250,9 +1223,8 @@
     "PurchaseCost": 190,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.7,
         "MinMultiplier": 2.4,
         "MaxMultiplier": 3.0,
@@ -1274,13 +1246,10 @@
     "PurchaseCost": 330,
     "Effects": [
       {
-        "Type": "LifeSteal",
-        "Value": 50,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
         "Multiplier": 2.25,
-        "MinMultiplier": 2.0,
-        "MaxMultiplier": 2.5,
-        "Accuracy": 0.92
+        "FlatValue": 50
       }
     ]
   },
@@ -1298,9 +1267,8 @@
     "PurchaseCost": 440,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.4,
         "MinMultiplier": 3.0,
         "MaxMultiplier": 3.8,
@@ -1352,9 +1320,8 @@
     "PurchaseCost": 560,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 7.0,
         "MinMultiplier": 6.5,
         "MaxMultiplier": 7.5,
@@ -1376,8 +1343,8 @@
     "PurchaseCost": 230,
     "Effects": [
       {
-        "Type": "Dodge",
-        "Duration": 2
+        "Type": "Effect",
+        "EffectKind": "Dodge"
       }
     ]
   },
@@ -1417,9 +1384,9 @@
     "PurchaseCost": 270,
     "Effects": [
       {
-        "Type": "Restore",
-        "Value": 80,
-        "Duration": 0
+        "Type": "Effect",
+        "EffectKind": "Heal",
+        "FlatValue": 80
       }
     ]
   },
@@ -1460,14 +1427,13 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.0,
         "MinMultiplier": 2.5,
         "MaxMultiplier": 3.5,
-        "Accuracy": 0.9,
-        "GuaranteedCrit": true
+        "GuaranteedCrit": true,
+        "Accuracy": 0.9
       }
     ]
   },
@@ -1508,8 +1474,8 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "Dodge",
-        "Duration": 0
+        "Type": "Effect",
+        "EffectKind": "Dodge"
       }
     ]
   },
@@ -1527,9 +1493,8 @@
     "PurchaseCost": 200,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 5.0,
         "MinMultiplier": 4.5,
         "MaxMultiplier": 5.5,
@@ -1551,9 +1516,8 @@
     "PurchaseCost": 250,
     "Effects": [
       {
-        "Type": "Damage",
-        "Value": 0,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.25,
         "MinMultiplier": 2.0,
         "MaxMultiplier": 2.5,
@@ -1583,8 +1547,8 @@
     "PurchaseCost": 300,
     "Effects": [
       {
-        "Type": "Dodge",
-        "Duration": 2
+        "Type": "Effect",
+        "EffectKind": "Dodge"
       },
       {
         "Type": "Effect",
@@ -1610,7 +1574,8 @@
     "PurchaseCost": 50,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.0
       }
     ]
@@ -1630,7 +1595,8 @@
     "PurchaseCost": 80,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.5
       },
       {
@@ -1653,7 +1619,8 @@
     "PurchaseCost": 120,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.0
       }
     ]
@@ -1673,7 +1640,8 @@
     "PurchaseCost": 150,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.3
       },
       {
@@ -1698,7 +1666,8 @@
     "PurchaseCost": 200,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.5
       },
       {
@@ -1724,7 +1693,8 @@
     "PurchaseCost": 500,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 4.0
       },
       {
@@ -1746,8 +1716,8 @@
     "PurchaseCost": 50,
     "Effects": [
       {
-        "Type": "Dodge",
-        "Duration": 1
+        "Type": "Effect",
+        "EffectKind": "Dodge"
       }
     ]
   },
@@ -1787,8 +1757,8 @@
     "PurchaseCost": 120,
     "Effects": [
       {
-        "Type": "Dodge",
-        "Duration": 2
+        "Type": "Effect",
+        "EffectKind": "Dodge"
       }
     ]
   },
@@ -1828,8 +1798,8 @@
     "PurchaseCost": 200,
     "Effects": [
       {
-        "Type": "Dodge",
-        "Duration": 2
+        "Type": "Effect",
+        "EffectKind": "Dodge"
       },
       {
         "Type": "Effect",
@@ -1854,8 +1824,8 @@
     "PurchaseCost": 500,
     "Effects": [
       {
-        "Type": "Dodge",
-        "Duration": 3
+        "Type": "Effect",
+        "EffectKind": "Dodge"
       },
       {
         "Type": "Effect",
@@ -1881,7 +1851,8 @@
     "PurchaseCost": 50,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.0
       },
       {
@@ -1909,7 +1880,8 @@
     "PurchaseCost": 80,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.2
       },
       {
@@ -1937,7 +1909,8 @@
     "PurchaseCost": 120,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 0.8
       },
       {
@@ -1965,7 +1938,8 @@
     "PurchaseCost": 150,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.0
       },
       {
@@ -1999,7 +1973,8 @@
     "PurchaseCost": 200,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.5
       },
       {
@@ -2027,7 +2002,8 @@
     "PurchaseCost": 500,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 2.0
       },
       {
@@ -2055,7 +2031,8 @@
     "PurchaseCost": 50,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 0.8
       },
       {
@@ -2081,7 +2058,8 @@
     "PurchaseCost": 80,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 0.5
       },
       {
@@ -2107,7 +2085,8 @@
     "PurchaseCost": 120,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.0
       },
       {
@@ -2133,7 +2112,8 @@
     "PurchaseCost": 150,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 1.2
       },
       {
@@ -2180,7 +2160,8 @@
     "PurchaseCost": 500,
     "Effects": [
       {
-        "Type": "Damage",
+        "Type": "Effect",
+        "EffectKind": "InstantDamage",
         "Multiplier": 3.5
       },
       {
@@ -2291,13 +2272,10 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "LifeSteal",
-        "Value": 30,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
         "Multiplier": 1.5,
-        "MinMultiplier": 1.4,
-        "MaxMultiplier": 1.6,
-        "Accuracy": 0.95
+        "FlatValue": 30
       }
     ]
   },
@@ -2633,13 +2611,10 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "LifeSteal",
-        "Value": 40,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
         "Multiplier": 1.8,
-        "MinMultiplier": 1.6,
-        "MaxMultiplier": 2.0,
-        "Accuracy": 0.95
+        "FlatValue": 40
       },
       {
         "Type": "Effect",
@@ -2734,13 +2709,10 @@
     "PurchaseCost": 0,
     "Effects": [
       {
-        "Type": "LifeSteal",
-        "Value": 50,
-        "Duration": 0,
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
         "Multiplier": 2.0,
-        "MinMultiplier": 1.8,
-        "MaxMultiplier": 2.2,
-        "Accuracy": 0.93
+        "FlatValue": 50
       }
     ]
   },

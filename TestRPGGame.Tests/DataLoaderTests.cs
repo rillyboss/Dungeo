@@ -216,9 +216,10 @@ namespace TestRPGGame.Tests
             // Act
             var ability = DataLoader.GetAbility("mage_fireball");
 
-            // Assert
+            // Assert - Now using Effect format with EffectKind
             Assert.NotEmpty(ability.Effects);
-            Assert.Equal("Damage", ability.Effects[0].Type);
+            Assert.Equal("Effect", ability.Effects[0].Type);
+            Assert.Equal("InstantDamage", ability.Effects[0].EffectKind);
             Assert.Equal(3.0, ability.Effects[0].Multiplier);
         }
 

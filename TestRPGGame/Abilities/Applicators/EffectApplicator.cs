@@ -48,19 +48,19 @@ namespace TestRPGGame.Abilities.Applicators
             {
                 foreach (var (kind, multiplier, flatValue) in CompositeEffects)
                 {
-                    ApplyGenericEffect(context.Source, kind, DisplayName, Duration, multiplier, flatValue, Icon);
+                    ApplyGenericEffect(context, kind, DisplayName, Duration, multiplier, flatValue, Icon);
                 }
             }
             else
             {
                 // Single effect - apply directly
-                ApplyGenericEffect(context.Source, EffectKind, DisplayName, Duration, Multiplier, FlatValue, Icon);
+                ApplyGenericEffect(context, EffectKind, DisplayName, Duration, Multiplier, FlatValue, Icon);
             }
 
             // Note: Output is handled by the combat system through events
         }
 
-        private void ApplyGenericEffect(Entities.Combatant target, EffectKind kind, string name, int duration, double multiplier, int flatValue, string icon)
+        private void ApplyGenericEffect(AbilityContext context, EffectKind kind, string name, int duration, double multiplier, int flatValue, string icon)
         {
             switch (kind)
             {
@@ -76,7 +76,7 @@ namespace TestRPGGame.Abilities.Applicators
                             multiplier,
                             isMultiplier: true
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -92,7 +92,7 @@ namespace TestRPGGame.Abilities.Applicators
                             multiplier,
                             isMultiplier: true
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -108,7 +108,7 @@ namespace TestRPGGame.Abilities.Applicators
                             flatValue != 0 ? flatValue : (int)multiplier,
                             isMultiplier: flatValue == 0
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -124,7 +124,7 @@ namespace TestRPGGame.Abilities.Applicators
                             multiplier,
                             isMultiplier: true
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -141,7 +141,7 @@ namespace TestRPGGame.Abilities.Applicators
                             multiplier,
                             isMultiplier: true
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -157,7 +157,7 @@ namespace TestRPGGame.Abilities.Applicators
                             multiplier,
                             isMultiplier: true
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -173,7 +173,7 @@ namespace TestRPGGame.Abilities.Applicators
                             multiplier,
                             isMultiplier: true
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -189,7 +189,7 @@ namespace TestRPGGame.Abilities.Applicators
                             flatValue != 0 ? -flatValue : (int)multiplier,
                             isMultiplier: flatValue == 0
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -202,7 +202,7 @@ namespace TestRPGGame.Abilities.Applicators
                             duration,
                             flatValue > 0 ? flatValue : 10  // Default 10 HP/turn
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -215,7 +215,7 @@ namespace TestRPGGame.Abilities.Applicators
                             duration,
                             flatValue > 0 ? flatValue : 10  // Default 10 dmg/turn
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -228,7 +228,7 @@ namespace TestRPGGame.Abilities.Applicators
                             duration,
                             flatValue > 0 ? flatValue : 50  // Default 50 HP shield
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
@@ -240,11 +240,66 @@ namespace TestRPGGame.Abilities.Applicators
                             icon,
                             duration
                         );
-                        target.Effects.AddEffect(effect);
+                        context.Source.Effects.AddEffect(effect);
                         break;
                     }
 
-                // Add more effect kinds as needed
+                // Immediate Actions
+                case EffectKind.InstantDamage:
+                    {
+                        if (context.Target != null)
+                        {
+                            int baseDamage = (int)(context.Source.Attack * multiplier);
+                            context.Target.ApplyDamage(baseDamage, applyShieldAbsorption: true, attacker: context.Source);
+                        }
+                        break;
+                    }
+
+                case EffectKind.Heal:
+                    {
+                        // Check if this is mana restoration (for players only)
+                        bool isMana = name.ToLower().Contains("mana") || name.ToLower().Contains("restore");
+
+                        if (isMana && context.Source is Entities.Player.Player player)
+                        {
+                            player.RestoreMana(flatValue);
+                        }
+                        else
+                        {
+                            // HP healing
+                            int actualHeal = Math.Min(flatValue, context.Source.MaxHP - context.Source.CurrentHP);
+                            context.Source.CurrentHP += actualHeal;
+
+                            // Notify AI if enemy healed
+                            if (context.Source is Entities.Enemy.Enemy enemy && enemy.AI != null)
+                            {
+                                enemy.AI.RecordHealUsed();
+                            }
+                        }
+                        break;
+                    }
+
+                case EffectKind.LifeSteal:
+                    {
+                        if (context.Target != null)
+                        {
+                            // Deal damage to target
+                            int baseDamage = (int)(context.Source.Attack * multiplier);
+                            int actualDamage = context.Target.ApplyDamage(baseDamage, applyShieldAbsorption: true, attacker: context.Source);
+
+                            // Heal source (caster)
+                            int actualHeal = Math.Min(flatValue, context.Source.MaxHP - context.Source.CurrentHP);
+                            context.Source.CurrentHP += actualHeal;
+                        }
+                        break;
+                    }
+
+                case EffectKind.Dodge:
+                    {
+                        // Dodge is handled specially by the combat system
+                        // This is a marker effect that tells the combat system to dodge the next attack
+                        break;
+                    }
 
                 default:
                     throw new ArgumentException($"Unsupported EffectKind: {kind}");
@@ -268,10 +323,14 @@ namespace TestRPGGame.Abilities.Applicators
                 EffectKind.AttackReduction => "🔻",
                 EffectKind.DefenseReduction => "🎯",
                 EffectKind.SpeedReduction => "🦶",
+                EffectKind.InstantDamage => "💥",
+                EffectKind.Heal => "💚",
+                EffectKind.LifeSteal => "🩸",
                 EffectKind.Regeneration => "💚",
                 EffectKind.DamageOverTime => "☠️",
                 EffectKind.Shield => "🛡️",
                 EffectKind.Stun => "⚡",
+                EffectKind.Dodge => "💨",
                 _ => "✨"
             };
         }
