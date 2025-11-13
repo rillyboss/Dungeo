@@ -133,6 +133,27 @@ namespace TestRPGGame.Interfaces
 
         public (int slotNumber, bool isNewCharacter) RequestSaveSlotSelection(List<InterfaceSaveSlotInfo> slots)
         {
+            // Check if strategy has a preferred slot
+            var preferredSlot = strategy.GetPreferredSaveSlot();
+            if (preferredSlot.HasValue)
+            {
+                var slot = slots.FirstOrDefault(s => s.SlotNumber == preferredSlot.Value);
+                if (slot != null)
+                {
+                    if (slot.IsEmpty)
+                    {
+                        Log($"Decision: Create new character in preferred slot {slot.SlotNumber}");
+                        return (slot.SlotNumber, true);
+                    }
+                    else
+                    {
+                        Log($"Decision: Overwrite slot {slot.SlotNumber} (was {slot.Name}, Lvl {slot.Level})");
+                        return (slot.SlotNumber, true); // Overwrite for automated testing
+                    }
+                }
+            }
+
+            // Fallback: use first empty slot
             var emptySlot = slots.FirstOrDefault(s => s.IsEmpty);
             if (emptySlot != null)
             {
@@ -363,6 +384,110 @@ namespace TestRPGGame.Interfaces
 
             // Default: basic attack
             return new CombatAction { ActionType = CombatActionType.Attack };
+        }
+    }
+
+    /// <summary>
+    /// Strategy for automated playtesting to level 10.
+    /// Tests the full game loop: combat, equipment, abilities, leveling, dungeons.
+    /// </summary>
+    public class Level10Strategy : AutomatedStrategy
+    {
+        private readonly string characterName;
+        private readonly PlayerClass playerClass;
+        private int lastLoggedLevel = 0;
+
+        public Level10Strategy(string characterName, PlayerClass playerClass)
+        {
+            this.characterName = characterName;
+            this.playerClass = playerClass;
+        }
+
+        public override (string name, PlayerClass playerClass) ChooseCharacterClass()
+        {
+            return (characterName, playerClass);
+        }
+
+        public override MainMenuChoice ChooseMainMenuAction(int combatCount, int level, int gold, int hp, int maxHp)
+        {
+            // Log progress milestones
+            if (level > lastLoggedLevel)
+            {
+                Console.WriteLine($"\n🎯 MILESTONE: Reached Level {level}!");
+                lastLoggedLevel = level;
+            }
+
+            // Stop at level 10 - test complete!
+            if (level >= 10)
+            {
+                Console.WriteLine($"\n✅ TEST COMPLETE: {characterName} reached level 10!");
+                return MainMenuChoice.Exit;
+            }
+
+            // Rest if HP is below 60%
+            if (hp < maxHp * 0.6)
+            {
+                return MainMenuChoice.Rest;
+            }
+
+            // Try dungeons every 5 levels (if available)
+            if (level % 5 == 0 && combatCount % 10 == 0)
+            {
+                return MainMenuChoice.Dungeon;
+            }
+
+            // Main activity: combat to gain XP
+            return MainMenuChoice.Combat;
+        }
+
+        public override CombatAction ChooseCombatAction(CombatState state)
+        {
+            // Emergency potion if very low HP
+            if (state.PlayerCurrentHP < state.PlayerMaxHP * 0.25 && state.PlayerPotions > 0)
+            {
+                return new CombatAction { ActionType = CombatActionType.UsePotion };
+            }
+
+            // Flee if critically low HP and no potions
+            if (state.PlayerCurrentHP < state.PlayerMaxHP * 0.15 && state.PlayerPotions == 0)
+            {
+                return new CombatAction { ActionType = CombatActionType.Flee };
+            }
+
+            // Smart ability usage: prioritize high-damage abilities
+            var usableAbilities = state.AvailableAbilities
+                .Where(a => a.CanUse && a.CurrentCooldown == 0)
+                .OrderByDescending(a => a.ManaCost) // Higher mana cost usually means more powerful
+                .ToList();
+
+            // Use ability if we have mana and abilities available
+            if (usableAbilities.Any() && state.PlayerCurrentMana >= 15)
+            {
+                // Prefer abilities when enemy HP is high
+                if (state.EnemyCurrentHP > state.EnemyMaxHP * 0.5 || usableAbilities.First().ManaCost <= state.PlayerCurrentMana / 2)
+                {
+                    return new CombatAction
+                    {
+                        ActionType = CombatActionType.UseAbility,
+                        AbilityIndex = usableAbilities.First().Index
+                    };
+                }
+            }
+
+            // Default: basic attack (conserve mana)
+            return new CombatAction { ActionType = CombatActionType.Attack };
+        }
+
+        public override int? GetPreferredSaveSlot()
+        {
+            // Use slot 1 for Warrior, 2 for Mage, 3 for Rogue
+            return playerClass switch
+            {
+                PlayerClass.Warrior => 1,
+                PlayerClass.Mage => 2,
+                PlayerClass.Rogue => 3,
+                _ => 1
+            };
         }
     }
 }

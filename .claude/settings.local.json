@@ -13,7 +13,9 @@
       "Bash(git checkout:*)",
       "Bash(python convert_abilities_preserve_comments.py:*)",
       "Bash(python convert_abilities_v2.py:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(dotnet run:*)",
+      "Bash(tee:*)"
     ],
     "deny": [],
     "ask": []
