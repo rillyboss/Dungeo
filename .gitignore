@@ -40,3 +40,6 @@ artifacts/
 # Backup files
 *.old
 *.bak
+
+# Claude Code local settings
+.claude/settings.local.json

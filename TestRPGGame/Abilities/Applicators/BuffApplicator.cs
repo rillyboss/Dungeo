@@ -38,6 +38,9 @@ namespace TestRPGGame.Abilities.Applicators
                 case Constants.BuffType.ShieldWall:
                     context.Source.ApplyShieldWall(Duration);
                     break;
+                case Constants.BuffType.SmokeScreen:
+                    context.Source.ApplySmokeScreen(Duration);
+                    break;
             }
 
             // Note: Output is handled by the combat system through events
@@ -54,6 +57,7 @@ namespace TestRPGGame.Abilities.Applicators
             {
                 "Battle Rage" => Constants.BuffType.BattleRage,
                 "Shield Wall" => Constants.BuffType.ShieldWall,
+                "Smoke Screen" => Constants.BuffType.SmokeScreen,
                 _ => throw new System.ArgumentException($"Unknown buff name: {buffName}")
             };
         }

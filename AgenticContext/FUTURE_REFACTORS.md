@@ -1,4 +1,17 @@
-# Future Refactoring Tasks
+# Future Refactoring Opportunities
+
+**Status:** Informational - No immediate work required
+**Last Updated:** 2025-01-12
+
+---
+
+## Overview
+
+This document outlines **potential** future refactoring opportunities. These are **NOT** immediate priorities - they are ideas for long-term code improvement when the project matures further.
+
+**Current Focus:** Content expansion (see CONTENT_EXPANSION_ROADMAP.md)
+
+---
 
 ## ✅ COMPLETED REFACTORS
 

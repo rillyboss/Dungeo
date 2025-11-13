@@ -88,6 +88,55 @@
       }
     ]
   },
+  "warrior_reckless_charge": {
+    "Id": "warrior_reckless_charge",
+    "Name": "Reckless Charge",
+    "Description": "Rush the enemy with 2.0x-2.5x damage + stun for 1 turn - goes first! (88% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 35,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "Priority": true,
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 7,
+    "PurchaseCost": 250,
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "Duration": 1,
+        "Multiplier": 2.25,
+        "MinMultiplier": 2.0,
+        "MaxMultiplier": 2.5,
+        "Accuracy": 0.88
+      }
+    ]
+  },
+  "warrior_blood_fury": {
+    "Id": "warrior_blood_fury",
+    "Name": "Blood Fury",
+    "Description": "Savage strike for 2.0x-2.6x damage + heal for damage dealt (92% accuracy)",
+    "PlayerClass": "Warrior",
+    "ManaCost": 45,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 8,
+    "PurchaseCost": 300,
+    "Effects": [
+      {
+        "Type": "LifeSteal",
+        "Value": 100,
+        "Duration": 0,
+        "Multiplier": 2.3,
+        "MinMultiplier": 2.0,
+        "MaxMultiplier": 2.6,
+        "Accuracy": 0.92
+      }
+    ]
+  },
 
   // Mage Abilities
   "mage_fireball": {
@@ -187,6 +236,51 @@
       }
     ]
   },
+  "mage_frost_nova": {
+    "Id": "mage_frost_nova",
+    "Name": "Frost Nova",
+    "Description": "Freezing explosion for 2.5x-3.0x magic damage + stun for 1 turn (87% accuracy)",
+    "PlayerClass": "Mage",
+    "ManaCost": 40,
+    "Cooldown": 6,
+    "Type": "Magic",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 7,
+    "PurchaseCost": 250,
+    "Effects": [
+      {
+        "Type": "Stun",
+        "Value": 0,
+        "Duration": 1,
+        "Multiplier": 2.75,
+        "MinMultiplier": 2.5,
+        "MaxMultiplier": 3.0,
+        "Accuracy": 0.87
+      }
+    ]
+  },
+  "mage_arcane_barrier": {
+    "Id": "mage_arcane_barrier",
+    "Name": "Arcane Barrier",
+    "Description": "Create magical shield absorbing 80 damage for 3 turns",
+    "PlayerClass": "Mage",
+    "ManaCost": 35,
+    "Cooldown": 6,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 8,
+    "PurchaseCost": 300,
+    "Effects": [
+      {
+        "Type": "Shield",
+        "Value": 80,
+        "Duration": 3,
+        "Multiplier": 1.0
+      }
+    ]
+  },
 
   // Rogue Abilities
   "rogue_backstab": {
@@ -276,6 +370,60 @@
         "MinMultiplier": 4.5,
         "MaxMultiplier": 5.5,
         "Accuracy": 0.85
+      }
+    ]
+  },
+  "rogue_venom_strike": {
+    "Id": "rogue_venom_strike",
+    "Name": "Venom Strike",
+    "Description": "Deadly strike for 2.0x-2.5x damage + poison for 25 damage over 4 turns (90% accuracy)",
+    "PlayerClass": "Rogue",
+    "ManaCost": 40,
+    "Cooldown": 5,
+    "Type": "Physical",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 7,
+    "PurchaseCost": 250,
+    "Effects": [
+      {
+        "Type": "Damage",
+        "Value": 0,
+        "Duration": 0,
+        "Multiplier": 2.25,
+        "MinMultiplier": 2.0,
+        "MaxMultiplier": 2.5,
+        "Accuracy": 0.90
+      },
+      {
+        "Type": "DamageOverTime",
+        "Value": 25,
+        "Duration": 4,
+        "Multiplier": 1.0
+      }
+    ]
+  },
+  "rogue_smoke_bomb": {
+    "Id": "rogue_smoke_bomb",
+    "Name": "Smoke Bomb",
+    "Description": "Vanish in smoke - dodge next 2 attacks + gain evasion buff",
+    "PlayerClass": "Rogue",
+    "ManaCost": 40,
+    "Cooldown": 6,
+    "Type": "Defensive",
+    "IsStarting": false,
+    "IsUnlockable": true,
+    "UnlockLevel": 8,
+    "PurchaseCost": 300,
+    "Effects": [
+      {
+        "Type": "Dodge",
+        "Duration": 2
+      },
+      {
+        "Type": "Buff",
+        "BuffName": "Smoke Screen",
+        "Duration": 3
       }
     ]
   },

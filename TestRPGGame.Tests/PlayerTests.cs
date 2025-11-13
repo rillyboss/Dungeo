@@ -21,7 +21,7 @@ namespace TestRPGGame.Tests
             Assert.True(player.MaxHP >= 140); // Base 140 + equipment bonuses
             Assert.True(player.MaxMana >= 80); // Base 80 + possible equipment bonuses
             Assert.Equal(100, player.Gold);
-            Assert.Equal(4, player.Abilities.Count); // 3 starting abilities + 1 unlockable
+            Assert.Equal(6, player.Abilities.Count); // 3 starting abilities + 3 unlockable
 
             // Verify starting equipment was given
             Assert.NotNull(player.Inventory.Weapon);

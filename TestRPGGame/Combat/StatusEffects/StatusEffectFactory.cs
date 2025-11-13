@@ -99,6 +99,20 @@ namespace TestRPGGame.Combat.StatusEffects
             );
         }
 
+        public static StatModifierEffect CreateSmokeScreen(int duration)
+        {
+            return new StatModifierEffect(
+                StatusEffectId.SmokeScreen.GetIdentifier(),
+                "Smoke Screen",
+                "💨",
+                StatusEffectType.Buff,
+                duration,
+                StatModifierEffect.StatType.Defense,
+                0.7, // 30% damage reduction (simulated as defense buff)
+                isMultiplier: true
+            );
+        }
+
         // Control Effects
         public static StunEffect CreateStun(int duration)
         {
@@ -172,6 +186,12 @@ namespace TestRPGGame.Combat.StatusEffects
         public static void ApplyShieldWall(this Combatant target, int duration)
         {
             var effect = CreateShieldWall(duration);
+            target.Effects.AddEffect(effect);
+        }
+
+        public static void ApplySmokeScreen(this Combatant target, int duration)
+        {
+            var effect = CreateSmokeScreen(duration);
             target.Effects.AddEffect(effect);
         }
     }

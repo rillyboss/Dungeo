@@ -7,7 +7,8 @@ namespace TestRPGGame.Constants
     public enum BuffType
     {
         BattleRage,
-        ShieldWall
+        ShieldWall,
+        SmokeScreen
     }
 
     /// <summary>
@@ -21,6 +22,7 @@ namespace TestRPGGame.Constants
             {
                 BuffType.BattleRage => "Battle Rage",
                 BuffType.ShieldWall => "Shield Wall",
+                BuffType.SmokeScreen => "Smoke Screen",
                 _ => buffType.ToString()
             };
         }

@@ -16,7 +16,8 @@ namespace TestRPGGame.Constants
         Enrage,
         ShieldWall,
         SpeedBuff,
-        Stun
+        Stun,
+        SmokeScreen
     }
 
     /// <summary>
@@ -39,6 +40,7 @@ namespace TestRPGGame.Constants
                 StatusEffectId.ShieldWall => "shield_wall",
                 StatusEffectId.SpeedBuff => "speed_buff",
                 StatusEffectId.Stun => "stun",
+                StatusEffectId.SmokeScreen => "smoke_screen",
                 _ => effectId.ToString().ToLower()
             };
         }
@@ -58,6 +60,7 @@ namespace TestRPGGame.Constants
                 "shield_wall" => StatusEffectId.ShieldWall,
                 "speed_buff" => StatusEffectId.SpeedBuff,
                 "stun" => StatusEffectId.Stun,
+                "smoke_screen" => StatusEffectId.SmokeScreen,
                 _ => throw new System.ArgumentException($"Unknown status effect identifier: {identifier}")
             };
         }
