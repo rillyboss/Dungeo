@@ -172,7 +172,7 @@ namespace TestRPGGame.Systems
             }
 
             var item = player.Inventory.BackpackItems[itemIndex];
-            int sellPrice = (int)(item.Price * GameConfig.Config.ItemSellPriceMultiplier);
+            int sellPrice = (int)(item.Price * GameConfig.Config.ItemSellPriceMultiplier * GameConfig.Config.EquipmentSellPriceMultiplier);
 
             player.Gold += sellPrice;
             player.Inventory.BackpackItems.RemoveAt(itemIndex);

@@ -89,7 +89,7 @@ namespace TestRPGGame.Tests
             // Arrange
             var progressionManager = new ProgressionManager(_mockInterface.Object);
             var player = new Player("Hero", PlayerClass.Warrior);
-            player.Gold = 1000;
+            player.Gold = 10000; // Need enough to afford abilities with 10x multiplier
             player.Level = 10;
 
             var lockedAbility = player.Abilities.FirstOrDefault(a => !a.IsUnlocked);

@@ -67,6 +67,12 @@ namespace TestRPGGame.Entities
         /// <returns>The actual damage dealt after defense and shields</returns>
         public virtual int ApplyDamage(int rawDamage, bool applyShieldAbsorption = true, Combatant? attacker = null)
         {
+            // Step 0: Apply enemy damage multiplier if enemy is attacking player
+            if (attacker is Enemy.Enemy && this is Player.Player)
+            {
+                rawDamage = (int)(rawDamage * Systems.GameConfig.Config.EnemyDamageMultiplier);
+            }
+
             // Step 1: Apply defense reduction using percentage-based formula
             // Formula: defense reduces damage by Defense/(Defense+100) percentage
             // This provides diminishing returns and ensures multipliers scale properly

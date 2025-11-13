@@ -36,6 +36,14 @@ namespace TestRPGGame.Systems
         public int AbilityPurchaseCostMultiplier { get; set; } = 100; // Base cost multiplier for abilities
         public int AbilityUnlockLevel { get; set; } = 5; // Level required to unlock new abilities
 
+        // Economy Multipliers (for easy balance tuning)
+        public double CombatGoldMultiplier { get; set; } = 1.0; // Multiply combat gold rewards
+        public double DungeonGoldMultiplier { get; set; } = 1.0; // Multiply dungeon gold rewards
+        public double EquipmentPurchasePriceMultiplier { get; set; } = 1.0; // Multiply equipment buy prices
+        public double EquipmentSellPriceMultiplier { get; set; } = 1.0; // Multiply equipment sell prices
+        public double AbilityPurchasePriceMultiplier { get; set; } = 1.0; // Multiply ability purchase costs
+        public double EnemyDamageMultiplier { get; set; } = 1.0; // Multiply enemy damage output
+
         // System Settings
         public bool CombatAutosave { get; set; } = true; // Autosave after combat
     }

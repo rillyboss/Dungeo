@@ -639,7 +639,8 @@ namespace TestRPGGame.Equipment
             int effectBonus = item.SpecialEffects.Count * 100;
             int abilityBonus = item.GrantedAbilityIds.Count * 150; // Abilities are more valuable than effects
 
-            return (int)(basePrice * rarityMultiplier) + effectBonus + abilityBonus;
+            int finalPrice = (int)(basePrice * rarityMultiplier) + effectBonus + abilityBonus;
+            return (int)(finalPrice * Systems.GameConfig.Config.EquipmentPurchasePriceMultiplier);
         }
 
         private static void GenerateAbilities(EquipmentItem item, WeaponTypeData? weaponType)

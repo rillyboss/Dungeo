@@ -30,7 +30,7 @@ namespace TestRPGGame.Tests
 
             // Assert - Phase 2: Combat properties
             Assert.Equal(100, config.MaxCombatTurns);
-            Assert.Equal(0.4, config.CombatLootDropChance);
+            Assert.Equal(0.4, config.CombatLootDropChance); // 40% chance for loot drop
             Assert.Equal(0.25, config.CombatGoldLossPercent);
             Assert.Equal(100, config.CombatGoldLossMax);
 

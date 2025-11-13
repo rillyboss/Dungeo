@@ -309,8 +309,9 @@ namespace TestRPGGame.Entities.Dungeon
                 // Apply encounter effects
                 if (index == 0 && encounter.GoldReward.HasValue)
                 {
-                    player.Gold += encounter.GoldReward.Value;
-                    SendMessage($"\n💰 +{encounter.GoldReward.Value} gold!");
+                    int goldAmount = (int)(encounter.GoldReward.Value * TestRPGGame.Systems.GameConfig.Config.DungeonGoldMultiplier);
+                    player.Gold += goldAmount;
+                    SendMessage($"\n💰 +{goldAmount} gold!");
                 }
                 if (index == 0 && encounter.HealthReward.HasValue)
                 {

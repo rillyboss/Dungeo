@@ -197,7 +197,7 @@ namespace TestRPGGame.Combat
 
             if (playerVictory)
             {
-                goldEarned = enemy.GoldReward;
+                goldEarned = (int)(enemy.GoldReward * Systems.GameConfig.Config.CombatGoldMultiplier);
                 expEarned = enemy.ExpReward;
                 player.Gold += goldEarned;
 
