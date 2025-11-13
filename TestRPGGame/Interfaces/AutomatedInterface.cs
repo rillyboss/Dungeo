@@ -488,8 +488,8 @@ namespace TestRPGGame.Interfaces
                 return MainMenuChoice.Exit;
             }
 
-            // Rest if HP is below 60%
-            if (hp < maxHp * 0.6)
+            // Rest if HP is below 60% and we have enough gold (costs 10)
+            if (hp < maxHp * 0.6 && gold >= 10)
             {
                 return MainMenuChoice.Rest;
             }
@@ -769,9 +769,9 @@ namespace TestRPGGame.Interfaces
                 return MainMenuChoice.Exit;
             }
 
-            // Rest if HP is below 60%
+            // Rest if HP is below 60% and we have enough gold (costs 10)
             double hpPercent = (double)hp / maxHp;
-            if (hpPercent < 0.6)
+            if (hpPercent < 0.6 && gold >= 10)
             {
                 analytics.TimesRested++;
                 if (hpPercent < 0.3)
@@ -780,6 +780,13 @@ namespace TestRPGGame.Interfaces
                     analytics.AddObservation("negative", $"Frequently at critically low HP ({hpPercent:P0})");
                 }
                 return MainMenuChoice.Rest;
+            }
+
+            // If HP is low but can't afford rest, note this as a problem
+            if (hpPercent < 0.6 && gold < 10)
+            {
+                LogUltraThink($"Need to rest at {hpPercent:P0} HP but only have {gold} gold (need 10) - forced to continue");
+                analytics.AddObservation("balance", $"Stuck at low HP with insufficient gold for rest - economy too tight");
             }
 
             // TODO: Ability unlocking system not yet implemented - skip for now

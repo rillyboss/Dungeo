@@ -88,7 +88,33 @@ This allows automated playthroughs to proceed without hanging.
 
 ## Other Known Issues
 
-_(None currently tracked)_
+### Rest Cost Economy Problem
+
+**Status:** Fixed in automation, but reveals game balance issue
+**Date Identified:** 2025-01-12
+
+**The Problem:**
+Players can get stuck in a death spiral where they:
+1. Have low HP and need to rest
+2. Don't have enough gold to rest (costs 10 gold)
+3. Can't earn gold without combat
+4. Can't survive combat with low HP
+
+This creates an unwinnable situation where the player is forced to fight at low HP, likely die, lose gold on death, and spiral further.
+
+**What Was Fixed:**
+- Automated strategies now check `gold >= 10` before attempting to rest
+- UltraThink analysis tracks and reports when players are stuck in this situation
+
+**Game Balance Issue:**
+This reveals a fundamental economy/progression problem. Possible solutions:
+1. Make resting free or very cheap (1-2 gold)
+2. Provide passive HP regeneration
+3. Guarantee minimum gold from combat wins
+4. Allow resting "on credit" (borrow gold)
+5. Provide emergency "free rest" when gold < 10
+
+**Recommendation:** Consider making rest free or adding passive HP regen to prevent death spirals.
 
 ---
 
