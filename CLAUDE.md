@@ -18,7 +18,7 @@ TestRPGGame is a feature-rich console RPG with:
 - **Dungeon system** with progression, bosses, and encounters
 - **Multiple interfaces** (Console for humans, Automated for AI)
 - **Data-driven design** (all content in JSON files)
-- **Comprehensive testing** (423 tests, 100% passing)
+- **Comprehensive testing** (450 tests, 100% passing)
 
 ### Technology Stack
 - **Language:** C# (.NET 9.0)
@@ -412,9 +412,49 @@ dotnet test
 # Check status
 git status
 
-# Stage changes
-git add -A
+# 🚨 CRITICAL: Stage ONLY files you modified, NOT all files
+# NEVER use "git add -A" or "git add ." - stages unrelated work!
+git add TestRPGGame/Systems/GameConfig.cs TestRPGGame.Tests/GameConfigTests.cs CHANGELOG.md
+
+# Verify ONLY your files are staged
+git status
+
+# If unrelated files are staged, unstage them:
+git restore --staged TestRPGGame.Blazor/
+git restore --staged TestRPGGame.sln
+git restore --staged .claude/settings.local.json
 ```
+
+### Critical Git Rules
+**🚨 NEVER use `git add -A` or `git add .`**
+- These commands stage ALL modified files, including work from other agents/sessions
+- This causes unintended commits of unrelated work
+
+**✅ ALWAYS stage specific files:**
+```bash
+# Good - explicit file paths
+git add path/to/file1.cs path/to/file2.cs CHANGELOG.md
+
+# Good - interactive staging (review each change)
+git add -p
+
+# Bad - stages everything including unrelated work
+git add -A   # ❌ NEVER USE
+git add .    # ❌ NEVER USE
+```
+
+**✅ ALWAYS verify staged files:**
+```bash
+git status  # Check "Changes to be committed" section
+```
+
+**✅ Common files to EXCLUDE:**
+- `.sln` files (unless you created new project)
+- `.csproj` files (unless you added new dependencies)
+- `.claude/settings.local.json` (local settings)
+- `TestRPGGame.Blazor/` (if working on core game)
+- Test fixture files from other agents
+- Any files you didn't modify in this session
 
 ---
 
@@ -482,7 +522,7 @@ dotnet test
 
 **Current State:**
 - ✅ 128 C# source files
-- ✅ 423 tests passing (100%)
+- ✅ 450 tests passing (100%)
 - ✅ 54% code coverage (3,269/6,042 lines)
 - ✅ Zero Console calls in game logic
 - ✅ 100% interface-driven architecture

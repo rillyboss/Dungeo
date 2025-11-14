@@ -8,6 +8,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Critical Git Workflow Documentation**:
+  - Updated CLAUDE.md and context-enrichment.md with explicit git staging rules
+  - Added warning against `git add -A` and `git add .` to prevent accidental commits
+  - Documented proper workflow: stage specific files only, verify with `git status`
+  - Examples of common files to exclude (.sln, .csproj, Blazor/, local settings)
+  - Prevents committing unrelated work from parallel agents/sessions
 - **GameConfig Override Methods for Testing**:
   - Added `GameConfig.SetConfig()` - Allows tests to inject custom configuration
   - Added `GameConfig.ResetConfig()` - Resets config to force reload from file

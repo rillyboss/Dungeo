@@ -14,7 +14,7 @@ If you add code without tests, **THE TASK IS NOT COMPLETE.**
 
 **ALWAYS run tests before committing:**
 ```bash
-dotnet test                    # Run all 423 tests (must pass 100%)
+dotnet test                    # Run all 450 tests (must pass 100%)
 dotnet test --no-build         # Skip rebuild if just ran dotnet build
 ```
 
@@ -27,7 +27,7 @@ dotnet test --no-build         # Skip rebuild if just ran dotnet build
 - ❌ NOT needed for pure documentation changes
 
 **Test expectations:**
-- All tests must pass (currently 423 tests)
+- All tests must pass (currently 450 tests)
 - **🚨 WRITE TESTS FOR NEW FEATURES** - Not optional, not later, NOW
 - **🚨 WRITE TESTS FOR BUG FIXES** - Prove the bug is fixed
 - **🚨 WRITE TESTS FOR NEW PUBLIC METHODS** - Every method needs at least one test
@@ -71,9 +71,24 @@ Detailed changes:
 dotnet test                              # Verify tests pass
 # Edit CHANGELOG.md                      # Document your changes under [Unreleased]
 git status                               # Check what changed
-git add -A                               # Stage changes
+
+# 🚨 CRITICAL: Stage ONLY files you modified, NOT all files
+# Use git add with specific file paths, never "git add -A" or "git add ."
+git add TestRPGGame/Systems/GameConfig.cs TestRPGGame.Tests/GameConfigTests.cs CHANGELOG.md
+# OR use git add -p to interactively review each change
+
+git status                               # Verify ONLY your files are staged
+# If unrelated files are staged: git restore --staged <file>
+
 git commit -m "type: description..."     # Commit with proper format
 ```
+
+**🚨 CRITICAL Git Rules:**
+- **NEVER use `git add -A` or `git add .`** - This stages unrelated work from other sessions
+- **ALWAYS stage specific files** you modified: `git add path/to/file1 path/to/file2`
+- **ALWAYS review `git status`** after staging to verify only relevant files
+- **ALWAYS unstage unrelated files** with `git restore --staged <file>` if needed
+- **Examples of files to exclude**: .sln, .csproj changes from other agents, Blazor/, new test fixtures from other work
 
 **CHANGELOG.md Requirements:**
 - **ALWAYS update CHANGELOG.md** before committing changes
@@ -185,7 +200,7 @@ git commit -m "type: description..."     # Commit with proper format
 
 Before considering work "done":
 - [ ] **🚨 NEW TESTS WRITTEN** for all new features/bug fixes (MANDATORY)
-- [ ] All tests pass: `dotnet test` (423 tests, 100%)
+- [ ] All tests pass: `dotnet test` (450 tests, 100%)
 - [ ] **CHANGELOG.md updated** with changes
 - [ ] Code follows SOLID principles
 - [ ] No Console calls in game logic (use IGameInterface)
@@ -202,7 +217,7 @@ Before considering work "done":
 
 - **3 Classes:** Warrior, Mage, Rogue
 - **6 Abilities per class:** 3 starting + 3 unlockable
-- **Total Tests:** 423 (must all pass - 100% required)
+- **Total Tests:** 450 (must all pass - 100% required)
 - **Testing Policy:** 🚨 ALL new code MUST have tests - NO EXCEPTIONS
 - **Architecture:** Interface-driven, event-based, data-driven
 - **Tech Stack:** C# .NET 8.0, xUnit, Moq
