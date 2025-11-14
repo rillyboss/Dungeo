@@ -9,7 +9,7 @@
 ### Testing Rules
 **ALWAYS run tests before committing:**
 ```bash
-dotnet test                    # Run all 375 tests (must pass 100%)
+dotnet test                    # Run all 401 tests (must pass 100%)
 dotnet test --no-build         # Skip rebuild if just ran dotnet build
 ```
 
@@ -21,9 +21,11 @@ dotnet test --no-build         # Skip rebuild if just ran dotnet build
 - ❌ NOT needed for pure documentation changes
 
 **Test expectations:**
-- All tests must pass
+- All tests must pass (currently 401 tests)
+- **ALWAYS write tests for bug fixes** - Prevent regressions
+- **ALWAYS write tests for new features** - Ensure they work correctly
+- Update test counts in this file when adding/removing tests
 - Update test counts when adding abilities (Warrior/Mage/Rogue each have 6 total abilities now)
-- Add tests for new features
 
 ### Version Control Rules
 **Commit format:**
@@ -42,14 +44,27 @@ Detailed changes:
 - ✅ When user explicitly requests it
 - ✅ After significant refactoring
 - ❌ NOT without running tests first
+- ❌ NOT without updating CHANGELOG.md first
 
 **Git workflow:**
 ```bash
 dotnet test                              # Verify tests pass
+# Edit CHANGELOG.md                      # Document your changes under [Unreleased]
 git status                               # Check what changed
 git add -A                               # Stage changes
 git commit -m "type: description..."     # Commit with proper format
 ```
+
+**CHANGELOG.md Requirements:**
+- **ALWAYS update CHANGELOG.md** before committing changes
+- Add entries under `[Unreleased]` section
+- Use appropriate categories:
+  - `Added` - New features
+  - `Changed` - Changes to existing functionality
+  - `Fixed` - Bug fixes
+  - `Removed` - Removed features
+- Include specific details: file names, test counts, clear descriptions
+- Update test counts when they change
 
 ---
 
@@ -77,9 +92,10 @@ git commit -m "type: description..."     # Commit with proper format
 - **TestRPGGame/Abilities/Applicators/** - Ability effect applicators
 - **TestRPGGame/Systems/** - Managers (Save, Dungeon, Progression, etc.)
 
-### Testing
-- **TestRPGGame.Tests/** - All 375 unit tests
+### Testing & Documentation
+- **TestRPGGame.Tests/** - All 401 unit tests
 - Run: `dotnet test` (must pass 100%)
+- **CHANGELOG.md** - Project changelog (update with every change)
 
 ---
 
@@ -128,10 +144,11 @@ git commit -m "type: description..."     # Commit with proper format
 
 ### Fixing a Bug
 1. Identify issue
-2. Write failing test (optional but recommended)
+2. **Write failing test** (REQUIRED for all bug fixes)
 3. Fix the bug
 4. Run: `dotnet test` (all must pass)
-5. Commit if requested
+5. Update CHANGELOG.md under `### Fixed`
+6. Commit if requested
 
 ### Refactoring
 1. Run tests before: `dotnet test`
@@ -145,11 +162,13 @@ git commit -m "type: description..."     # Commit with proper format
 
 Before considering work "done":
 - [ ] All tests pass: `dotnet test`
+- [ ] **New tests added** for bug fixes or features
+- [ ] **CHANGELOG.md updated** with changes
 - [ ] Code follows SOLID principles
 - [ ] No Console calls in game logic (use IGameInterface)
 - [ ] JSON files are valid (project builds)
 - [ ] Changes are focused and atomic
-- [ ] Tests updated if adding features
+- [ ] Test count updated in context-enrichment.md (if changed)
 - [ ] Commit when request is completed and tests are passing
 
 ---
@@ -158,10 +177,11 @@ Before considering work "done":
 
 - **3 Classes:** Warrior, Mage, Rogue
 - **6 Abilities per class:** 3 starting + 3 unlockable
-- **Total Tests:** 375 (must all pass)
+- **Total Tests:** 401 (must all pass)
 - **Architecture:** Interface-driven, event-based, data-driven
 - **Tech Stack:** C# .NET 8.0, xUnit, Moq
-- **Zero Console calls** in game logic (100% interface-driven)
+- **Documentation:** CHANGELOG.md (update with every change)
+- **Repository:** https://github.com/rillyboss/Dungeo
 
 ---
 

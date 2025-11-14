@@ -43,6 +43,10 @@ namespace TestRPGGame.Combat
             {
                 turnNumber++;
 
+                // Process status effects at turn start
+                player.Effects.ProcessTurnStart();
+                enemy.Effects.ProcessTurnStart();
+
                 // Turn start event
                 gameInterface.OnEvent(new GameEvents.CombatTurnStartEvent
                 {
@@ -190,6 +194,10 @@ namespace TestRPGGame.Combat
 
         private bool EndCombat(Player player, Enemy enemy, bool playerVictory)
         {
+            // Clear all status effects when combat ends
+            player.Effects.ClearAll();
+            enemy.Effects.ClearAll();
+
             EquipmentItem? loot = null;
             int goldEarned = 0;
             int expEarned = 0;

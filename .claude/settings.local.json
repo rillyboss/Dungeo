@@ -26,7 +26,14 @@
       "Bash(find:*)",
       "Bash(git reset:*)",
       "Bash(python3:*)",
-      "Bash(git remote add:*)"
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(git stash pop:*)",
+      "Bash(git for-each-ref:*)",
+      "Bash(git update-ref:*)",
+      "Bash(git reflog:*)",
+      "Bash(git gc:*)",
+      "Bash(git rm:*)"
     ],
     "deny": [],
     "ask": []

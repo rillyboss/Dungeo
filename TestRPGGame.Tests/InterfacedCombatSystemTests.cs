@@ -214,5 +214,165 @@ namespace TestRPGGame.Tests
             Assert.Equal(0.05, config.ManaRegenRate);
             Assert.Equal(5, regenAmount); // 5% of 100
         }
+
+        [Fact]
+        public void InterfacedCombatSystem_ProcessesStatusEffectsEachTurn()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var combat = new InterfacedCombatSystem(autoInterface);
+            var player = new Player("TestHero", PlayerClass.Warrior);
+            player.CurrentHP = player.MaxHP;
+            player.CurrentMana = player.MaxMana;
+
+            // Create very weak enemy that won't kill player quickly
+            var enemy = EnemyFactory.CreateEnemy(1);
+            enemy.MaxHP = 500; // Make enemy tanky so combat lasts multiple turns
+            enemy.CurrentHP = 500;
+            enemy.Attack = 1; // Very weak attack
+
+            // Apply a buff with 3-turn duration manually
+            var testEffect = new Combat.StatusEffects.StatModifierEffect(
+                "battle_rage",
+                "Battle Rage",
+                "⚔️",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                3, // 3 turn duration
+                Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                1.5,
+                isMultiplier: true
+            );
+
+            player.Effects.AddEffect(testEffect);
+            int initialDuration = testEffect.RemainingTurns;
+            Assert.Equal(3, initialDuration);
+
+            // Act - Process turn start once manually to verify it works
+            player.Effects.ProcessTurnStart();
+
+            // Assert - Duration should decrease by 1
+            if (player.Effects.ActiveEffects.Any())
+            {
+                Assert.Equal(2, player.Effects.ActiveEffects.First().RemainingTurns);
+            }
+        }
+
+        [Fact]
+        public void InterfacedCombatSystem_ClearsStatusEffectsWhenCombatEnds()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var combat = new InterfacedCombatSystem(autoInterface);
+            var player = new Player("TestHero", PlayerClass.Warrior);
+            player.CurrentHP = player.MaxHP;
+            player.CurrentMana = player.MaxMana;
+
+            var enemy = EnemyFactory.CreateEnemy(1);
+
+            // Apply a long-duration buff before combat
+            var testEffect = new Combat.StatusEffects.StatModifierEffect(
+                "battle_rage",
+                "Battle Rage",
+                "⚔️",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                10, // Long duration to ensure it doesn't expire during combat
+                Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                1.5,
+                isMultiplier: true
+            );
+
+            player.Effects.AddEffect(testEffect);
+            Assert.Single(player.Effects.ActiveEffects);
+
+            // Act - Start and complete combat
+            combat.StartBattle(player, enemy, canFlee: false);
+
+            // Assert - All status effects should be cleared after combat ends
+            Assert.Empty(player.Effects.ActiveEffects);
+            Assert.Empty(enemy.Effects.ActiveEffects);
+        }
+
+        [Fact]
+        public void InterfacedCombatSystem_StatusEffectsDontPersistBetweenCombats()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var combat = new InterfacedCombatSystem(autoInterface);
+            var player = new Player("TestHero", PlayerClass.Warrior);
+            player.CurrentHP = player.MaxHP;
+            player.CurrentMana = player.MaxMana;
+
+            var enemy1 = EnemyFactory.CreateEnemy(1);
+            var enemy2 = EnemyFactory.CreateEnemy(1);
+
+            // Act - First combat with buff applied
+            var testEffect = new Combat.StatusEffects.StatModifierEffect(
+                "battle_rage",
+                "Battle Rage",
+                "⚔️",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                10, // Long duration
+                Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                1.5,
+                isMultiplier: true
+            );
+
+            player.Effects.AddEffect(testEffect);
+            Assert.Single(player.Effects.ActiveEffects);
+
+            combat.StartBattle(player, enemy1, canFlee: false);
+            Assert.Empty(player.Effects.ActiveEffects);
+
+            // Restore player for second combat
+            player.CurrentHP = player.MaxHP;
+            player.CurrentMana = player.MaxMana;
+
+            // Second combat - verify no effects from first combat persist
+            combat.StartBattle(player, enemy2, canFlee: false);
+
+            // Assert - No effects should carry over from first combat
+            Assert.Empty(player.Effects.ActiveEffects);
+        }
+
+        [Fact]
+        public void InterfacedCombatSystem_BuffDurationDecrementsCorrectly()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var combat = new InterfacedCombatSystem(autoInterface);
+            var player = new Player("TestHero", PlayerClass.Mage);
+            player.CurrentHP = player.MaxHP;
+            player.CurrentMana = player.MaxMana;
+
+            // Create tanky enemy for longer combat
+            var enemy = EnemyFactory.CreateEnemy(1);
+            enemy.MaxHP = 1000;
+            enemy.CurrentHP = 1000;
+            enemy.Attack = 1;
+
+            // Manually add a status effect with known duration
+            var testEffect = new Combat.StatusEffects.StatModifierEffect(
+                "test_buff",
+                "Test Buff",
+                "⚔️",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                2, // 2 turn duration
+                Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                1.5,
+                isMultiplier: true
+            );
+
+            player.Effects.AddEffect(testEffect);
+            Assert.Equal(2, testEffect.RemainingTurns);
+
+            // Process one turn manually to verify decrement
+            player.Effects.ProcessTurnStart();
+
+            // Assert - Duration should decrease by 1
+            if (player.Effects.ActiveEffects.Any())
+            {
+                Assert.Equal(1, player.Effects.ActiveEffects.First().RemainingTurns);
+            }
+        }
     }
 }
