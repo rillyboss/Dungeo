@@ -83,6 +83,23 @@ namespace TestRPGGame.Systems
             _logger = logger;
         }
 
+        /// <summary>
+        /// Sets a custom configuration. Useful for testing with known values.
+        /// </summary>
+        public static void SetConfig(GameConfiguration config)
+        {
+            _config = config;
+        }
+
+        /// <summary>
+        /// Resets configuration to null, forcing reload from file on next access.
+        /// Useful for test cleanup.
+        /// </summary>
+        public static void ResetConfig()
+        {
+            _config = null;
+        }
+
         public static GameConfiguration Config
         {
             get

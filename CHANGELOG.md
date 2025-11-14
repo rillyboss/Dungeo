@@ -8,6 +8,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **GameConfig Override Methods for Testing**:
+  - Added `GameConfig.SetConfig()` - Allows tests to inject custom configuration
+  - Added `GameConfig.ResetConfig()` - Resets config to force reload from file
+  - Enables integration tests to run with predictable config values
+  - Added 3 new tests in GameConfigTests.cs:
+    - `GameConfig_SetConfig_OverridesDefaultConfig` - Verifies custom config injection
+    - `GameConfig_ResetConfig_ForcesReloadFromFile` - Verifies reset behavior
+    - `GameConfig_SetConfig_AllowsTestIsolation` - Verifies test isolation
+  - Total tests now: 450 (up from 447)
 - **Test Infrastructure Improvements**:
   - Created comprehensive TestFixtures.cs (456 lines) - Central infrastructure for creating controlled test data
   - Added helper methods for all major entity types:
@@ -127,7 +136,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - **Note**: After test refactoring, final count is 447 tests (EnemyModifierTests gained 16 additional tests)
 
 ### Changed
-- **MAJOR: Comprehensive Test Suite Refactoring** (447 tests, 100% passing):
+- **Integration Test Resilience**:
+  - Updated TestBase.cs to reset GameConfig before/after each test
+  - Refactored 2 integration tests in GameCoreTests.cs to use predictable config:
+    - `GameCore_Start_PlayerGainsExperience` - Now sets 1.0x enemy scaling
+    - `GameCore_PlayerCanDefeatEnemy` - Now sets 1.0x enemy scaling
+  - Integration tests now resilient to gameconfig.json balance changes
+  - Tests validate system integration, not specific combat outcomes
+- **MAJOR: Comprehensive Test Suite Refactoring** (450 tests, 100% passing):
   - **Problem Solved**: Tests were brittle and dependent on JSON data changes
   - **Solution**: Separated data validation tests from system behavior tests
   - **Refactored 7 Test Files** to eliminate JSON data dependencies:
@@ -150,7 +166,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - ShopTests.cs now tests config usage patterns, not specific values
     - Tests validate ranges and relationships instead of exact numbers
   - **Result**: Test suite now resilient to JSON data changes while maintaining full system coverage
-  - **Test Count**: 447 tests (up from 423) - gained 24 tests from EnemyModifierTests expansion
+  - **Test Count**: 450 tests (up from 423) - gained 24 tests from EnemyModifierTests expansion + 3 from GameConfig tests
 - **Modified Files for UI/UX Enhancements**:
   - `Player.cs` - Fixed `GetEquipmentSourceForAbility()` to use ability ID instead of name
   - `ProgressionManager.cs` - Abilities now sorted by cost, then level in unlock menu
@@ -217,7 +233,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Statistics tracking (40+ stats)
 - ✅ Shop system with potions and equipment
 - ✅ Interface-driven architecture (Console + Automated UIs)
-- ✅ Comprehensive test suite (447 tests, 100% passing)
+- ✅ Comprehensive test suite (450 tests, 100% passing)
 
 ### Architecture
 - Interface-driven design (IGameInterface abstraction)
@@ -229,7 +245,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical Stats
 - **C# Source Files**: 128
-- **Unit Tests**: 447 (100% passing)
+- **Unit Tests**: 450 (100% passing)
 - **Code Coverage**: 54% (3,269/6,042 lines)
 - **Game Content**: 100% data-driven JSON
 - **Architecture**: Fully interface-driven

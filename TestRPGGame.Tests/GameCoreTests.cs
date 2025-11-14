@@ -107,7 +107,16 @@ namespace TestRPGGame.Tests
         [Fact]
         public void GameCore_Start_PlayerGainsExperience()
         {
-            // Arrange
+            // Arrange - Use predictable config for integration test
+            var testConfig = new GameConfiguration
+            {
+                EnemyDamageMultiplier = 1.0,
+                EnemyAttackMultiplier = 1.0,
+                EnemyDefenseMultiplier = 1.0,
+                EnemyHPMultiplier = 1.0
+            };
+            GameConfig.SetConfig(testConfig);
+
             var autoInterface = new AutomatedInterface();
             var gameCore = new GameCore(autoInterface);
 
@@ -171,7 +180,16 @@ namespace TestRPGGame.Tests
         [Fact]
         public void GameCore_PlayerCanDefeatEnemy()
         {
-            // Arrange
+            // Arrange - Use predictable config for integration test
+            var testConfig = new GameConfiguration
+            {
+                EnemyDamageMultiplier = 1.0,
+                EnemyAttackMultiplier = 1.0,
+                EnemyDefenseMultiplier = 1.0,
+                EnemyHPMultiplier = 1.0
+            };
+            GameConfig.SetConfig(testConfig);
+
             var autoInterface = new AutomatedInterface();
             var gameCore = new GameCore(autoInterface);
 

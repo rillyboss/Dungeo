@@ -288,5 +288,66 @@ namespace TestRPGGame.Tests
             // Act & Assert
             Assert.Equal(expectedHP, scaledHP);
         }
+
+        [Fact]
+        public void GameConfig_SetConfig_OverridesDefaultConfig()
+        {
+            // Arrange
+            var customConfig = new GameConfiguration
+            {
+                ManaRegenRate = 0.99,
+                EnemyDamageMultiplier = 5.0
+            };
+
+            // Act
+            GameConfig.SetConfig(customConfig);
+            var config = GameConfig.Config;
+
+            // Assert
+            Assert.Equal(0.99, config.ManaRegenRate);
+            Assert.Equal(5.0, config.EnemyDamageMultiplier);
+
+            // Cleanup
+            GameConfig.ResetConfig();
+        }
+
+        [Fact]
+        public void GameConfig_ResetConfig_ForcesReloadFromFile()
+        {
+            // Arrange - Set custom config
+            var customConfig = new GameConfiguration
+            {
+                ManaRegenRate = 0.99
+            };
+            GameConfig.SetConfig(customConfig);
+            Assert.Equal(0.99, GameConfig.Config.ManaRegenRate);
+
+            // Act - Reset config
+            GameConfig.ResetConfig();
+
+            // Assert - Should reload from file (or defaults)
+            var config = GameConfig.Config;
+            Assert.NotEqual(0.99, config.ManaRegenRate); // Should not be custom value
+            Assert.True(config.ManaRegenRate >= 0 && config.ManaRegenRate <= 1);
+        }
+
+        [Fact]
+        public void GameConfig_SetConfig_AllowsTestIsolation()
+        {
+            // Arrange - Create two different configs
+            var config1 = new GameConfiguration { EnemyHPMultiplier = 2.0 };
+            var config2 = new GameConfiguration { EnemyHPMultiplier = 3.0 };
+
+            // Act & Assert - First config
+            GameConfig.SetConfig(config1);
+            Assert.Equal(2.0, GameConfig.Config.EnemyHPMultiplier);
+
+            // Act & Assert - Second config
+            GameConfig.SetConfig(config2);
+            Assert.Equal(3.0, GameConfig.Config.EnemyHPMultiplier);
+
+            // Cleanup
+            GameConfig.ResetConfig();
+        }
     }
 }
