@@ -93,6 +93,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Legendary tier: of the Titan, of Steadfastness, of the Ancients, of Sanctuary, of the Storm, of Iron Will, of Courage, of the Vanguard
   - **Total Equipment Variety**: ~340,000 possible unique combinations (up from ~15,000)
   - All 423 tests passing with new equipment data
+- **Enemy Difficulty Scaling System** (Combat Balance Tuning):
+  - **New Config Properties** in `gameconfig.json`:
+    - `EnemyDamageMultiplier` - Multiplies enemy damage output (default: 1.0)
+    - `EnemyAttackMultiplier` - Multiplies enemy attack stat (default: 1.0)
+    - `EnemyDefenseMultiplier` - Multiplies enemy defense stat (default: 1.0)
+    - `EnemyHPMultiplier` - Multiplies enemy HP (default: 1.0)
+  - **Implementation**:
+    - Added 4 new properties to `GameConfiguration` class in GameConfig.cs
+    - Updated `EntityFactory.CreateEnemy()` to apply HP/Attack/Defense multipliers
+    - Updated `InterfacedCombatSystem.ExecuteEnemyTurn()` to apply damage multiplier
+  - **Balance Tuning**:
+    - Set multipliers to 1.0 by default (neutral, current difficulty)
+    - Increase to 1.5 for moderate challenge
+    - Increase to 2.0+ for hard mode
+    - All multipliers apply independently for fine-tuned control
+  - **Added 6 New Tests**:
+    - `GameConfig_EnemyDifficultyMultipliers_ExistInConfig` - Verifies all 4 multipliers load
+    - `GameConfig_EnemyDamageMultiplier_IsApplied` - Tests damage scaling
+    - `GameConfig_EnemyStatMultipliers_CanScaleStats` - Tests stat scaling calculation
+    - `GameConfig_EnemyHPMultiplier_ScalesCorrectly` - Theory test for HP scaling (3 cases)
+  - Total tests now: 429 (increased from 423)
 
 ### Changed
 - **Modified Files for UI/UX Enhancements**:

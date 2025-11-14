@@ -155,6 +155,11 @@ namespace TestRPGGame.Factories
                 goldReward += RandomProvider.Next(-5, 16);
             }
 
+            // Apply difficulty multipliers from config
+            maxHP = (int)(maxHP * Systems.GameConfig.Config.EnemyHPMultiplier);
+            attack = (int)(attack * Systems.GameConfig.Config.EnemyAttackMultiplier);
+            defense = (int)(defense * Systems.GameConfig.Config.EnemyDefenseMultiplier);
+
             var enemy = new Enemy(data.Name, enemyType, maxHP, attack, defense, speed, goldReward, expReward);
 
             return enemy;

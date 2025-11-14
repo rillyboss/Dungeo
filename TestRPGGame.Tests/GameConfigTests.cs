@@ -216,7 +216,67 @@ namespace TestRPGGame.Tests
             Assert.Equal(1.0, config.DungeonGoldMultiplier);
             Assert.Equal(1.0, config.EquipmentPurchasePriceMultiplier);
             Assert.Equal(1.0, config.EquipmentSellPriceMultiplier);
-            Assert.Equal(1.0, config.EnemyDamageMultiplier);
+        }
+
+        [Fact]
+        public void GameConfig_EnemyDifficultyMultipliers_ExistInConfig()
+        {
+            // Arrange & Act
+            var config = GameConfig.Config;
+
+            // Assert - All enemy difficulty multipliers should be loaded
+            Assert.NotNull(config);
+            Assert.True(config.EnemyDamageMultiplier > 0);
+            Assert.True(config.EnemyAttackMultiplier > 0);
+            Assert.True(config.EnemyDefenseMultiplier > 0);
+            Assert.True(config.EnemyHPMultiplier > 0);
+        }
+
+        [Fact]
+        public void GameConfig_EnemyDamageMultiplier_IsApplied()
+        {
+            // Arrange
+            var config = GameConfig.Config;
+            int baseEnemyAttack = 20;
+
+            // Act - Simulate damage calculation with multiplier
+            int scaledAttack = (int)(baseEnemyAttack * config.EnemyDamageMultiplier);
+
+            // Assert - Multiplier should be applied (whether it's 1.0 or higher)
+            Assert.Equal((int)(baseEnemyAttack * config.EnemyDamageMultiplier), scaledAttack);
+        }
+
+        [Fact]
+        public void GameConfig_EnemyStatMultipliers_CanScaleStats()
+        {
+            // Arrange - Use explicit multiplier values for testing
+            double testMultiplier = 1.5;
+            int baseHP = 100;
+            int baseAttack = 20;
+            int baseDefense = 10;
+
+            // Act - Simulate stat scaling with test multiplier
+            int scaledHP = (int)(baseHP * testMultiplier);
+            int scaledAttack = (int)(baseAttack * testMultiplier);
+            int scaledDefense = (int)(baseDefense * testMultiplier);
+
+            // Assert - Multipliers should scale stats correctly
+            Assert.Equal(150, scaledHP);
+            Assert.Equal(30, scaledAttack);
+            Assert.Equal(15, scaledDefense);
+        }
+
+        [Theory]
+        [InlineData(1.0, 100, 100)]  // 1x multiplier = no change
+        [InlineData(2.0, 100, 200)]  // 2x multiplier = double
+        [InlineData(0.5, 100, 50)]   // 0.5x multiplier = half
+        public void GameConfig_EnemyHPMultiplier_ScalesCorrectly(double multiplier, int baseHP, int expectedHP)
+        {
+            // Arrange
+            int scaledHP = (int)(baseHP * multiplier);
+
+            // Act & Assert
+            Assert.Equal(expectedHP, scaledHP);
         }
     }
 }

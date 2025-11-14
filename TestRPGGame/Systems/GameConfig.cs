@@ -41,7 +41,12 @@ namespace TestRPGGame.Systems
         public double EquipmentPurchasePriceMultiplier { get; set; } = 1.0; // Multiply equipment buy prices
         public double EquipmentSellPriceMultiplier { get; set; } = 1.0; // Multiply equipment sell prices
         public double AbilityPurchasePriceMultiplier { get; set; } = 1.0; // Multiply ability purchase costs
+
+        // Combat Difficulty Multipliers (for balance tuning)
         public double EnemyDamageMultiplier { get; set; } = 1.0; // Multiply enemy damage output
+        public double EnemyAttackMultiplier { get; set; } = 1.0; // Multiply enemy attack stat
+        public double EnemyDefenseMultiplier { get; set; } = 1.0; // Multiply enemy defense stat
+        public double EnemyHPMultiplier { get; set; } = 1.0; // Multiply enemy HP
 
         // Additional Equipment Ability Chances by Rarity
         // Note: Weapons always grant their signature ability based on type

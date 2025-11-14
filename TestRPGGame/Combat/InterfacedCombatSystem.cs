@@ -201,6 +201,9 @@ namespace TestRPGGame.Combat
             // Apply general damage multipliers from enemy buffs
             baseDamage = (int)(baseDamage * enemy.Effects.GetTotalDamageMultiplier());
 
+            // Apply difficulty multiplier from config
+            baseDamage = (int)(baseDamage * Systems.GameConfig.Config.EnemyDamageMultiplier);
+
             // Calculate player's effective defense
             double effectiveDefense = player.Defense + player.Effects.GetDefenseBonus();
             effectiveDefense *= player.Effects.GetDefenseMultiplier();
