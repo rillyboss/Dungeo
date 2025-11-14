@@ -18,7 +18,7 @@ TestRPGGame is a feature-rich console RPG with:
 - **Dungeon system** with progression, bosses, and encounters
 - **Multiple interfaces** (Console for humans, Automated for AI)
 - **Data-driven design** (all content in JSON files)
-- **Comprehensive testing** (418 tests, 100% passing)
+- **Comprehensive testing** (423 tests, 100% passing)
 
 ### Technology Stack
 - **Language:** C# (.NET 9.0)
@@ -193,7 +193,7 @@ TestRPGGame/
         ├── armor-suffixes.json
         └── rarity-multipliers.json
 
-TestRPGGame.Tests/              # 418 unit tests, 100% passing
+TestRPGGame.Tests/              # 423 unit tests, 100% passing
 ```
 
 ---
@@ -482,7 +482,7 @@ dotnet test
 
 **Current State:**
 - ✅ 128 C# source files
-- ✅ 418 tests passing (100%)
+- ✅ 423 tests passing (100%)
 - ✅ 54% code coverage (3,269/6,042 lines)
 - ✅ Zero Console calls in game logic
 - ✅ 100% interface-driven architecture

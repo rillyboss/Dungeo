@@ -34,7 +34,10 @@ namespace TestRPGGame.Systems
                     UnlockLevel = a.UnlockLevel,
                     PurchaseCost = a.PurchaseCost,
                     IsUnlocked = false
-                }).ToList();
+                })
+                .OrderBy(a => a.PurchaseCost) // Sort by cost for better user experience
+                .ThenBy(a => a.UnlockLevel)   // Then by level if costs are equal
+                .ToList();
 
             if (!lockedAbilities.Any())
             {
@@ -46,11 +49,13 @@ namespace TestRPGGame.Systems
                 return;
             }
 
-            int abilityIndex = _gameInterface.RequestAbilityUnlock(lockedAbilities, player.Gold, player.Level);
+            int selectedIndex = _gameInterface.RequestAbilityUnlock(lockedAbilities, player.Gold, player.Level);
 
-            if (abilityIndex >= 0 && abilityIndex < lockedAbilities.Count)
+            if (selectedIndex >= 0 && selectedIndex < lockedAbilities.Count)
             {
-                var selectedAbility = player.Abilities.Where(a => !a.IsUnlocked).ElementAt(abilityIndex);
+                // Use the stored Index from AbilityInfo to get the correct ability from the original unsorted list
+                int originalIndex = lockedAbilities[selectedIndex].Index;
+                var selectedAbility = player.Abilities.Where(a => !a.IsUnlocked).ElementAt(originalIndex);
 
                 if (selectedAbility.CanUnlock(player.Level, player.Gold))
                 {

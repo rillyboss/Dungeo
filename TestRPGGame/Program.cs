@@ -31,8 +31,26 @@ namespace TestRPGGame
                 return;
             }
 
-            // Check command line arguments for interface selection
+            // Check command line arguments for interface selection and save path
             bool useAutomated = args.Contains("--automated") || args.Contains("-a");
+
+            // Parse custom save path if provided
+            string? customSavePath = null;
+            for (int i = 0; i < args.Length; i++)
+            {
+                if ((args[i] == "--save-path" || args[i] == "-sp") && i + 1 < args.Length)
+                {
+                    customSavePath = args[i + 1];
+                    break;
+                }
+            }
+
+            // Set custom save directory if provided
+            if (!string.IsNullOrWhiteSpace(customSavePath))
+            {
+                SaveSystem.SetSaveDirectory(customSavePath);
+                Console.WriteLine($"Using custom save directory: {customSavePath}\n");
+            }
 
             if (useAutomated)
             {

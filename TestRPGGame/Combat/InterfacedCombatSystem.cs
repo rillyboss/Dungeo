@@ -247,13 +247,20 @@ namespace TestRPGGame.Combat
                 bool leveledUp = player.GainExperience(expEarned);
                 if (leveledUp)
                 {
+                    // Find abilities that were just unlocked at this level
+                    var newlyUnlockedAbilities = player.Abilities
+                        .Where(a => a.IsUnlocked && a.UnlockLevel == player.Level && !a.IsEquipmentGranted)
+                        .Select(a => (a.Name, a.Description, a.UnlockLevel))
+                        .ToList();
+
                     gameInterface.OnEvent(new GameEvents.PlayerLeveledUpEvent
                     {
                         NewLevel = player.Level,
                         NewMaxHP = player.MaxHP,
                         NewMaxMana = player.MaxMana,
                         NewAttack = player.Attack,
-                        NewDefense = player.Defense
+                        NewDefense = player.Defense,
+                        NewlyUnlockedAbilities = newlyUnlockedAbilities
                     });
                 }
             }

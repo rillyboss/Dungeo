@@ -158,6 +158,19 @@ namespace TestRPGGame.Interfaces
                     AsciiArt.DrawLevelUp();
                     UIHelper.PrintColoredLine($"\n🎉 You are now level {e.NewLevel}!", ConsoleColor.Magenta);
                     UIHelper.PrintColoredLine($"HP: {e.NewMaxHP} | Mana: {e.NewMaxMana} | ATK: {e.NewAttack} | DEF: {e.NewDefense}", ConsoleColor.Green);
+
+                    // Display newly unlocked abilities
+                    if (e.NewlyUnlockedAbilities != null && e.NewlyUnlockedAbilities.Count > 0)
+                    {
+                        Console.WriteLine();
+                        UIHelper.PrintColoredLine("✨ NEW ABILITY UNLOCKED! ✨", ConsoleColor.Yellow);
+                        foreach (var (name, description, unlockLevel) in e.NewlyUnlockedAbilities)
+                        {
+                            UIHelper.PrintColoredLine($"⚡ {name}", ConsoleColor.Cyan);
+                            UIHelper.PrintColoredLine($"   {description}", ConsoleColor.Gray);
+                        }
+                    }
+
                     Thread.Sleep(1500);
                     break;
 
@@ -1365,6 +1378,167 @@ namespace TestRPGGame.Interfaces
             }
 
             Console.WriteLine("\nPress any key to continue...");
+            Console.ReadKey(true);
+        }
+
+        public void DisplayHelp()
+        {
+            Console.Clear();
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════", ConsoleColor.Cyan);
+            UIHelper.PrintColoredLine("              GAME HELP", ConsoleColor.Yellow);
+            UIHelper.PrintColoredLine("═══════════════════════════════════════════\n", ConsoleColor.Cyan);
+
+            // Getting Started
+            UIHelper.PrintColoredLine("╔══ GETTING STARTED ══════════════════════╗", ConsoleColor.Green);
+            Console.WriteLine("  Your goal is to battle enemies, complete");
+            Console.WriteLine("  dungeons, collect loot, and become");
+            Console.WriteLine("  legendary!");
+            Console.WriteLine();
+            Console.WriteLine("  • Create a character (Warrior/Mage/Rogue)");
+            Console.WriteLine("  • Fight enemies to earn gold & XP");
+            Console.WriteLine("  • Buy equipment to get stronger");
+            Console.WriteLine("  • Unlock abilities as you level up");
+            Console.WriteLine("  • Save your progress often!");
+            Console.WriteLine("╚═════════════════════════════════════════╝\n");
+
+            // Combat
+            UIHelper.PrintColoredLine("╔══ COMBAT ⚔️  ═══════════════════════════╗", ConsoleColor.Red);
+            Console.WriteLine("  Turn-based battles with enemies:");
+            Console.WriteLine();
+            Console.WriteLine("  ACTIONS:");
+            Console.WriteLine("    • Attack - Basic physical/magic attack");
+            Console.WriteLine("    • Abilities - Special moves (costs mana)");
+            Console.WriteLine("    • Potion - Restore HP (limited uses)");
+            Console.WriteLine("    • Flee - Escape combat (may fail)");
+            Console.WriteLine();
+            Console.WriteLine("  COMBAT MECHANICS:");
+            Console.WriteLine("    • Critical hits deal double damage");
+            Console.WriteLine("    • Abilities have cooldowns");
+            Console.WriteLine("    • Status effects last multiple turns");
+            Console.WriteLine("    • Fleeing costs a turn if it fails");
+            Console.WriteLine();
+            Console.WriteLine("  DAMAGE TYPES:");
+            Console.WriteLine("    • Physical - Reduced by Defense");
+            Console.WriteLine("    • Magic - Reduced by Magic Defense");
+            Console.WriteLine("╚═════════════════════════════════════════╝\n");
+
+            // Character Progression
+            UIHelper.PrintColoredLine("╔══ PROGRESSION ⭐ ═══════════════════════╗", ConsoleColor.Magenta);
+            Console.WriteLine("  LEVELING UP:");
+            Console.WriteLine("    • Gain XP from combat & dungeons");
+            Console.WriteLine("    • Each level increases your stats");
+            Console.WriteLine("    • Unlock new abilities at certain levels");
+            Console.WriteLine();
+            Console.WriteLine("  ABILITIES:");
+            Console.WriteLine("    • Each class has 6 unique abilities");
+            Console.WriteLine("    • 3 start unlocked, 3 must be purchased");
+            Console.WriteLine("    • Cost gold to unlock (150-200g)");
+            Console.WriteLine("    • Visit 'Unlock Abilities' menu");
+            Console.WriteLine();
+            Console.WriteLine("  STATS:");
+            Console.WriteLine("    • HP - Health points (damage you can take)");
+            Console.WriteLine("    • Mana - Resource for abilities");
+            Console.WriteLine("    • Attack - Physical damage dealt");
+            Console.WriteLine("    • Defense - Physical damage reduction");
+            Console.WriteLine("    • Magic Power - Magic damage dealt");
+            Console.WriteLine("    • Speed - Turn order in combat");
+            Console.WriteLine("    • Crit Chance - Chance for 2x damage");
+            Console.WriteLine("╚═════════════════════════════════════════╝\n");
+
+            // Equipment & Inventory
+            UIHelper.PrintColoredLine("╔══ EQUIPMENT & INVENTORY 🎒 ═════════════╗", ConsoleColor.Yellow);
+            Console.WriteLine("  EQUIPMENT SLOTS:");
+            Console.WriteLine("    • Weapon, Armor, Helmet, Boots, Gloves");
+            Console.WriteLine("    • Ring 1, Ring 2, Amulet, Relic");
+            Console.WriteLine();
+            Console.WriteLine("  RARITY TIERS:");
+            UIHelper.PrintColored("    • Common", ConsoleColor.Gray);
+            Console.WriteLine(" (weakest, most common)");
+            UIHelper.PrintColored("    • Uncommon", ConsoleColor.Green);
+            Console.WriteLine(" (slight boost)");
+            UIHelper.PrintColored("    • Rare", ConsoleColor.Blue);
+            Console.WriteLine(" (good stats)");
+            UIHelper.PrintColored("    • Epic", ConsoleColor.Magenta);
+            Console.WriteLine(" (powerful)");
+            UIHelper.PrintColored("    • Legendary", ConsoleColor.DarkYellow);
+            Console.WriteLine(" (rarest, best)");
+            Console.WriteLine();
+            Console.WriteLine("  SPECIAL FEATURES:");
+            Console.WriteLine("    • Equipment can grant bonus abilities!");
+            Console.WriteLine("    • Stats increase based on rarity");
+            Console.WriteLine("    • Backpack holds extra items");
+            Console.WriteLine("    • Equip/unequip from Inventory menu");
+            Console.WriteLine("╚═════════════════════════════════════════╝\n");
+
+            // Dungeons
+            UIHelper.PrintColoredLine("╔══ DUNGEONS 🏰 ══════════════════════════╗", ConsoleColor.DarkCyan);
+            Console.WriteLine("  Multi-combat challenges with bosses:");
+            Console.WriteLine();
+            Console.WriteLine("  • Entry costs gold (varies by dungeon)");
+            Console.WriteLine("  • Fight multiple enemies in a row");
+            Console.WriteLine("  • Face a powerful boss at the end");
+            Console.WriteLine("  • No healing between fights!");
+            Console.WriteLine("  • Huge rewards if you complete it");
+            Console.WriteLine();
+            Console.WriteLine("  TIPS:");
+            Console.WriteLine("    • Save potions for the boss fight");
+            Console.WriteLine("    • Use abilities wisely (no mana regen!)");
+            Console.WriteLine("    • Higher level = harder dungeon");
+            Console.WriteLine("    • Completion unlocks next dungeon");
+            Console.WriteLine("╚═════════════════════════════════════════╝\n");
+
+            // Shop
+            UIHelper.PrintColoredLine("╔══ SHOP 🏪 ══════════════════════════════╗", ConsoleColor.Cyan);
+            Console.WriteLine("  Buy and sell equipment:");
+            Console.WriteLine();
+            Console.WriteLine("  • Buy Items - Purchase shop inventory");
+            Console.WriteLine("  • Sell Items - Sell for 50% value");
+            Console.WriteLine("  • Refresh Shop - New items (costs 50g)");
+            Console.WriteLine("  • Buy Potions - Healing items (50g each)");
+            Console.WriteLine();
+            Console.WriteLine("  STRATEGY:");
+            Console.WriteLine("    • Sell old equipment for gold");
+            Console.WriteLine("    • Refresh to find better gear");
+            Console.WriteLine("    • Stock up on potions before dungeons");
+            Console.WriteLine("╚═════════════════════════════════════════╝\n");
+
+            // Statistics & Achievements
+            UIHelper.PrintColoredLine("╔══ STATS & ACHIEVEMENTS 📊 ══════════════╗", ConsoleColor.White);
+            Console.WriteLine("  STATISTICS:");
+            Console.WriteLine("    • Tracks all your accomplishments");
+            Console.WriteLine("    • Kills, deaths, damage, gold, etc.");
+            Console.WriteLine("    • View from main menu");
+            Console.WriteLine();
+            Console.WriteLine("  ACHIEVEMENTS:");
+            Console.WriteLine("    • 27 achievements to unlock");
+            Console.WriteLine("    • Rewards include gold, XP, titles");
+            Console.WriteLine("    • Some are hidden until unlocked");
+            Console.WriteLine("    • Organized by category");
+            Console.WriteLine("╚═════════════════════════════════════════╝\n");
+
+            // Saving & Loading
+            UIHelper.PrintColoredLine("╔══ SAVING & LOADING 💾 ══════════════════╗", ConsoleColor.DarkGray);
+            Console.WriteLine("  • 3 save slots available");
+            Console.WriteLine("  • Auto-save after successful combat");
+            Console.WriteLine("  • Manual save from main menu");
+            Console.WriteLine("  • Load character at startup");
+            Console.WriteLine("  • All progress is saved (stats,");
+            Console.WriteLine("    achievements, equipment, etc.)");
+            Console.WriteLine("╚═════════════════════════════════════════╝\n");
+
+            // Tips & Tricks
+            UIHelper.PrintColoredLine("╔══ TIPS & TRICKS 💡 ═════════════════════╗", ConsoleColor.Yellow);
+            Console.WriteLine("  • Save before attempting dungeons!");
+            Console.WriteLine("  • Rest to fully heal HP & mana (free)");
+            Console.WriteLine("  • Higher rarity = better stats");
+            Console.WriteLine("  • Abilities with cooldowns are powerful");
+            Console.WriteLine("  • Check character sheet for build info");
+            Console.WriteLine("  • Equipment-granted abilities are free!");
+            Console.WriteLine("  • Balance offense and defense");
+            Console.WriteLine("  • Don't hoard potions - use them!");
+            Console.WriteLine("╚═════════════════════════════════════════╝\n");
+
+            UIHelper.PrintColoredLine("Press any key to return to menu...", ConsoleColor.Gray);
             Console.ReadKey(true);
         }
     }

@@ -10,17 +10,51 @@ namespace TestRPGGame.Systems
 {
     public static class SaveSystem
     {
-        private static readonly string SaveDirectory = Path.Combine(
+        private static readonly string DefaultSaveDirectory = Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData),
             "TestRPGGame",
             "Saves"
         );
 
+        private static string _saveDirectory = DefaultSaveDirectory;
+
         private const int MaxSaveSlots = 3;
+
+        /// <summary>
+        /// Sets a custom save directory. Must be called before any save/load operations.
+        /// </summary>
+        /// <param name="customPath">Custom directory path for save files. If null or empty, uses default AppData location.</param>
+        public static void SetSaveDirectory(string? customPath)
+        {
+            if (string.IsNullOrWhiteSpace(customPath))
+            {
+                _saveDirectory = DefaultSaveDirectory;
+            }
+            else
+            {
+                _saveDirectory = customPath;
+            }
+        }
+
+        /// <summary>
+        /// Gets the current save directory path.
+        /// </summary>
+        public static string GetSaveDirectory()
+        {
+            return _saveDirectory;
+        }
+
+        /// <summary>
+        /// Resets the save directory to the default AppData location.
+        /// </summary>
+        public static void ResetSaveDirectory()
+        {
+            _saveDirectory = DefaultSaveDirectory;
+        }
 
         private static string GetSaveFilePath(int slot)
         {
-            return Path.Combine(SaveDirectory, $"save_slot_{slot}.json");
+            return Path.Combine(_saveDirectory, $"save_slot_{slot}.json");
         }
 
         public static bool SaveGame(Player player, int slot, DungeonProgress? dungeonProgress = null, PlayerStatistics? statistics = null, HashSet<string>? unlockedAchievements = null)
@@ -34,9 +68,9 @@ namespace TestRPGGame.Systems
                 }
 
                 // Create directory if it doesn't exist
-                if (!Directory.Exists(SaveDirectory))
+                if (!Directory.Exists(_saveDirectory))
                 {
-                    Directory.CreateDirectory(SaveDirectory);
+                    Directory.CreateDirectory(_saveDirectory);
                 }
 
                 // Access private base stats via reflection or add public getters

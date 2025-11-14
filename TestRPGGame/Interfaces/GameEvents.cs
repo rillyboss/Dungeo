@@ -45,6 +45,7 @@ namespace TestRPGGame.Interfaces
             public int NewMaxMana { get; set; }
             public int NewAttack { get; set; }
             public int NewDefense { get; set; }
+            public List<(string Name, string Description, int UnlockLevel)> NewlyUnlockedAbilities { get; set; } = new List<(string, string, int)>();
         }
 
         // Combat events

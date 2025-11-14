@@ -8,6 +8,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **UI/UX Enhancements**:
+  - Equipment-granted abilities now display friendly names instead of IDs in character sheet
+  - Unlock Abilities screen now sorts abilities by cost (cheapest first), then by level
+  - Comprehensive help system with 8 categorized sections:
+    - Getting Started, Combat, Progression, Equipment & Inventory
+    - Dungeons, Shop, Statistics & Achievements, Saving & Loading, Tips & Tricks
+  - Level-up rewards now display newly unlocked abilities with descriptions
+  - Added `NewlyUnlockedAbilities` property to `PlayerLeveledUpEvent` for better feedback
+- **Custom Save Path Support**:
+  - Added command-line argument support for custom save directories (`--save-path` or `-sp`)
+  - Allows automated runner to use separate saves from manual gameplay
+  - Added `SaveSystem.SetSaveDirectory()`, `GetSaveDirectory()`, and `ResetSaveDirectory()` methods
+  - Updated `Program.cs` to parse save path argument and configure SaveSystem
+  - Added 5 comprehensive tests for custom save path functionality:
+    - `SetSaveDirectory_ChangesActiveSaveDirectory` - Verifies directory changes
+    - `SetSaveDirectory_WithCustomPath_SavesAndLoadsFromCustomLocation` - Verifies save/load isolation
+    - `ResetSaveDirectory_RestoresDefaultDirectory` - Verifies reset functionality
+    - `SetSaveDirectory_WithNullOrEmpty_UsesDefaultDirectory` - Verifies null handling
+    - `CustomSaveDirectory_IsolatesFromDefaultSaves` - Verifies complete save isolation
+  - Total tests now: 423 (increased from 418)
 - **Character Sheet Enhancements**:
   - Filters out unlearned abilities from character sheet display
   - Separates equipment-granted abilities into dedicated section
@@ -44,6 +64,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Test for buff duration decrementing correctly
 - Added CHANGELOG.md to track all project changes
 - Created comprehensive README.md highlighting data-driven design
+
+### Changed
+- **Modified Files for UI/UX Enhancements**:
+  - `Player.cs` - Fixed `GetEquipmentSourceForAbility()` to use ability ID instead of name
+  - `ProgressionManager.cs` - Abilities now sorted by cost, then level in unlock menu
+  - `ProgressionManagerTests.cs` - Updated 2 tests to account for ability sorting
+  - `GameEvents.cs` - Added `NewlyUnlockedAbilities` list to `PlayerLeveledUpEvent`
+  - `InterfacedCombatSystem.cs` - Populates newly unlocked abilities on level up
+  - `ConsoleInterface.cs` - Added comprehensive `DisplayHelp()` method (160 lines)
+  - `ConsoleInterface.cs` - Display newly unlocked abilities in level-up event
+  - `GameCore.cs` - Updated `ShowHelp()` to use new display method
 
 ### Fixed
 - **CRITICAL**: Fixed status effects never expiring during combat

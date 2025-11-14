@@ -315,7 +315,7 @@ namespace TestRPGGame.Entities.Player
                     IsUnlocked = true, // Equipment abilities are always "unlocked"
                     UnlockLevel = 0,
                     PurchaseCost = 0,
-                    Source = GetEquipmentSourceForAbility(a.Name)
+                    Source = GetEquipmentSourceForAbility(a.Id) // Use ID to match with GrantedAbilityIds
                 }).ToList();
 
             return new CharacterSheetInfo

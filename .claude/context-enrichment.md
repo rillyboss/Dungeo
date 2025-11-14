@@ -14,7 +14,7 @@ If you add code without tests, **THE TASK IS NOT COMPLETE.**
 
 **ALWAYS run tests before committing:**
 ```bash
-dotnet test                    # Run all 418 tests (must pass 100%)
+dotnet test                    # Run all 423 tests (must pass 100%)
 dotnet test --no-build         # Skip rebuild if just ran dotnet build
 ```
 
@@ -27,7 +27,7 @@ dotnet test --no-build         # Skip rebuild if just ran dotnet build
 - ❌ NOT needed for pure documentation changes
 
 **Test expectations:**
-- All tests must pass (currently 418 tests)
+- All tests must pass (currently 423 tests)
 - **🚨 WRITE TESTS FOR NEW FEATURES** - Not optional, not later, NOW
 - **🚨 WRITE TESTS FOR BUG FIXES** - Prove the bug is fixed
 - **🚨 WRITE TESTS FOR NEW PUBLIC METHODS** - Every method needs at least one test
@@ -113,7 +113,7 @@ git commit -m "type: description..."     # Commit with proper format
 - **TestRPGGame/Systems/** - Managers (Save, Dungeon, Progression, etc.)
 
 ### Testing & Documentation
-- **TestRPGGame.Tests/** - All 418 unit tests
+- **TestRPGGame.Tests/** - All 423 unit tests
 - Run: `dotnet test` (must pass 100%)
 - **🚨 ALL NEW CODE MUST HAVE TESTS** - No exceptions
 - **CHANGELOG.md** - Project changelog (update with every change)
@@ -185,7 +185,7 @@ git commit -m "type: description..."     # Commit with proper format
 
 Before considering work "done":
 - [ ] **🚨 NEW TESTS WRITTEN** for all new features/bug fixes (MANDATORY)
-- [ ] All tests pass: `dotnet test` (418 tests, 100%)
+- [ ] All tests pass: `dotnet test` (423 tests, 100%)
 - [ ] **CHANGELOG.md updated** with changes
 - [ ] Code follows SOLID principles
 - [ ] No Console calls in game logic (use IGameInterface)
@@ -202,7 +202,7 @@ Before considering work "done":
 
 - **3 Classes:** Warrior, Mage, Rogue
 - **6 Abilities per class:** 3 starting + 3 unlockable
-- **Total Tests:** 418 (must all pass - 100% required)
+- **Total Tests:** 423 (must all pass - 100% required)
 - **Testing Policy:** 🚨 ALL new code MUST have tests - NO EXCEPTIONS
 - **Architecture:** Interface-driven, event-based, data-driven
 - **Tech Stack:** C# .NET 8.0, xUnit, Moq

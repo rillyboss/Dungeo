@@ -277,5 +277,179 @@ namespace TestRPGGame.Tests
             Assert.True(loadedPlayer.Abilities.Count >= originalAbilityCount,
                 $"Loaded player should have at least {originalAbilityCount} abilities, has {loadedPlayer.Abilities.Count}");
         }
+
+        [Fact]
+        public void SetSaveDirectory_ChangesActiveSaveDirectory()
+        {
+            // Arrange
+            var customPath = Path.Combine(Path.GetTempPath(), "TestRPGGame_CustomSaves");
+            var originalPath = SaveSystem.GetSaveDirectory();
+
+            try
+            {
+                // Act
+                SaveSystem.SetSaveDirectory(customPath);
+                var newPath = SaveSystem.GetSaveDirectory();
+
+                // Assert
+                Assert.Equal(customPath, newPath);
+                Assert.NotEqual(originalPath, newPath);
+            }
+            finally
+            {
+                // Cleanup
+                SaveSystem.ResetSaveDirectory();
+            }
+        }
+
+        [Fact]
+        public void SetSaveDirectory_WithCustomPath_SavesAndLoadsFromCustomLocation()
+        {
+            // Arrange
+            var customPath = Path.Combine(Path.GetTempPath(), "TestRPGGame_CustomSaves_Test1");
+            var originalPath = SaveSystem.GetSaveDirectory();
+
+            try
+            {
+                SaveSystem.SetSaveDirectory(customPath);
+                var player = new Player("CustomPathTest", PlayerClass.Warrior);
+                player.Gold = 999;
+                var progress = new DungeonProgress();
+
+                // Act - Save to custom location
+                bool saveResult = SaveSystem.SaveGame(player, 1, progress);
+                var customSaveFile = Path.Combine(customPath, "save_slot_1.json");
+
+                // Assert - Save succeeded and file exists in custom location
+                Assert.True(saveResult);
+                Assert.True(File.Exists(customSaveFile));
+
+                // Act - Load from custom location
+                var (loadedPlayer, _, _, _) = SaveSystem.LoadGame(1);
+
+                // Assert - Player loaded correctly
+                Assert.NotNull(loadedPlayer);
+                Assert.Equal("CustomPathTest", loadedPlayer.Name);
+                Assert.Equal(999, loadedPlayer.Gold);
+            }
+            finally
+            {
+                // Cleanup
+                SaveSystem.ResetSaveDirectory();
+                if (Directory.Exists(customPath))
+                {
+                    Directory.Delete(customPath, true);
+                }
+            }
+        }
+
+        [Fact]
+        public void ResetSaveDirectory_RestoresDefaultDirectory()
+        {
+            // Arrange
+            var customPath = Path.Combine(Path.GetTempPath(), "TestRPGGame_TempSaves");
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var defaultPath = Path.Combine(appData, "TestRPGGame", "Saves");
+
+            try
+            {
+                // Act
+                SaveSystem.SetSaveDirectory(customPath);
+                var customPathCheck = SaveSystem.GetSaveDirectory();
+                SaveSystem.ResetSaveDirectory();
+                var resetPath = SaveSystem.GetSaveDirectory();
+
+                // Assert
+                Assert.Equal(customPath, customPathCheck);
+                Assert.Equal(defaultPath, resetPath);
+            }
+            finally
+            {
+                // Ensure we're reset
+                SaveSystem.ResetSaveDirectory();
+            }
+        }
+
+        [Fact]
+        public void SetSaveDirectory_WithNullOrEmpty_UsesDefaultDirectory()
+        {
+            // Arrange
+            var appData = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var defaultPath = Path.Combine(appData, "TestRPGGame", "Saves");
+
+            try
+            {
+                // Act & Assert - Null
+                SaveSystem.SetSaveDirectory(null);
+                Assert.Equal(defaultPath, SaveSystem.GetSaveDirectory());
+
+                // Act & Assert - Empty string
+                SaveSystem.SetSaveDirectory("");
+                Assert.Equal(defaultPath, SaveSystem.GetSaveDirectory());
+
+                // Act & Assert - Whitespace
+                SaveSystem.SetSaveDirectory("   ");
+                Assert.Equal(defaultPath, SaveSystem.GetSaveDirectory());
+            }
+            finally
+            {
+                SaveSystem.ResetSaveDirectory();
+            }
+        }
+
+        [Fact]
+        public void CustomSaveDirectory_IsolatesFromDefaultSaves()
+        {
+            // Arrange
+            var customPath = Path.Combine(Path.GetTempPath(), "TestRPGGame_Isolated");
+            var originalPath = SaveSystem.GetSaveDirectory();
+
+            try
+            {
+                // Save a player in default location
+                var defaultPlayer = new Player("DefaultPlayer", PlayerClass.Mage);
+                defaultPlayer.Gold = 100;
+                SaveSystem.SaveGame(defaultPlayer, 1, new DungeonProgress());
+
+                // Switch to custom path
+                SaveSystem.SetSaveDirectory(customPath);
+
+                // Act - Try to load from custom path (should be empty)
+                var (loadedPlayer, _, _, _) = SaveSystem.LoadGame(1);
+
+                // Assert - Should not find the save from default location
+                Assert.Null(loadedPlayer);
+
+                // Save a different player in custom location
+                var customPlayer = new Player("CustomPlayer", PlayerClass.Warrior);
+                customPlayer.Gold = 500;
+                SaveSystem.SaveGame(customPlayer, 1, new DungeonProgress());
+
+                // Load from custom location
+                var (loadedCustom, _, _, _) = SaveSystem.LoadGame(1);
+                Assert.NotNull(loadedCustom);
+                Assert.Equal("CustomPlayer", loadedCustom.Name);
+                Assert.Equal(500, loadedCustom.Gold);
+
+                // Switch back to default
+                SaveSystem.ResetSaveDirectory();
+                var (loadedDefault, _, _, _) = SaveSystem.LoadGame(1);
+
+                // Assert - Original save still exists in default location
+                Assert.NotNull(loadedDefault);
+                Assert.Equal("DefaultPlayer", loadedDefault.Name);
+                Assert.Equal(100, loadedDefault.Gold);
+            }
+            finally
+            {
+                // Cleanup
+                SaveSystem.ResetSaveDirectory();
+                CleanupSaveFiles();
+                if (Directory.Exists(customPath))
+                {
+                    Directory.Delete(customPath, true);
+                }
+            }
+        }
     }
 }

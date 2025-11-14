@@ -282,20 +282,20 @@ namespace TestRPGGame
 
         private void ShowHelp()
         {
-            _gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+            if (_gameInterface is ConsoleInterface consoleInterface)
             {
-                Message = @"
-=== GAME HELP ===
-
-⚔️  COMBAT: Battle enemies to gain gold and experience
-🏰 DUNGEONS: Complete dungeons for greater rewards
-🏪 SHOP: Buy better equipment and items
-📊 PROGRESSION: Level up to unlock new abilities
-💡 TIP: Save your game often!
-",
-                Type = GameEvents.MessageType.Info
-            });
-            _gameInterface.WaitForAcknowledgment();
+                consoleInterface.DisplayHelp();
+            }
+            else
+            {
+                // Fallback for non-console interfaces
+                _gameInterface.OnEvent(new GameEvents.InfoMessageEvent
+                {
+                    Message = "Help is available in the console version.",
+                    Type = GameEvents.MessageType.Info
+                });
+                _gameInterface.WaitForAcknowledgment();
+            }
         }
 
         private void ExitGame()

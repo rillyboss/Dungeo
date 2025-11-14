@@ -92,7 +92,12 @@ namespace TestRPGGame.Tests
             player.Gold = 10000; // Need enough to afford abilities with 10x multiplier
             player.Level = 10;
 
-            var lockedAbility = player.Abilities.FirstOrDefault(a => !a.IsUnlocked);
+            // After sorting, get the ability that will be at index 0 (cheapest)
+            var lockedAbility = player.Abilities
+                .Where(a => !a.IsUnlocked)
+                .OrderBy(a => a.PurchaseCost)
+                .ThenBy(a => a.UnlockLevel)
+                .First();
             Assert.NotNull(lockedAbility); // Ensure there is a locked ability
 
             int initialGold = player.Gold;
@@ -216,7 +221,12 @@ namespace TestRPGGame.Tests
             player.Gold = 10000;
             player.Level = 10;
 
-            var lockedAbility = player.Abilities.FirstOrDefault(a => !a.IsUnlocked);
+            // After sorting, get the ability that will be at index 0 (cheapest)
+            var lockedAbility = player.Abilities
+                .Where(a => !a.IsUnlocked)
+                .OrderBy(a => a.PurchaseCost)
+                .ThenBy(a => a.UnlockLevel)
+                .First();
             Assert.NotNull(lockedAbility);
 
             _mockInterface.Setup(x => x.RequestAbilityUnlock(
