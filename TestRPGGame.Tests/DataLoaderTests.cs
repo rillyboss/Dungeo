@@ -5,6 +5,15 @@ using TestRPGGame.DataLoading;
 
 namespace TestRPGGame.Tests
 {
+    /// <summary>
+    /// DATA VALIDATION TEST SUITE
+    ///
+    /// This test file validates that JSON data files are correctly structured and can be loaded.
+    /// These tests ARE INTENTIONALLY data-dependent - their purpose is to catch data errors.
+    ///
+    /// When JSON data changes, these tests may need to be updated, which is expected behavior.
+    /// For system/unit tests that should NOT depend on data, see other test files.
+    /// </summary>
     public class DataLoaderTests : TestBase
     {
         public DataLoaderTests()

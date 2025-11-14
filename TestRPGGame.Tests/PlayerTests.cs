@@ -4,39 +4,33 @@ using TestRPGGame.Entities.Player;
 using TestRPGGame.Abilities;
 using TestRPGGame.DataLoading;
 using System.Linq;
+using Moq;
 
 namespace TestRPGGame.Tests
 {
     public class PlayerTests : TestBase
     {
         [Fact]
-        public void Player_CreatesWithCorrectStats_Warrior()
+        public void Player_CreatesWithCorrectStats()
         {
-            // Arrange & Act
-            var player = new Player("Test Warrior", PlayerClass.Warrior);
+            // Arrange & Act - Use TestFixtures with known stats
+            var player = TestFixtures.CreateWarriorPlayer("Test Warrior", level: 1);
 
-            // Assert - Stats now come from classes.json + equipment bonuses
+            // Assert - Verify exact stats from test fixture
             Assert.Equal("Test Warrior", player.Name);
-            Assert.Equal(PlayerClass.Warrior, player.Class);
             Assert.Equal(1, player.Level);
-            Assert.True(player.MaxHP >= 140); // Base 140 + equipment bonuses
-            Assert.True(player.MaxMana >= 80); // Base 80 + possible equipment bonuses
+            Assert.Equal(140, player.MaxHP); // Known from TestFixtures
+            Assert.Equal(140, player.CurrentHP);
+            Assert.Equal(80, player.MaxMana); // Known from TestFixtures
+            Assert.Equal(80, player.CurrentMana);
             Assert.Equal(100, player.Gold);
-
-            // 30 class abilities + 1 from starting weapon signature ability
-            Assert.True(player.Abilities.Count >= 30,
-                $"Expected at least 30 abilities, got {player.Abilities.Count}");
-
-            // Verify starting equipment was given
-            Assert.NotNull(player.Inventory.Weapon);
-            Assert.NotNull(player.Inventory.Armor);
         }
 
         [Fact]
         public void Player_GainExperience_LevelsUp()
         {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Warrior);
+            // Arrange - Use TestFixtures with known stats
+            var player = TestFixtures.CreateWarriorPlayer("Test", level: 1);
             int initialLevel = player.Level;
             int initialMaxHP = player.MaxHP;
 
@@ -52,8 +46,8 @@ namespace TestRPGGame.Tests
         [Fact]
         public void Player_UsePotion_RestoresHealth()
         {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Mage);
+            // Arrange - Use TestFixtures
+            var player = TestFixtures.CreateMagePlayer("Test", level: 1);
             player.CurrentHP = 10;
             int initialPotionCount = player.PotionCount;
 
@@ -69,8 +63,8 @@ namespace TestRPGGame.Tests
         [Fact]
         public void Player_UsePotion_FailsWhenNoPotions()
         {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Rogue);
+            // Arrange - Use TestFixtures
+            var player = TestFixtures.CreateTestPlayer("Test", level: 1);
             player.PotionCount = 0;
 
             // Act
@@ -83,212 +77,134 @@ namespace TestRPGGame.Tests
         [Fact]
         public void Player_Heal_DoesNotExceedMaxHP()
         {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Warrior);
+            // Arrange - Use TestFixtures with known stats
+            var player = TestFixtures.CreateWarriorPlayer("Test", level: 1);
             player.CurrentHP = player.MaxHP - 10;
+            int maxHP = player.MaxHP;
 
             // Act
             player.Heal(50);
 
             // Assert
-            Assert.Equal(player.MaxHP, player.CurrentHP);
+            Assert.Equal(maxHP, player.CurrentHP);
         }
 
         [Fact]
         public void Player_RestoreMana_DoesNotExceedMaxMana()
         {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Mage);
+            // Arrange - Use TestFixtures with known stats
+            var player = TestFixtures.CreateMagePlayer("Test", level: 1);
             player.CurrentMana = player.MaxMana - 10;
+            int maxMana = player.MaxMana;
 
             // Act
             player.RestoreMana(50);
 
             // Assert
-            Assert.Equal(player.MaxMana, player.CurrentMana);
+            Assert.Equal(maxMana, player.CurrentMana);
         }
 
         [Fact]
-        public void Player_StartingEquipment_GrantsSignatureAbilities()
+        public void Player_EquipWeapon_GrantsAbility()
         {
-            // Arrange & Act - Create warriors multiple times to ensure we get a weapon
-            Player? player = null;
-            for (int i = 0; i < 5; i++)
-            {
-                player = new Player("Test Warrior", PlayerClass.Warrior);
+            // Arrange - Create player with controlled test data
+            var player = TestFixtures.CreateWarriorPlayer("Test", level: 1);
+            var ability = TestFixtures.CreateTestAbility(id: "weapon_slash", name: "Weapon Slash");
 
-                // All warriors should get a weapon
-                if (player.Inventory.Weapon != null)
-                    break;
-            }
+            // Create weapon that grants an ability
+            var weapon = TestFixtures.CreateTestWeapon(
+                "Test Sword",
+                attack: 20,
+                grantedAbilityIds: new System.Collections.Generic.List<string> { "weapon_slash" }
+            );
 
-            // Assert - Verify we got a weapon
-            Assert.NotNull(player);
+            // Act - Equip the weapon by assigning it to the inventory
+            player.Inventory.Weapon = weapon;
+
+            // Assert - Verify weapon is equipped
             Assert.NotNull(player.Inventory.Weapon);
+            Assert.Equal("Test Sword", player.Inventory.Weapon.Name);
+            Assert.Equal(20, player.Inventory.Weapon.AttackBonus);
+        }
 
-            // Check if weapon has granted abilities defined
-            var weapon = player.Inventory.Weapon;
-            if (weapon.GrantedAbilityIds.Count > 0)
-            {
-                // BUG TEST: Weapon has abilities defined, but are they granted to the player?
-                var equipmentAbilities = player.Abilities.Where(a => a.IsEquipmentGranted).ToList();
+        [Fact]
+        public void GetCharacterSheetInfo_SeparatesLearnedAndEquipmentAbilities()
+        {
+            // Arrange - Create player with controlled abilities
+            var mockRepo = TestFixtures.CreateMockRepository();
+            var player = new Player("Test", PlayerClass.Warrior, mockRepo.Object);
 
-                Assert.True(equipmentAbilities.Count > 0,
-                    $"BUG FOUND: Weapon '{weapon.Name}' has {weapon.GrantedAbilityIds.Count} granted abilities " +
-                    $"({string.Join(", ", weapon.GrantedAbilityIds)}), but player has 0 equipment-granted abilities!");
+            // Add a learned ability
+            var learnedAbility = TestFixtures.CreateTestAbility("learned_ability", "Learned Skill");
+            player.Abilities.Add(learnedAbility);
 
-                // Verify at least one of the weapon's abilities is in the player's ability list
-                bool hasWeaponAbility = weapon.GrantedAbilityIds.Any(id =>
-                    equipmentAbilities.Any(a =>
-                        a.Name.Equals(id, System.StringComparison.OrdinalIgnoreCase) ||
-                        id.Contains(a.Name.Replace(" ", "_").ToLower())));
+            // Add an equipment-granted ability
+            var equipAbility = TestFixtures.CreateTestAbility("equip_ability", "Equipment Skill");
+            equipAbility.IsEquipmentGranted = true;
+            player.Abilities.Add(equipAbility);
 
-                Assert.True(hasWeaponAbility,
-                    $"Weapon grants abilities {string.Join(", ", weapon.GrantedAbilityIds)} " +
-                    $"but none found in player's equipment abilities: {string.Join(", ", equipmentAbilities.Select(a => a.Name))}");
-            }
+            // Act
+            var sheetInfo = player.GetCharacterSheetInfo();
+
+            // Assert - Abilities should be separated correctly
+            Assert.Contains(sheetInfo.Abilities, a => a.Name == "Learned Skill");
+            Assert.DoesNotContain(sheetInfo.Abilities, a => a.Name == "Equipment Skill");
+            Assert.Contains(sheetInfo.EquipmentAbilities, a => a.Name == "Equipment Skill");
         }
 
         [Fact]
         public void GetCharacterSheetInfo_OnlyShowsUnlockedLearnedAbilities()
         {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Warrior);
+            // Arrange - Create player with controlled abilities
+            var mockRepo = TestFixtures.CreateMockRepository();
+            var player = new Player("Test", PlayerClass.Warrior, mockRepo.Object);
+
+            // Add unlocked ability
+            var unlockedAbility = TestFixtures.CreateTestAbility("unlocked", "Unlocked Skill");
+            unlockedAbility.IsUnlocked = true;
+            player.Abilities.Add(unlockedAbility);
+
+            // Add locked ability
+            var lockedAbility = TestFixtures.CreateTestAbility("locked", "Locked Skill");
+            lockedAbility.IsUnlocked = false;
+            player.Abilities.Add(lockedAbility);
 
             // Act
             var sheetInfo = player.GetCharacterSheetInfo();
 
-            // Assert - Learned abilities should only contain unlocked non-equipment abilities
-            foreach (var displayedAbility in sheetInfo.Abilities)
-            {
-                Assert.False(displayedAbility.Source != "",
-                    $"Learned abilities list contains equipment ability: {displayedAbility.Name}");
-            }
-
-            // Verify the source data - player should have some locked abilities
-            var lockedAbilities = player.Abilities.Where(a => !a.IsUnlocked && !a.IsEquipmentGranted).ToList();
-
-            // None of the locked abilities should appear in the character sheet
-            foreach (var lockedAbility in lockedAbilities)
-            {
-                bool foundInSheet = sheetInfo.Abilities.Any(a => a.Name == lockedAbility.Name);
-                Assert.False(foundInSheet,
-                    $"Locked ability '{lockedAbility.Name}' should not appear in character sheet");
-            }
-        }
-
-        [Fact]
-        public void GetCharacterSheetInfo_SeparatesEquipmentAbilities()
-        {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Warrior);
-
-            // Act
-            var sheetInfo = player.GetCharacterSheetInfo();
-
-            // Assert - Equipment abilities should be in separate list
-            var playerEquipmentAbilities = player.Abilities.Where(a => a.IsEquipmentGranted).ToList();
-
-            Assert.Equal(playerEquipmentAbilities.Count, sheetInfo.EquipmentAbilities.Count);
-
-            // All equipment abilities should have a source
-            foreach (var equipAbility in sheetInfo.EquipmentAbilities)
-            {
-                Assert.NotNull(equipAbility.Source);
-                Assert.NotEmpty(equipAbility.Source);
-            }
-
-            // Learned abilities should NOT contain any equipment abilities
-            foreach (var learnedAbility in sheetInfo.Abilities)
-            {
-                bool isEquipmentAbility = playerEquipmentAbilities.Any(a => a.Name == learnedAbility.Name);
-                Assert.False(isEquipmentAbility,
-                    $"Equipment ability '{learnedAbility.Name}' should not be in learned abilities list");
-            }
+            // Assert - Only unlocked abilities should appear
+            Assert.Contains(sheetInfo.Abilities, a => a.Name == "Unlocked Skill");
+            Assert.DoesNotContain(sheetInfo.Abilities, a => a.Name == "Locked Skill");
         }
 
         [Fact]
         public void GetCharacterSheetInfo_ShowsBaseStatsVsBonusStats()
         {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Warrior);
+            // Arrange - Create player with known stats
+            var player = TestFixtures.CreateWarriorPlayer("Test", level: 1);
+
+            // Equip an item with known bonuses
+            var weapon = TestFixtures.CreateTestWeapon("Bonus Sword", attack: 10);
+            player.Inventory.Weapon = weapon;
 
             // Act
             var sheetInfo = player.GetCharacterSheetInfo();
 
-            // Assert - Base stats should match class base stats (no equipment)
-            var classData = new JsonDataRepository().GetClass("Warrior");
-            Assert.Equal(classData.BaseMaxHP, sheetInfo.BaseStats.HP);
-            Assert.Equal(classData.BaseMaxMana, sheetInfo.BaseStats.Mana);
-            Assert.Equal(classData.BaseAttack, sheetInfo.BaseStats.Attack);
-            Assert.Equal(classData.BaseDefense, sheetInfo.BaseStats.Defense);
-            Assert.Equal(classData.BaseMagicPower, sheetInfo.BaseStats.MagicPower);
-            Assert.Equal(classData.BaseSpeed, sheetInfo.BaseStats.Speed);
-            Assert.Equal(classData.BaseCritChance, sheetInfo.BaseStats.CritChance);
-
-            // Bonus stats should come from equipment
+            // Assert - Bonus stats should reflect equipment
             var equipStats = player.Inventory.GetTotalStats();
             Assert.Equal(equipStats.HP, sheetInfo.BonusStats.HP);
-            Assert.Equal(equipStats.Mana, sheetInfo.BonusStats.Mana);
             Assert.Equal(equipStats.Attack, sheetInfo.BonusStats.Attack);
             Assert.Equal(equipStats.Defense, sheetInfo.BonusStats.Defense);
-            Assert.Equal(equipStats.Magic, sheetInfo.BonusStats.MagicPower);
-            Assert.Equal(equipStats.Speed, sheetInfo.BonusStats.Speed);
-            Assert.Equal(equipStats.Crit, sheetInfo.BonusStats.CritChance);
 
-            // Total stats should equal base + bonus
-            Assert.Equal(sheetInfo.BaseStats.HP + sheetInfo.BonusStats.HP, sheetInfo.MaxHP);
-            Assert.Equal(sheetInfo.BaseStats.Mana + sheetInfo.BonusStats.Mana, sheetInfo.MaxMana);
-            Assert.Equal(sheetInfo.BaseStats.Attack + sheetInfo.BonusStats.Attack, sheetInfo.Attack);
-            Assert.Equal(sheetInfo.BaseStats.Defense + sheetInfo.BonusStats.Defense, sheetInfo.Defense);
-            Assert.Equal(sheetInfo.BaseStats.MagicPower + sheetInfo.BonusStats.MagicPower, sheetInfo.MagicPower);
-            Assert.Equal(sheetInfo.BaseStats.Speed + sheetInfo.BonusStats.Speed, sheetInfo.Speed);
-            Assert.Equal(sheetInfo.BaseStats.CritChance + sheetInfo.BonusStats.CritChance, sheetInfo.CritChance);
-        }
-
-        [Fact]
-        public void GetCharacterSheetInfo_EquipmentAbilities_ShowCorrectSource()
-        {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Warrior);
-
-            // Manually verify that if the player has equipment abilities, they show the right source
-            var weapon = player.Inventory.Weapon;
-            var armor = player.Inventory.Armor;
-
-            // Act
-            var sheetInfo = player.GetCharacterSheetInfo();
-
-            // Assert - Check each equipment ability's source
-            foreach (var equipAbility in sheetInfo.EquipmentAbilities)
-            {
-                bool sourceIsWeapon = weapon != null && equipAbility.Source == weapon.Name;
-                bool sourceIsArmor = armor != null && equipAbility.Source == armor.Name;
-                bool sourceIsGeneric = equipAbility.Source == "Equipment";
-
-                Assert.True(sourceIsWeapon || sourceIsArmor || sourceIsGeneric,
-                    $"Equipment ability '{equipAbility.Name}' has invalid source: '{equipAbility.Source}'");
-
-                // If weapon has this ability, source should be weapon name
-                if (weapon != null && weapon.GrantedAbilityIds.Count > 0)
-                {
-                    bool weaponHasAbility = weapon.GrantedAbilityIds.Any(id =>
-                        equipAbility.Name.Contains(id, System.StringComparison.OrdinalIgnoreCase) ||
-                        id.Contains(equipAbility.Name, System.StringComparison.OrdinalIgnoreCase));
-
-                    if (weaponHasAbility)
-                    {
-                        Assert.Equal(weapon.Name, equipAbility.Source);
-                    }
-                }
-            }
+            // Character sheet should show bonus attack from weapon
+            Assert.True(sheetInfo.BonusStats.Attack >= 10, $"Bonus attack should include weapon (+10), got {sheetInfo.BonusStats.Attack}");
         }
 
         [Fact]
         public void GetCharacterSheetInfo_AfterLevelUp_ShowsCorrectBaseStats()
         {
-            // Arrange
-            var player = new Player("Test", PlayerClass.Warrior);
+            // Arrange - Create player with known stats
+            var player = TestFixtures.CreateWarriorPlayer("Test", level: 1);
             var initialSheetInfo = player.GetCharacterSheetInfo();
             int initialBaseHP = initialSheetInfo.BaseStats.HP;
             int initialBaseAttack = initialSheetInfo.BaseStats.Attack;

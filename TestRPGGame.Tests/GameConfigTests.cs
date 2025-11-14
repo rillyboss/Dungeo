@@ -4,6 +4,16 @@ using TestRPGGame.Systems;
 
 namespace TestRPGGame.Tests
 {
+    /// <summary>
+    /// GAME CONFIG VALIDATION TEST SUITE
+    ///
+    /// This test file validates that gameconfig.json has valid values and expected structure.
+    /// Some tests ARE data-dependent (validating specific config relationships).
+    /// Other tests validate that config values are USED correctly (system tests).
+    ///
+    /// When gameconfig.json changes, data validation tests may need updates.
+    /// System tests (those testing usage, not values) should remain stable.
+    /// </summary>
     public class GameConfigTests : TestBase
     {
         [Fact]

@@ -2,7 +2,6 @@ using Xunit;
 using TestRPGGame.Combat.StatusEffects;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.Entities.Enemy;
-using TestRPGGame.Factories;
 
 namespace TestRPGGame.Tests
 {
@@ -15,7 +14,7 @@ namespace TestRPGGame.Tests
 
         private Enemy CreateTestEnemy()
         {
-            return EnemyFactory.CreateEnemy(1);
+            return TestFixtures.CreateTestEnemy();
         }
 
         // Helper to calculate damage with percentage-based defense formula

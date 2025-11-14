@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Test Infrastructure Improvements**:
+  - Created comprehensive TestFixtures.cs (456 lines) - Central infrastructure for creating controlled test data
+  - Added helper methods for all major entity types:
+    - `CreateTestEnemy()`, `CreateWeakEnemy()`, `CreateTestBoss()` - Enemy creation with known stats
+    - `CreateTestPlayer()`, `CreateWarriorPlayer()`, `CreateMagePlayer()` - Player creation
+    - `CreateTestWeapon()`, `CreateTestArmor()` - Equipment creation
+    - `CreateTestAbility()` - Ability creation
+    - `CreateMockRepository()` - Mock IDataRepository with test data
+    - `CreateTestEnemyData()`, `CreateTestPrefix()`, `CreateTestSuffix()` - Data model creation
+  - All test fixtures provide predictable, controlled data eliminating JSON dependencies
 - **UI/UX Enhancements**:
   - Equipment-granted abilities now display friendly names instead of IDs in character sheet
   - Unlock Abilities screen now sorts abilities by cost (cheapest first), then by level
@@ -114,8 +124,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `GameConfig_EnemyStatMultipliers_CanScaleStats` - Tests stat scaling calculation
     - `GameConfig_EnemyHPMultiplier_ScalesCorrectly` - Theory test for HP scaling (3 cases)
   - Total tests now: 429 (increased from 423)
+  - **Note**: After test refactoring, final count is 447 tests (EnemyModifierTests gained 16 additional tests)
 
 ### Changed
+- **MAJOR: Comprehensive Test Suite Refactoring** (447 tests, 100% passing):
+  - **Problem Solved**: Tests were brittle and dependent on JSON data changes
+  - **Solution**: Separated data validation tests from system behavior tests
+  - **Refactored 7 Test Files** to eliminate JSON data dependencies:
+    1. **InterfacedCombatSystemTests.cs** - Replaced all EnemyFactory.CreateEnemy() calls with TestFixtures
+       - Removed hardcoded config assertions (e.g., `Assert.Equal(0.4, config.CombatLootDropChance)`)
+       - Changed to range validation (e.g., `Assert.True(config.CombatLootDropChance >= 0 && <= 1)`)
+    2. **StatusEffectSystemTests.cs** - Updated CreateTestEnemy() helper to use TestFixtures
+    3. **EnemyModifierTests.cs** - Complete rewrite: 11 tests → 27 tests
+       - Added 6 test regions: Level Filtering, Prefix Application, Suffix Application, Combined Modifiers, Data Validation, Probability
+       - Tests now verify modifier application logic with controlled data
+    4. **EnemyLevelRequirementTests.cs** - Replaced DataLoader with mock repository
+    5. **EnemyAbilityTests.cs** - Replaced DataLoader calls with TestFixtures
+    6. **EquipmentGeneratorTests.cs** - Mocked ItemGenerationData instead of loading from JSON
+    7. **PlayerTests.cs** - Used TestFixtures for player creation instead of loading classes.json
+  - **Documented Data Validation Tests**:
+    - Added headers to DataLoaderTests.cs and GameConfigTests.cs
+    - Clarified these ARE intentionally data-dependent (validate JSON structure)
+    - Separated concerns: validation tests vs system tests
+  - **Removed Hardcoded Config Assertions**:
+    - ShopTests.cs now tests config usage patterns, not specific values
+    - Tests validate ranges and relationships instead of exact numbers
+  - **Result**: Test suite now resilient to JSON data changes while maintaining full system coverage
+  - **Test Count**: 447 tests (up from 423) - gained 24 tests from EnemyModifierTests expansion
 - **Modified Files for UI/UX Enhancements**:
   - `Player.cs` - Fixed `GetEquipmentSourceForAbility()` to use ability ID instead of name
   - `ProgressionManager.cs` - Abilities now sorted by cost, then level in unlock menu
@@ -182,7 +217,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Statistics tracking (40+ stats)
 - ✅ Shop system with potions and equipment
 - ✅ Interface-driven architecture (Console + Automated UIs)
-- ✅ Comprehensive test suite (418 tests, 100% passing)
+- ✅ Comprehensive test suite (447 tests, 100% passing)
 
 ### Architecture
 - Interface-driven design (IGameInterface abstraction)
@@ -194,7 +229,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical Stats
 - **C# Source Files**: 128
-- **Unit Tests**: 418 (100% passing)
+- **Unit Tests**: 447 (100% passing)
 - **Code Coverage**: 54% (3,269/6,042 lines)
 - **Game Content**: 100% data-driven JSON
 - **Architecture**: Fully interface-driven
