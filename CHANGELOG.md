@@ -8,6 +8,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Character Sheet Enhancements**:
+  - Filters out unlearned abilities from character sheet display
+  - Separates equipment-granted abilities into dedicated section
+  - Shows base stats vs equipment bonuses breakdown
+  - Displays which equipment grants which abilities
+- **Inventory Display Improvements**:
+  - Shows granted abilities on equipped items
+  - Displays granted abilities in item details view
+  - Clear indication of ability sources in equipment list
+- **5 New Comprehensive Tests** for character sheet functionality:
+  - `GetCharacterSheetInfo_OnlyShowsUnlockedLearnedAbilities` - Verifies locked abilities hidden
+  - `GetCharacterSheetInfo_SeparatesEquipmentAbilities` - Verifies equipment ability separation
+  - `GetCharacterSheetInfo_ShowsBaseStatsVsBonusStats` - Verifies stat calculation accuracy
+  - `GetCharacterSheetInfo_EquipmentAbilities_ShowCorrectSource` - Verifies source tracking
+  - `GetCharacterSheetInfo_AfterLevelUp_ShowsCorrectBaseStats` - Verifies level progression
+- **Data Model Enhancements**:
+  - Added `Source` property to `AbilityInfo` for tracking ability origin
+  - Added `EquipmentAbilities` list to `CharacterSheetInfo`
+  - Added `BaseStats` and `BonusStats` to `CharacterSheetInfo`
+  - Added `EquipmentStats` class for stat breakdown
+- **Mandatory Testing Policy** enforced across all documentation:
+  - Updated CLAUDE.md with explicit "ALL NEW FEATURES REQUIRE TESTS" policy
+  - Updated SESSION_GUIDE.md with testing-first workflow
+  - Updated context-enrichment.md hook with mandatory testing requirements
+  - Added examples of what requires tests vs what doesn't
 - **JustApplied flag** to StatusEffect base class
   - Ensures buffs/debuffs last their full stated duration
   - Skips first duration tick when effect is applied
@@ -35,6 +60,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Matches player expectations and industry standard RPG behavior
 
 ### Changed
+- **Updated test count from 401 to 418 tests** (all passing, 100% required)
+- Updated all documentation files with new test counts:
+  - CLAUDE.md
+  - SESSION_GUIDE.md
+  - context-enrichment.md
 - Updated test count from 397 to 401 tests (all passing)
 - Updated 6 existing tests to account for JustApplied flag behavior:
   - `DamageOverTimeEffect_DecrementsRemainingTurns`
@@ -71,7 +101,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - ✅ Statistics tracking (40+ stats)
 - ✅ Shop system with potions and equipment
 - ✅ Interface-driven architecture (Console + Automated UIs)
-- ✅ Comprehensive test suite (401 tests, 100% passing)
+- ✅ Comprehensive test suite (418 tests, 100% passing)
 
 ### Architecture
 - Interface-driven design (IGameInterface abstraction)
@@ -83,7 +113,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Technical Stats
 - **C# Source Files**: 128
-- **Unit Tests**: 401 (100% passing)
+- **Unit Tests**: 418 (100% passing)
 - **Code Coverage**: 54% (3,269/6,042 lines)
 - **Game Content**: 100% data-driven JSON
 - **Architecture**: Fully interface-driven
