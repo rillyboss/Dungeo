@@ -178,6 +178,7 @@ namespace TestRPGGame.Interfaces
         public int UnlockLevel { get; set; }
         public int PurchaseCost { get; set; }
         public bool Priority { get; set; }
+        public string Source { get; set; } = ""; // Source of ability (equipment name for equipment-granted abilities)
     }
 
     public class ShopItemInfo
@@ -242,6 +243,20 @@ namespace TestRPGGame.Interfaces
         public int Potions { get; set; }
         public Dictionary<EquipmentSlot, EquipmentItem?> Equipment { get; set; } = new();
         public List<AbilityInfo> Abilities { get; set; } = new();
+        public List<AbilityInfo> EquipmentAbilities { get; set; } = new();
+        public EquipmentStats BaseStats { get; set; } = new();
+        public EquipmentStats BonusStats { get; set; } = new();
+    }
+
+    public class EquipmentStats
+    {
+        public int HP { get; set; }
+        public int Mana { get; set; }
+        public int Attack { get; set; }
+        public int Defense { get; set; }
+        public int MagicPower { get; set; }
+        public int Speed { get; set; }
+        public double CritChance { get; set; }
     }
 
     public class DungeonSelectionInfo

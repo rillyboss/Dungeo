@@ -720,6 +720,13 @@ namespace TestRPGGame.Interfaces
             if (item != null)
             {
                 UIHelper.PrintColoredLine($"[{item.Rarity}] {item.Name}", item.GetRarityColor());
+
+                // Show granted abilities
+                if (item.GrantedAbilityIds.Count > 0)
+                {
+                    Console.Write("               ");
+                    UIHelper.PrintColoredLine($"   ⚔️  Grants: {string.Join(", ", item.GrantedAbilityIds)}", ConsoleColor.Cyan);
+                }
             }
             else
             {
@@ -884,12 +891,19 @@ namespace TestRPGGame.Interfaces
 
             Console.WriteLine("╔════════════ STATS ════════════╗");
             Console.WriteLine($"  ❤️  HP: {info.CurrentHP}/{info.MaxHP}");
+            Console.WriteLine($"      Base: {info.BaseStats.HP} + Equipment: {info.BonusStats.HP}");
             Console.WriteLine($"  💙 Mana: {info.CurrentMana}/{info.MaxMana}");
+            Console.WriteLine($"      Base: {info.BaseStats.Mana} + Equipment: {info.BonusStats.Mana}");
             Console.WriteLine($"  ⚔️  Attack: {info.Attack}");
+            Console.WriteLine($"      Base: {info.BaseStats.Attack} + Equipment: {info.BonusStats.Attack}");
             Console.WriteLine($"  🛡️  Defense: {info.Defense}");
+            Console.WriteLine($"      Base: {info.BaseStats.Defense} + Equipment: {info.BonusStats.Defense}");
             Console.WriteLine($"  🔮 Magic: {info.MagicPower}");
+            Console.WriteLine($"      Base: {info.BaseStats.MagicPower} + Equipment: {info.BonusStats.MagicPower}");
             Console.WriteLine($"  ⚡ Speed: {info.Speed}");
+            Console.WriteLine($"      Base: {info.BaseStats.Speed} + Equipment: {info.BonusStats.Speed}");
             Console.WriteLine($"  💥 Crit Chance: {info.CritChance:P0}");
+            Console.WriteLine($"      Base: {info.BaseStats.CritChance:P0} + Equipment: {info.BonusStats.CritChance:P0}");
             Console.WriteLine("╚═══════════════════════════════╝\n");
 
             Console.WriteLine("╔════════════ RESOURCES ════════════╗");
@@ -897,22 +911,45 @@ namespace TestRPGGame.Interfaces
             Console.WriteLine($"  🧪 Potions: {info.Potions}");
             Console.WriteLine("╚═══════════════════════════════════╝\n");
 
-            Console.WriteLine("╔════════════ ABILITIES ════════════╗");
-            foreach (var ability in info.Abilities)
+            Console.WriteLine("╔════════════ LEARNED ABILITIES ════════════╗");
+            if (info.Abilities.Count > 0)
             {
-                if (ability.IsUnlocked)
+                foreach (var ability in info.Abilities)
                 {
                     Console.Write($"  ✓ {ability.Name}");
                     Console.WriteLine($" (Cost: {ability.ManaCost} mana, CD: {ability.Cooldown})");
                     Console.WriteLine($"    {ability.Description}");
                 }
-                else
+            }
+            else
+            {
+                Console.WriteLine("  No abilities unlocked yet.");
+            }
+            Console.WriteLine("╚════════════════════════════════════════════╝\n");
+
+            Console.WriteLine("╔════════════ EQUIPMENT ABILITIES ════════════╗");
+            if (info.EquipmentAbilities.Count > 0)
+            {
+                foreach (var ability in info.EquipmentAbilities)
                 {
-                    Console.Write($"  🔒 {ability.Name}");
-                    Console.WriteLine($" - Unlock at Level {ability.UnlockLevel} for {ability.PurchaseCost} gold");
+                    Console.Write($"  ⚔️  {ability.Name}");
+                    if (!string.IsNullOrEmpty(ability.Source))
+                    {
+                        Console.WriteLine($" (from {ability.Source})");
+                    }
+                    else
+                    {
+                        Console.WriteLine();
+                    }
+                    Console.WriteLine($"      Cost: {ability.ManaCost} mana, CD: {ability.Cooldown}");
+                    Console.WriteLine($"      {ability.Description}");
                 }
             }
-            Console.WriteLine("╚═══════════════════════════════════╝");
+            else
+            {
+                Console.WriteLine("  No equipment abilities equipped.");
+            }
+            Console.WriteLine("╚═════════════════════════════════════════════╝");
 
             Console.WriteLine("\nPress any key to continue...");
             Console.ReadKey(true);
@@ -1181,6 +1218,17 @@ namespace TestRPGGame.Interfaces
                 foreach (var effect in item.SpecialEffects)
                 {
                     Console.WriteLine($"    • {effect.Description}");
+                }
+            }
+
+            // Display granted abilities
+            if (item.GrantedAbilityIds.Count > 0)
+            {
+                Console.WriteLine();
+                UIHelper.PrintColoredLine("  ⚔️  GRANTED ABILITIES:", ConsoleColor.Cyan);
+                foreach (var abilityId in item.GrantedAbilityIds)
+                {
+                    UIHelper.PrintColoredLine($"    • {abilityId}", ConsoleColor.Yellow);
                 }
             }
 

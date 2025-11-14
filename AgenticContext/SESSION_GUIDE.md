@@ -19,13 +19,22 @@ Quick reference for continuing development on this project.
 
 ## How to End a Session
 
-1. **Update DEVELOPMENT_LOG.md**:
+1. **🚨 VERIFY ALL TESTS PASS** (MANDATORY):
+   ```bash
+   dotnet test
+   ```
+   - **DO NOT COMMIT if tests fail**
+   - **DO NOT END SESSION without adding tests for new features**
+   - All new code MUST have corresponding tests
+
+2. **Update DEVELOPMENT_LOG.md**:
    - Add completed tasks to the current session
    - Update pending tasks
    - Add any new issues discovered
    - Write session summary
+   - **List any tests that were added**
 
-2. **Commit Changes**:
+3. **Commit Changes**:
    ```bash
    git add -A
    git commit -m "Your commit message
@@ -33,11 +42,6 @@ Quick reference for continuing development on this project.
    🤖 Generated with [Claude Code](https://claude.com/claude-code)
 
    Co-Authored-By: Claude <noreply@anthropic.com>"
-   ```
-
-3. **Run Final Tests**:
-   ```bash
-   dotnet test
    ```
 
 ## Project Structure
@@ -87,6 +91,17 @@ Most game systems are configured via JSON:
 
 ## Testing
 
+### 🚨 MANDATORY TESTING POLICY
+
+**ALL NEW FEATURES MUST HAVE TESTS. NO EXCEPTIONS.**
+
+Every time you add or modify functionality:
+1. Write tests that prove it works
+2. Run `dotnet test` to verify all tests pass
+3. Do not consider the task complete until tests are written and passing
+
+### Running Tests
+
 ```bash
 # Run all tests
 dotnet test
@@ -94,9 +109,39 @@ dotnet test
 # Run specific test
 dotnet test --filter "FullyQualifiedName~TestName"
 
+# Run tests for a specific class
+dotnet test --filter "FullyQualifiedName~PlayerTests"
+
 # Build without tests
 dotnet build
 ```
+
+### What Requires Tests
+
+✅ **MUST have tests:**
+- New public methods or properties
+- New game mechanics or systems
+- Bug fixes (test proves the bug is fixed)
+- Data model changes (test serialization works)
+- UI data preparation (test the data layer, not the display)
+- Refactoring (tests ensure behavior unchanged)
+
+❌ **Does NOT need tests:**
+- Console display code (pure UI rendering)
+- Comment changes
+- Documentation updates
+
+### Test Organization
+
+Tests are in `TestRPGGame.Tests/`:
+- `PlayerTests.cs` - Player mechanics and character sheet
+- `CombatTests.cs` - Combat mechanics
+- `EquipmentTests.cs` - Equipment generation
+- `AbilityTests.cs` - Ability system
+- `StatusEffectTests.cs` - Status effects
+- And more...
+
+**Current test count: 418 tests, 100% passing**
 
 ## Balance Guidelines
 

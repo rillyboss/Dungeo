@@ -287,6 +287,37 @@ namespace TestRPGGame.Entities.Player
         {
             var equipStats = Inventory.GetTotalStats();
 
+            // Separate learned abilities from equipment abilities
+            var learnedAbilities = Abilities
+                .Where(a => !a.IsEquipmentGranted && a.IsUnlocked) // Only show UNLOCKED learned abilities
+                .Select(a => new AbilityInfo
+                {
+                    Name = a.Name,
+                    Description = a.Description,
+                    ManaCost = a.ManaCost,
+                    Cooldown = a.Cooldown,
+                    CurrentCooldown = a.CurrentCooldown,
+                    IsUnlocked = a.IsUnlocked,
+                    UnlockLevel = a.UnlockLevel,
+                    PurchaseCost = a.PurchaseCost,
+                    Source = "" // Learned from class
+                }).ToList();
+
+            var equipmentAbilities = Abilities
+                .Where(a => a.IsEquipmentGranted)
+                .Select(a => new AbilityInfo
+                {
+                    Name = a.Name,
+                    Description = a.Description,
+                    ManaCost = a.ManaCost,
+                    Cooldown = a.Cooldown,
+                    CurrentCooldown = a.CurrentCooldown,
+                    IsUnlocked = true, // Equipment abilities are always "unlocked"
+                    UnlockLevel = 0,
+                    PurchaseCost = 0,
+                    Source = GetEquipmentSourceForAbility(a.Name)
+                }).ToList();
+
             return new CharacterSheetInfo
             {
                 Name = Name,
@@ -306,18 +337,58 @@ namespace TestRPGGame.Entities.Player
                 Gold = Gold,
                 Potions = PotionCount,
                 Equipment = Inventory.GetEquippedItems(),
-                Abilities = Abilities.Select(a => new AbilityInfo
+                Abilities = learnedAbilities,
+                EquipmentAbilities = equipmentAbilities,
+                BaseStats = new Interfaces.EquipmentStats
                 {
-                    Name = a.Name,
-                    Description = a.Description,
-                    ManaCost = a.ManaCost,
-                    Cooldown = a.Cooldown,
-                    CurrentCooldown = a.CurrentCooldown,
-                    IsUnlocked = a.IsUnlocked,
-                    UnlockLevel = a.UnlockLevel,
-                    PurchaseCost = a.PurchaseCost
-                }).ToList()
+                    HP = BaseMaxHP,
+                    Mana = BaseMaxMana,
+                    Attack = BaseAttack,
+                    Defense = BaseDefense,
+                    MagicPower = BaseMagicPower,
+                    Speed = BaseSpeed,
+                    CritChance = BaseCritChance
+                },
+                BonusStats = new Interfaces.EquipmentStats
+                {
+                    HP = equipStats.HP,
+                    Mana = equipStats.Mana,
+                    Attack = equipStats.Attack,
+                    Defense = equipStats.Defense,
+                    MagicPower = equipStats.Magic,
+                    Speed = equipStats.Speed,
+                    CritChance = equipStats.Crit
+                }
             };
+        }
+
+        private string GetEquipmentSourceForAbility(string abilityName)
+        {
+            // Check weapon
+            if (Inventory.Weapon != null && Inventory.Weapon.GrantedAbilityIds.Count > 0)
+            {
+                if (Inventory.Weapon.GrantedAbilityIds.Any(id =>
+                    id.Equals(abilityName, StringComparison.OrdinalIgnoreCase) ||
+                    abilityName.Contains(id, StringComparison.OrdinalIgnoreCase) ||
+                    id.Contains(abilityName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return Inventory.Weapon.Name;
+                }
+            }
+
+            // Check armor
+            if (Inventory.Armor != null && Inventory.Armor.GrantedAbilityIds.Count > 0)
+            {
+                if (Inventory.Armor.GrantedAbilityIds.Any(id =>
+                    id.Equals(abilityName, StringComparison.OrdinalIgnoreCase) ||
+                    abilityName.Contains(id, StringComparison.OrdinalIgnoreCase) ||
+                    id.Contains(abilityName, StringComparison.OrdinalIgnoreCase)))
+                {
+                    return Inventory.Armor.Name;
+                }
+            }
+
+            return "Equipment";
         }
 
         public void ResetForNewBattle()
