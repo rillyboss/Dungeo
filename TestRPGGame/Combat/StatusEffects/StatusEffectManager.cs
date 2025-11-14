@@ -27,24 +27,62 @@ namespace TestRPGGame.Combat.StatusEffects
         public IReadOnlyList<StatusEffect> ActiveEffects => activeEffects.AsReadOnly();
 
         /// <summary>
-        /// Adds a new status effect to the combatant
+        /// Adds a new status effect to the combatant.
+        ///
+        /// Stacking Rules:
+        /// - Non-stacking effects (CanStack = false): Refreshes duration of existing effect
+        /// - Stacking effects (CanStack = true): Adds new stack up to MaxStacks limit
+        /// - At max stacks: Refreshes duration but doesn't add more stacks
         /// </summary>
         public void AddEffect(StatusEffect effect)
         {
             effect.Target = owner;
 
-            // Check if effect can stack
+            var existing = activeEffects.FirstOrDefault(e => e.EffectId == effect.EffectId);
+
             if (!effect.CanStack)
             {
-                // Remove existing effect with same ID
-                var existing = activeEffects.FirstOrDefault(e => e.EffectId == effect.EffectId);
+                // NON-STACKING: Replace existing and refresh duration
                 if (existing != null)
                 {
-                    existing.OnExpire();
-                    activeEffects.Remove(existing);
+                    // Refresh the duration instead of replacing the entire effect
+                    existing.RemainingTurns = effect.RemainingTurns;
+                    existing.JustApplied = true; // Reset the JustApplied flag
+
+                    // Update value/multiplier in case they changed
+                    existing.Value = effect.Value;
+                    existing.Multiplier = effect.Multiplier;
+
+                    return; // Don't add a new effect
+                }
+            }
+            else
+            {
+                // STACKING: Increment stacks or refresh if at max
+                if (existing != null)
+                {
+                    // Check if we can add more stacks
+                    bool atMaxStacks = effect.MaxStacks > 0 && existing.CurrentStacks >= effect.MaxStacks;
+
+                    if (atMaxStacks)
+                    {
+                        // At max stacks: Refresh duration but don't add more stacks
+                        existing.RemainingTurns = effect.RemainingTurns;
+                        existing.JustApplied = true;
+                        return;
+                    }
+                    else
+                    {
+                        // Can add more stacks: Increment and refresh
+                        existing.CurrentStacks++;
+                        existing.RemainingTurns = effect.RemainingTurns;
+                        existing.JustApplied = true;
+                        return;
+                    }
                 }
             }
 
+            // New effect: Add to list
             activeEffects.Add(effect);
             effect.OnApply();
         }

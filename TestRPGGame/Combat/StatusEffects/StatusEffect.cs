@@ -51,6 +51,18 @@ namespace TestRPGGame.Combat.StatusEffects
         public bool CanStack { get; set; } = false;
 
         /// <summary>
+        /// Maximum number of stacks allowed (0 = unlimited)
+        /// Only applies when CanStack = true
+        /// </summary>
+        public int MaxStacks { get; set; } = 0;
+
+        /// <summary>
+        /// Current number of stacks of this effect
+        /// Only applies when CanStack = true
+        /// </summary>
+        public int CurrentStacks { get; set; } = 1;
+
+        /// <summary>
         /// Whether this effect was just applied this turn (skips first duration tick)
         /// Ensures buffs last their full stated duration even when cast mid-turn
         /// </summary>

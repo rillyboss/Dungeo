@@ -832,5 +832,153 @@ namespace TestRPGGame.Tests
             Assert.True(actualIncrease >= 2.2 && actualIncrease <= 2.5,
                 $"3 attack buffs should stack multiplicatively to ~2.34x! Baseline: {baselineDamage}, Buffed: {buffedDamage}, Increase: {actualIncrease:P0}");
         }
+
+        [Fact]
+        public void SameEffect_DoesNotStack_RefreshesDuration()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+            var enemy = EnemyFactory.CreateEnemy(1);
+
+            player.CurrentHP = player.MaxHP;
+            player.Attack = 100;
+            enemy.Defense = 0;
+            enemy.CurrentHP = 10000;
+
+            // Act: Apply Battle Rage twice
+            var battleRage1 = player.Abilities.FirstOrDefault(a => a.Name == "Battle Rage");
+            Assert.NotNull(battleRage1);
+
+            var context = new TestRPGGame.Abilities.Effects.AbilityContext(player, enemy, autoInterface);
+
+            // Apply first time
+            battleRage1.Execute(context);
+            battleRage1.CurrentCooldown = 0;
+
+            // Verify 1 effect active
+            Assert.Single(player.Effects.ActiveEffects);
+            var firstEffect = player.Effects.ActiveEffects[0];
+            int initialDuration = firstEffect.RemainingTurns;
+
+            // Simulate turn passing
+            firstEffect.JustApplied = false;
+            firstEffect.RemainingTurns--;
+
+            // Apply Battle Rage AGAIN
+            battleRage1.Execute(context);
+
+            // Assert: Still only 1 effect (not stacked)
+            Assert.Single(player.Effects.ActiveEffects);
+
+            // Assert: Duration was refreshed
+            var refreshedEffect = player.Effects.ActiveEffects[0];
+            Assert.Equal(initialDuration, refreshedEffect.RemainingTurns);
+            Assert.True(refreshedEffect.JustApplied, "JustApplied should be reset");
+        }
+
+        [Fact]
+        public void StackableEffect_IncrementStacks()
+        {
+            // Arrange
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+
+            // Create a stackable DOT effect
+            var poison1 = new Combat.StatusEffects.DamageOverTimeEffect("poison", "Poison", "☠️", 3, 10);
+            poison1.CanStack = true;
+            poison1.MaxStacks = 5;
+            poison1.Source = player;
+
+            // Act: Apply poison 3 times
+            player.Effects.AddEffect(poison1);
+
+            var poison2 = new Combat.StatusEffects.DamageOverTimeEffect("poison", "Poison", "☠️", 3, 10);
+            poison2.CanStack = true;
+            poison2.MaxStacks = 5;
+            poison2.Source = player;
+            player.Effects.AddEffect(poison2);
+
+            var poison3 = new Combat.StatusEffects.DamageOverTimeEffect("poison", "Poison", "☠️", 3, 10);
+            poison3.CanStack = true;
+            poison3.MaxStacks = 5;
+            poison3.Source = player;
+            player.Effects.AddEffect(poison3);
+
+            // Assert: Still only 1 effect in list
+            Assert.Single(player.Effects.ActiveEffects);
+
+            // Assert: But it has 3 stacks
+            var poisonEffect = player.Effects.ActiveEffects[0];
+            Assert.Equal(3, poisonEffect.CurrentStacks);
+        }
+
+        [Fact]
+        public void StackableEffect_MaxStacks_StopsStacking()
+        {
+            // Arrange
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+
+            // Create a stackable effect with max 3 stacks
+            var bleed1 = new Combat.StatusEffects.DamageOverTimeEffect("bleed", "Bleeding", "🩸", 3, 5);
+            bleed1.CanStack = true;
+            bleed1.MaxStacks = 3;
+            bleed1.Source = player;
+
+            // Act: Try to apply 5 times (max is 3)
+            for (int i = 0; i < 5; i++)
+            {
+                var bleed = new Combat.StatusEffects.DamageOverTimeEffect("bleed", "Bleeding", "🩸", 3, 5);
+                bleed.CanStack = true;
+                bleed.MaxStacks = 3;
+                bleed.Source = player;
+                player.Effects.AddEffect(bleed);
+            }
+
+            // Assert: Still only 1 effect
+            Assert.Single(player.Effects.ActiveEffects);
+
+            // Assert: Capped at 3 stacks (not 5)
+            var bleedEffect = player.Effects.ActiveEffects[0];
+            Assert.Equal(3, bleedEffect.CurrentStacks);
+        }
+
+        [Fact]
+        public void StackableEffect_MaxStacks_StillRefreshesDuration()
+        {
+            // Arrange
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+
+            // Apply 3 stacks
+            for (int i = 0; i < 3; i++)
+            {
+                var burn = new Combat.StatusEffects.DamageOverTimeEffect("burning", "Burning", "🔥", 5, 10);
+                burn.CanStack = true;
+                burn.MaxStacks = 3;
+                burn.Source = player;
+                player.Effects.AddEffect(burn);
+            }
+
+            var burnEffect = player.Effects.ActiveEffects[0];
+            Assert.Equal(3, burnEffect.CurrentStacks);
+            int initialDuration = burnEffect.RemainingTurns;
+
+            // Simulate turns passing
+            burnEffect.JustApplied = false;
+            burnEffect.RemainingTurns -= 2; // Now at 3 turns
+
+            // Act: Try to apply a 4th stack (should refresh duration, not add stack)
+            var burn4 = new Combat.StatusEffects.DamageOverTimeEffect("burning", "Burning", "🔥", 5, 10);
+            burn4.CanStack = true;
+            burn4.MaxStacks = 3;
+            burn4.Source = player;
+            player.Effects.AddEffect(burn4);
+
+            // Assert: Still 3 stacks
+            Assert.Equal(3, burnEffect.CurrentStacks);
+
+            // Assert: Duration refreshed to full
+            Assert.Equal(initialDuration, burnEffect.RemainingTurns);
+            Assert.True(burnEffect.JustApplied);
+        }
     }
 }
