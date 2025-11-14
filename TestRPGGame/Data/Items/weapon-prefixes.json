@@ -230,5 +230,205 @@
     "DefenseMultiplier": 0.0,
     "MagicMultiplier": 0.0,
     "MinRarity": 4
+  },
+  "Blazing": {
+    "Id": "Blazing",
+    "Name": "Blazing",
+    "AttackMultiplier": 1.25,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.6,
+    "MinRarity": 2
+  },
+  "Frozen": {
+    "Id": "Frozen",
+    "Name": "Frozen",
+    "AttackMultiplier": 1.0,
+    "DefenseMultiplier": 0.2,
+    "MagicMultiplier": 0.9,
+    "MinRarity": 2
+  },
+  "Toxic": {
+    "Id": "Toxic",
+    "Name": "Toxic",
+    "AttackMultiplier": 1.1,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.5,
+    "MinRarity": 1
+  },
+  "Thunderous": {
+    "Id": "Thunderous",
+    "Name": "Thunderous",
+    "AttackMultiplier": 1.3,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.8,
+    "MinRarity": 2
+  },
+  "Obsidian": {
+    "Id": "Obsidian",
+    "Name": "Obsidian",
+    "AttackMultiplier": 1.35,
+    "DefenseMultiplier": 0.1,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 2
+  },
+  "Bone": {
+    "Id": "Bone",
+    "Name": "Bone",
+    "AttackMultiplier": 0.85,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.3,
+    "MinRarity": 0
+  },
+  "Blood": {
+    "Id": "Blood",
+    "Name": "Blood",
+    "AttackMultiplier": 1.4,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 3
+  },
+  "Spectral": {
+    "Id": "Spectral",
+    "Name": "Spectral",
+    "AttackMultiplier": 1.1,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 1.1,
+    "MinRarity": 2
+  },
+  "Wrathful": {
+    "Id": "Wrathful",
+    "Name": "Wrathful",
+    "AttackMultiplier": 1.55,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 3
+  },
+  "Merciless": {
+    "Id": "Merciless",
+    "Name": "Merciless",
+    "AttackMultiplier": 1.65,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 3
+  },
+  "Swift": {
+    "Id": "Swift",
+    "Name": "Swift",
+    "AttackMultiplier": 0.95,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 1
+  },
+  "Vampiric": {
+    "Id": "Vampiric",
+    "Name": "Vampiric",
+    "AttackMultiplier": 1.3,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 3
+  },
+  "Demonic": {
+    "Id": "Demonic",
+    "Name": "Demonic",
+    "AttackMultiplier": 1.5,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.5,
+    "MinRarity": 3
+  },
+  "Draconic": {
+    "Id": "Draconic",
+    "Name": "Draconic",
+    "AttackMultiplier": 1.6,
+    "DefenseMultiplier": 0.2,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 3
+  },
+  "Star Metal": {
+    "Id": "Star Metal",
+    "Name": "Star Metal",
+    "AttackMultiplier": 1.55,
+    "DefenseMultiplier": 0.3,
+    "MagicMultiplier": 0.8,
+    "MinRarity": 4
+  },
+  "Void Crystal": {
+    "Id": "Void Crystal",
+    "Name": "Void Crystal",
+    "AttackMultiplier": 1.4,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 1.4,
+    "MinRarity": 4
+  },
+  "Corrupted": {
+    "Id": "Corrupted",
+    "Name": "Corrupted",
+    "AttackMultiplier": 1.45,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.6,
+    "MinRarity": 3
+  },
+  "Hallowed": {
+    "Id": "Hallowed",
+    "Name": "Hallowed",
+    "AttackMultiplier": 1.35,
+    "DefenseMultiplier": 0.3,
+    "MagicMultiplier": 0.9,
+    "MinRarity": 3
+  },
+  "Shadow": {
+    "Id": "Shadow",
+    "Name": "Shadow",
+    "AttackMultiplier": 1.25,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.7,
+    "MinRarity": 2
+  },
+  "Radiant": {
+    "Id": "Radiant",
+    "Name": "Radiant",
+    "AttackMultiplier": 1.3,
+    "DefenseMultiplier": 0.2,
+    "MagicMultiplier": 1.0,
+    "MinRarity": 3
+  },
+  "Arcane": {
+    "Id": "Arcane",
+    "Name": "Arcane",
+    "AttackMultiplier": 0.8,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 1.4,
+    "MinRarity": 2
+  },
+  "Savage": {
+    "Id": "Savage",
+    "Name": "Savage",
+    "AttackMultiplier": 1.5,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 2
+  },
+  "Warped": {
+    "Id": "Warped",
+    "Name": "Warped",
+    "AttackMultiplier": 1.35,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 1.15,
+    "MinRarity": 3
+  },
+  "Primal": {
+    "Id": "Primal",
+    "Name": "Primal",
+    "AttackMultiplier": 1.75,
+    "DefenseMultiplier": 0.0,
+    "MagicMultiplier": 0.0,
+    "MinRarity": 4
+  },
+  "Soulbound": {
+    "Id": "Soulbound",
+    "Name": "Soulbound",
+    "AttackMultiplier": 1.5,
+    "DefenseMultiplier": 0.2,
+    "MagicMultiplier": 1.3,
+    "MinRarity": 4
   }
 }

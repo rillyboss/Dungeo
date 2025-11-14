@@ -326,5 +326,418 @@
         "ProcChance": 22
       }
     ]
+  },
+  "of the Inferno": {
+    "Id": "of the Inferno",
+    "Name": "of the Inferno",
+    "Effects": [
+      {
+        "Type": "Bleed",
+        "Value": 30,
+        "ProcChance": 40
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 12,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Conquest": {
+    "Id": "of Conquest",
+    "Name": "of Conquest",
+    "Effects": [
+      {
+        "Type": "AttackBonus",
+        "Value": 15,
+        "ProcChance": 100
+      },
+      {
+        "Type": "BonusGold",
+        "Value": 30,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Annihilation": {
+    "Id": "of Annihilation",
+    "Name": "of Annihilation",
+    "Effects": [
+      {
+        "Type": "DoubleDamage",
+        "Value": 0,
+        "ProcChance": 35
+      },
+      {
+        "Type": "Execute",
+        "Value": 70,
+        "ProcChance": 35
+      }
+    ]
+  },
+  "of the Reaper": {
+    "Id": "of the Reaper",
+    "Name": "of the Reaper",
+    "Effects": [
+      {
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
+        "FlatValue": 35
+      },
+      {
+        "Type": "Execute",
+        "Value": 55,
+        "ProcChance": 40
+      }
+    ]
+  },
+  "of Fury and Honor": {
+    "Id": "of Fury and Honor",
+    "Name": "of Fury and Honor",
+    "Effects": [
+      {
+        "Type": "AttackBonus",
+        "Value": 8,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 8,
+        "ProcChance": 100
+      },
+      {
+        "Type": "CritBonus",
+        "Value": 15,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Berserker": {
+    "Id": "of the Berserker",
+    "Name": "of the Berserker",
+    "Effects": [
+      {
+        "Type": "DoubleDamage",
+        "Value": 0,
+        "ProcChance": 28
+      },
+      {
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
+        "FlatValue": 20
+      }
+    ]
+  },
+  "of Glaciers": {
+    "Id": "of Glaciers",
+    "Name": "of Glaciers",
+    "Effects": [
+      {
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
+        "Duration": 1,
+        "ProcChance": 30
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 10,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Plague": {
+    "Id": "of the Plague",
+    "Name": "of the Plague",
+    "Effects": [
+      {
+        "Type": "Bleed",
+        "Value": 35,
+        "ProcChance": 50
+      },
+      {
+        "Type": "ChainLightning",
+        "Value": 30,
+        "ProcChance": 25
+      }
+    ]
+  },
+  "of Domination": {
+    "Id": "of Domination",
+    "Name": "of Domination",
+    "Effects": [
+      {
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
+        "Duration": 1,
+        "ProcChance": 20
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 12,
+        "ProcChance": 100
+      },
+      {
+        "Type": "CritBonus",
+        "Value": 12,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Spite": {
+    "Id": "of Spite",
+    "Name": "of Spite",
+    "Effects": [
+      {
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 15,
+        "Duration": 0,
+        "ProcChance": 100
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 6,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Shadows and Flame": {
+    "Id": "of Shadows and Flame",
+    "Name": "of Shadows and Flame",
+    "Effects": [
+      {
+        "Type": "DoubleDamage",
+        "Value": 0,
+        "ProcChance": 25
+      },
+      {
+        "Type": "ManaSiphon",
+        "Value": 12,
+        "ProcChance": 35
+      }
+    ]
+  },
+  "of the Tempest": {
+    "Id": "of the Tempest",
+    "Name": "of the Tempest",
+    "Effects": [
+      {
+        "Type": "ChainLightning",
+        "Value": 55,
+        "ProcChance": 35
+      },
+      {
+        "Type": "SpeedBonus",
+        "Value": 10,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Suffering": {
+    "Id": "of Suffering",
+    "Name": "of Suffering",
+    "Effects": [
+      {
+        "Type": "Bleed",
+        "Value": 40,
+        "ProcChance": 55
+      },
+      {
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
+        "FlatValue": 25
+      }
+    ]
+  },
+  "of the Ancients": {
+    "Id": "of the Ancients",
+    "Name": "of the Ancients",
+    "Effects": [
+      {
+        "Type": "AttackBonus",
+        "Value": 13,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 4,
+        "ProcChance": 100
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 4,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Warlock": {
+    "Id": "of the Warlock",
+    "Name": "of the Warlock",
+    "Effects": [
+      {
+        "Type": "ManaSiphon",
+        "Value": 18,
+        "ProcChance": 45
+      },
+      {
+        "Type": "Bleed",
+        "Value": 20,
+        "ProcChance": 30
+      }
+    ]
+  },
+  "of Obliteration": {
+    "Id": "of Obliteration",
+    "Name": "of Obliteration",
+    "Effects": [
+      {
+        "Type": "Execute",
+        "Value": 75,
+        "ProcChance": 40
+      },
+      {
+        "Type": "CritBonus",
+        "Value": 18,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Duelist": {
+    "Id": "of the Duelist",
+    "Name": "of the Duelist",
+    "Effects": [
+      {
+        "Type": "FirstStrike",
+        "Value": 40,
+        "ProcChance": 100
+      },
+      {
+        "Type": "CritBonus",
+        "Value": 15,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Momentum": {
+    "Id": "of Momentum",
+    "Name": "of Momentum",
+    "Effects": [
+      {
+        "Type": "SpeedBonus",
+        "Value": 12,
+        "ProcChance": 100
+      },
+      {
+        "Type": "FirstStrike",
+        "Value": 30,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Decimation": {
+    "Id": "of Decimation",
+    "Name": "of Decimation",
+    "Effects": [
+      {
+        "Type": "DoubleDamage",
+        "Value": 0,
+        "ProcChance": 32
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 8,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Slayer": {
+    "Id": "of the Slayer",
+    "Name": "of the Slayer",
+    "Effects": [
+      {
+        "Type": "Execute",
+        "Value": 65,
+        "ProcChance": 45
+      },
+      {
+        "Type": "BonusGold",
+        "Value": 20,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Eternity": {
+    "Id": "of Eternity",
+    "Name": "of Eternity",
+    "Effects": [
+      {
+        "Type": "Effect",
+        "EffectKind": "LifeSteal",
+        "FlatValue": 45
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Abyss": {
+    "Id": "of the Abyss",
+    "Name": "of the Abyss",
+    "Effects": [
+      {
+        "Type": "ManaSiphon",
+        "Value": 20,
+        "ProcChance": 50
+      },
+      {
+        "Type": "Effect",
+        "EffectKind": "Stun",
+        "DisplayName": "Stunned",
+        "Duration": 1,
+        "ProcChance": 18
+      }
+    ]
+  },
+  "of Savagery": {
+    "Id": "of Savagery",
+    "Name": "of Savagery",
+    "Effects": [
+      {
+        "Type": "Bleed",
+        "Value": 45,
+        "ProcChance": 60
+      },
+      {
+        "Type": "CritBonus",
+        "Value": 20,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Apocalypse": {
+    "Id": "of Apocalypse",
+    "Name": "of Apocalypse",
+    "Effects": [
+      {
+        "Type": "ChainLightning",
+        "Value": 60,
+        "ProcChance": 40
+      },
+      {
+        "Type": "Bleed",
+        "Value": 35,
+        "ProcChance": 40
+      },
+      {
+        "Type": "DoubleDamage",
+        "Value": 0,
+        "ProcChance": 20
+      }
+    ]
   }
 }

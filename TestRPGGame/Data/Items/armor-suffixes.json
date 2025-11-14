@@ -368,5 +368,465 @@
         "ProcChance": 100
       }
     ]
+  },
+  "of the Juggernaut": {
+    "Id": "of the Juggernaut",
+    "Name": "of the Juggernaut",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 16,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 22,
+        "Duration": 0,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Immortal": {
+    "Id": "of the Immortal",
+    "Name": "of the Immortal",
+    "Effects": [
+      {
+        "Type": "HealthRegen",
+        "Value": 12,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 6,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 10,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Swiftness": {
+    "Id": "of Swiftness",
+    "Name": "of Swiftness",
+    "Effects": [
+      {
+        "Type": "SpeedBonus",
+        "Value": 10,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DodgeChance",
+        "Value": 15,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Bulwark": {
+    "Id": "of the Bulwark",
+    "Name": "of the Bulwark",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 18,
+        "ProcChance": 100
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Templar": {
+    "Id": "of the Templar",
+    "Name": "of the Templar",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 12,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 5,
+        "ProcChance": 100
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 6,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Lifebinding": {
+    "Id": "of Lifebinding",
+    "Name": "of Lifebinding",
+    "Effects": [
+      {
+        "Type": "HealthRegen",
+        "Value": 9,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 8,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Sentinel": {
+    "Id": "of the Sentinel",
+    "Name": "of the Sentinel",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 14,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 16,
+        "Duration": 0,
+        "ProcChance": 100
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Vengeance": {
+    "Id": "of Vengeance",
+    "Name": "of Vengeance",
+    "Effects": [
+      {
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 35,
+        "Duration": 0,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Recovery": {
+    "Id": "of Recovery",
+    "Name": "of Recovery",
+    "Effects": [
+      {
+        "Type": "HealthRegen",
+        "Value": 7,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 4,
+        "ProcChance": 100
+      },
+      {
+        "Type": "SpeedBonus",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Juggernaut": {
+    "Id": "of the Juggernaut",
+    "Name": "of the Juggernaut",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 20,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 28,
+        "Duration": 0,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Deflection": {
+    "Id": "of Deflection",
+    "Name": "of Deflection",
+    "Effects": [
+      {
+        "Type": "DodgeChance",
+        "Value": 20,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 6,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Titan": {
+    "Id": "of the Titan",
+    "Name": "of the Titan",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 17,
+        "ProcChance": 100
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 8,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Winds": {
+    "Id": "of Winds",
+    "Name": "of Winds",
+    "Effects": [
+      {
+        "Type": "SpeedBonus",
+        "Value": 9,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DodgeChance",
+        "Value": 12,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 4,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Steadfastness": {
+    "Id": "of Steadfastness",
+    "Name": "of Steadfastness",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 11,
+        "ProcChance": 100
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 6,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 3,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Ancients": {
+    "Id": "of the Ancients",
+    "Name": "of the Ancients",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 13,
+        "ProcChance": 100
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 8,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Retribution": {
+    "Id": "of Retribution",
+    "Name": "of Retribution",
+    "Effects": [
+      {
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 24,
+        "Duration": 0,
+        "ProcChance": 100
+      },
+      {
+        "Type": "DefenseBonus",
+        "Value": 9,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Balance": {
+    "Id": "of Balance",
+    "Name": "of Balance",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 10,
+        "ProcChance": 100
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 10,
+        "ProcChance": 100
+      },
+      {
+        "Type": "SpeedBonus",
+        "Value": 6,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Stalwart": {
+    "Id": "of the Stalwart",
+    "Name": "of the Stalwart",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 15,
+        "ProcChance": 100
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Sanctuary": {
+    "Id": "of Sanctuary",
+    "Name": "of Sanctuary",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 12,
+        "ProcChance": 100
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 7,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 5,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Storm": {
+    "Id": "of the Storm",
+    "Name": "of the Storm",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 10,
+        "ProcChance": 100
+      },
+      {
+        "Type": "SpeedBonus",
+        "Value": 8,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 14,
+        "Duration": 0,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Iron Will": {
+    "Id": "of Iron Will",
+    "Name": "of Iron Will",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 14,
+        "ProcChance": 100
+      },
+      {
+        "Type": "ManaRegen",
+        "Value": 4,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Bastion": {
+    "Id": "of the Bastion",
+    "Name": "of the Bastion",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 19,
+        "ProcChance": 100
+      },
+      {
+        "Type": "Effect",
+        "EffectKind": "Thorns",
+        "DisplayName": "Thorns",
+        "FlatValue": 20,
+        "Duration": 0,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of Courage": {
+    "Id": "of Courage",
+    "Name": "of Courage",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 11,
+        "ProcChance": 100
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 7,
+        "ProcChance": 100
+      },
+      {
+        "Type": "HealthRegen",
+        "Value": 4,
+        "ProcChance": 100
+      }
+    ]
+  },
+  "of the Vanguard": {
+    "Id": "of the Vanguard",
+    "Name": "of the Vanguard",
+    "Effects": [
+      {
+        "Type": "DefenseBonus",
+        "Value": 13,
+        "ProcChance": 100
+      },
+      {
+        "Type": "SpeedBonus",
+        "Value": 7,
+        "ProcChance": 100
+      },
+      {
+        "Type": "AttackBonus",
+        "Value": 6,
+        "ProcChance": 100
+      }
+    ]
   }
 }

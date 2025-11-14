@@ -180,5 +180,180 @@
     "DefenseMultiplier": 2.1,
     "HPMultiplier": 1.6,
     "MinRarity": 4
+  },
+  "Shadow": {
+    "Id": "Shadow",
+    "Name": "Shadow",
+    "DefenseMultiplier": 1.25,
+    "HPMultiplier": 1.15,
+    "MinRarity": 2
+  },
+  "Obsidian": {
+    "Id": "Obsidian",
+    "Name": "Obsidian",
+    "DefenseMultiplier": 1.45,
+    "HPMultiplier": 1.25,
+    "MinRarity": 2
+  },
+  "Blessed": {
+    "Id": "Blessed",
+    "Name": "Blessed",
+    "DefenseMultiplier": 1.4,
+    "HPMultiplier": 1.45,
+    "MinRarity": 3
+  },
+  "Warded": {
+    "Id": "Warded",
+    "Name": "Warded",
+    "DefenseMultiplier": 1.5,
+    "HPMultiplier": 1.35,
+    "MinRarity": 2
+  },
+  "Infernal": {
+    "Id": "Infernal",
+    "Name": "Infernal",
+    "DefenseMultiplier": 1.55,
+    "HPMultiplier": 1.4,
+    "MinRarity": 3
+  },
+  "Lunar": {
+    "Id": "Lunar",
+    "Name": "Lunar",
+    "DefenseMultiplier": 1.35,
+    "HPMultiplier": 1.5,
+    "MinRarity": 2
+  },
+  "Solar": {
+    "Id": "Solar",
+    "Name": "Solar",
+    "DefenseMultiplier": 1.5,
+    "HPMultiplier": 1.35,
+    "MinRarity": 2
+  },
+  "Living": {
+    "Id": "Living",
+    "Name": "Living",
+    "DefenseMultiplier": 1.3,
+    "HPMultiplier": 1.55,
+    "MinRarity": 2
+  },
+  "Duskwood": {
+    "Id": "Duskwood",
+    "Name": "Duskwood",
+    "DefenseMultiplier": 1.15,
+    "HPMultiplier": 1.25,
+    "MinRarity": 1
+  },
+  "Runed": {
+    "Id": "Runed",
+    "Name": "Runed",
+    "DefenseMultiplier": 1.4,
+    "HPMultiplier": 1.3,
+    "MinRarity": 2
+  },
+  "Spiked": {
+    "Id": "Spiked",
+    "Name": "Spiked",
+    "DefenseMultiplier": 1.2,
+    "HPMultiplier": 1.1,
+    "MinRarity": 1
+  },
+  "Blessed Steel": {
+    "Id": "Blessed Steel",
+    "Name": "Blessed Steel",
+    "DefenseMultiplier": 1.6,
+    "HPMultiplier": 1.5,
+    "MinRarity": 3
+  },
+  "Blood-forged": {
+    "Id": "Blood-forged",
+    "Name": "Blood-forged",
+    "DefenseMultiplier": 1.5,
+    "HPMultiplier": 1.7,
+    "MinRarity": 3
+  },
+  "Sanctified": {
+    "Id": "Sanctified",
+    "Name": "Sanctified",
+    "DefenseMultiplier": 1.65,
+    "HPMultiplier": 1.55,
+    "MinRarity": 3
+  },
+  "Warforged": {
+    "Id": "Warforged",
+    "Name": "Warforged",
+    "DefenseMultiplier": 1.7,
+    "HPMultiplier": 1.5,
+    "MinRarity": 3
+  },
+  "Voidtouched": {
+    "Id": "Voidtouched",
+    "Name": "Voidtouched",
+    "DefenseMultiplier": 1.55,
+    "HPMultiplier": 1.65,
+    "MinRarity": 3
+  },
+  "Spectral": {
+    "Id": "Spectral",
+    "Name": "Spectral",
+    "DefenseMultiplier": 1.25,
+    "HPMultiplier": 1.4,
+    "MinRarity": 2
+  },
+  "Masterwork": {
+    "Id": "Masterwork",
+    "Name": "Masterwork",
+    "DefenseMultiplier": 1.35,
+    "HPMultiplier": 1.35,
+    "MinRarity": 2
+  },
+  "Elven": {
+    "Id": "Elven",
+    "Name": "Elven",
+    "DefenseMultiplier": 1.3,
+    "HPMultiplier": 1.25,
+    "MinRarity": 2
+  },
+  "Dwarven": {
+    "Id": "Dwarven",
+    "Name": "Dwarven",
+    "DefenseMultiplier": 1.5,
+    "HPMultiplier": 1.45,
+    "MinRarity": 2
+  },
+  "Orcish": {
+    "Id": "Orcish",
+    "Name": "Orcish",
+    "DefenseMultiplier": 1.2,
+    "HPMultiplier": 1.6,
+    "MinRarity": 1
+  },
+  "Celestial": {
+    "Id": "Celestial",
+    "Name": "Celestial",
+    "DefenseMultiplier": 1.8,
+    "HPMultiplier": 1.7,
+    "MinRarity": 4
+  },
+  "Abyssal": {
+    "Id": "Abyssal",
+    "Name": "Abyssal",
+    "DefenseMultiplier": 1.75,
+    "HPMultiplier": 1.75,
+    "MinRarity": 4
+  },
+  "Dragonhide": {
+    "Id": "Dragonhide",
+    "Name": "Dragonhide",
+    "DefenseMultiplier": 1.9,
+    "HPMultiplier": 1.65,
+    "MinRarity": 4
+  },
+  "Stormforged": {
+    "Id": "Stormforged",
+    "Name": "Stormforged",
+    "DefenseMultiplier": 1.7,
+    "HPMultiplier": 1.8,
+    "MinRarity": 4
   }
 }
