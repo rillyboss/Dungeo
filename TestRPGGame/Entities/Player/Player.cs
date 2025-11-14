@@ -184,6 +184,19 @@ namespace TestRPGGame.Entities.Player
             BaseMagicPower += classData.MagicPowerPerLevel;
             BaseSpeed += classData.SpeedPerLevel;
 
+            // Check for ability unlocks from class progression
+            if (classData.AbilityUnlockSchedule != null &&
+                classData.AbilityUnlockSchedule.TryGetValue(Level.ToString(), out string? abilityId))
+            {
+                // Find and unlock the ability by ID
+                var abilityToUnlock = Abilities.FirstOrDefault(a => a.Id == abilityId);
+
+                if (abilityToUnlock != null && !abilityToUnlock.IsUnlocked)
+                {
+                    abilityToUnlock.Unlock();
+                }
+            }
+
             // Recalculate with equipment
             UpdateStatsFromEquipment();
 

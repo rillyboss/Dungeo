@@ -45,7 +45,8 @@ namespace TestRPGGame.Factories
                 data.Description,
                 abilityType,
                 data.UnlockLevel,
-                (int)(data.PurchaseCost * Systems.GameConfig.Config.AbilityPurchasePriceMultiplier)
+                (int)(data.PurchaseCost * Systems.GameConfig.Config.AbilityPurchasePriceMultiplier),
+                data.Id
             )
             {
                 IsUnlocked = data.IsStarting,

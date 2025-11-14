@@ -1,0 +1,429 @@
+╔═══════════════════════════════════════════════════════════════════════════════╗
+║                 AUTOMATED GAMEPLAY ANALYSIS REPORT                            ║
+║                   9 Complete Playthroughs to Level 15                         ║
+╚═══════════════════════════════════════════════════════════════════════════════╝
+
+═══════════════════════════════════════════════════════════════════════════════
+  EXECUTIVE SUMMARY
+═══════════════════════════════════════════════════════════════════════════════
+
+Total Runs Completed:          9
+Total Combats Across Runs:     7684
+Average Combats to Level 15:   853.8
+Average Win Rate:              89.1%
+Total Dungeon Attempts:        844
+Dungeon Success Rate:          1.1%
+
+═══════════════════════════════════════════════════════════════════════════════
+  CLASS-SPECIFIC ANALYSIS
+═══════════════════════════════════════════════════════════════════════════════
+
+--- Warrior Class (3 runs) ---
+
+  Average Combats to Level 15: 852
+  Combat Win Rate:             89.2%
+  Dungeon Success Rate:        1.1%
+  Average Gold Earned:         496849
+  Average Gold Spent:          291129
+  Average Potions Used:        2.7
+  Average Times Rested:        1.3
+  Average Near-Death Moments:  2.0
+  Average Abilities Unlocked:  3.3
+
+  Average Combats Per Level:
+    • Level 1: 2.0 combats
+    • Level 2: 3.0 combats
+    • Level 3: 5.0 combats
+    • Level 4: 6.7 combats
+    • Level 5: 7.7 combats
+    • Level 6: 14.0 combats
+    • Level 7: 17.7 combats
+    • Level 8: 31.0 combats
+    • Level 9: 36.3 combats
+    • Level 10: 59.7 combats
+    • Level 11: 86.0 combats
+    • Level 12: 125.7 combats
+    • Level 13: 183.3 combats
+    • Level 14: 274.3 combats
+    • Level 15: 0.0 combats
+
+  Average Dungeon Attempts Per Level:
+    • Level 2: 0.0 attempts
+    • Level 3: 1.0 attempts
+    • Level 4: 0.7 attempts
+    • Level 5: 0.7 attempts
+    • Level 6: 1.7 attempts
+    • Level 7: 2.0 attempts
+    • Level 8: 3.3 attempts
+    • Level 9: 4.0 attempts
+    • Level 10: 6.7 attempts
+    • Level 11: 9.7 attempts
+    • Level 12: 12.0 attempts
+    • Level 13: 20.3 attempts
+    • Level 14: 30.7 attempts
+    • Level 15: 0.0 attempts
+
+  Average Damage Taken Per Combat By Level:
+    • Level 1: 6.7 damage/combat
+    • Level 2: 2.7 damage/combat
+    • Level 3: 76.9 damage/combat
+    • Level 4: 11.5 damage/combat
+    • Level 5: 1.9 damage/combat
+    • Level 6: 0.8 damage/combat
+    • Level 7: 0.3 damage/combat
+    • Level 8: 0.3 damage/combat
+    • Level 9: 0.2 damage/combat
+    • Level 10: 0.2 damage/combat
+    • Level 11: 0.2 damage/combat
+    • Level 12: 0.2 damage/combat
+    • Level 13: 0.1 damage/combat
+    • Level 14: 0.1 damage/combat
+
+  Equipment at Key Levels:
+    • Level 5: Avg gear level 2.8 (Atk+1, Def+2, Mag+1)
+    • Level 10: Avg gear level 9.1 (Atk+12, Def+27, Mag+5)
+
+  Most Used Abilities:
+    • Battle Rage: 47.7 uses per run
+    • Shield Wall: 35.7 uses per run
+    • Power Strike: 26.0 uses per run
+    • Whirlwind: 13.3 uses per run
+    • Shadow Step: 13.0 uses per run
+
+  Key Insights:
+    • [Lvl 1] Leveled up at high HP (100%) - safe progression
+    • [Lvl 2] Leveled up at high HP (100%) - safe progression
+    • [Lvl 3] Leveled up at high HP (100%) - safe progression
+    • [Lvl 4] Leveled up at high HP (100%) - safe progression
+    • [Lvl 4] Completed Dungeon - dungeon system provides good challenge
+
+
+--- Mage Class (3 runs) ---
+
+  Average Combats to Level 15: 842
+  Combat Win Rate:             89.0%
+  Dungeon Success Rate:        1.1%
+  Average Gold Earned:         472487
+  Average Gold Spent:          266172
+  Average Potions Used:        3.0
+  Average Times Rested:        2.3
+  Average Near-Death Moments:  3.0
+  Average Abilities Unlocked:  3.7
+
+  Average Combats Per Level:
+    • Level 1: 2.0 combats
+    • Level 2: 3.0 combats
+    • Level 3: 6.0 combats
+    • Level 4: 7.0 combats
+    • Level 5: 5.7 combats
+    • Level 6: 14.7 combats
+    • Level 7: 17.7 combats
+    • Level 8: 30.3 combats
+    • Level 9: 32.0 combats
+    • Level 10: 59.7 combats
+    • Level 11: 81.3 combats
+    • Level 12: 126.7 combats
+    • Level 13: 184.3 combats
+    • Level 14: 272.3 combats
+    • Level 15: 0.0 combats
+
+  Average Dungeon Attempts Per Level:
+    • Level 2: 0.0 attempts
+    • Level 3: 1.0 attempts
+    • Level 4: 1.0 attempts
+    • Level 5: 0.0 attempts
+    • Level 6: 2.0 attempts
+    • Level 7: 2.0 attempts
+    • Level 8: 3.3 attempts
+    • Level 9: 3.3 attempts
+    • Level 10: 7.0 attempts
+    • Level 11: 8.7 attempts
+    • Level 12: 14.3 attempts
+    • Level 13: 20.3 attempts
+    • Level 14: 30.3 attempts
+    • Level 15: 0.0 attempts
+
+  Average Damage Taken Per Combat By Level:
+    • Level 1: 6.2 damage/combat
+    • Level 2: 7.4 damage/combat
+    • Level 3: 50.8 damage/combat
+    • Level 4: 19.0 damage/combat
+    • Level 5: 1.4 damage/combat
+    • Level 6: 1.2 damage/combat
+    • Level 7: 0.2 damage/combat
+    • Level 8: 0.1 damage/combat
+    • Level 9: 0.3 damage/combat
+    • Level 10: 0.1 damage/combat
+    • Level 11: 0.1 damage/combat
+    • Level 12: 0.1 damage/combat
+    • Level 13: 0.1 damage/combat
+    • Level 14: 0.1 damage/combat
+
+  Equipment at Key Levels:
+    • Level 5: Avg gear level 2.9 (Atk+2, Def+4, Mag+1)
+    • Level 10: Avg gear level 8.6 (Atk+15, Def+21, Mag+6)
+
+  Most Used Abilities:
+    • Mana Surge: 52.0 uses per run
+    • Fireball: 39.7 uses per run
+    • Ice Lance: 35.3 uses per run
+    • Flame Blast: 14.0 uses per run
+    • Backstab: 10.3 uses per run
+
+  Key Insights:
+    • [Lvl 1] Leveled up at high HP (100%) - safe progression
+    • [Lvl 2] Leveled up at high HP (100%) - safe progression
+    • [Lvl 2] Found equipment with 1 granted ability(ies) - loot system creates excitement
+    • [Lvl 3] Leveled up at high HP (100%) - safe progression
+    • [Lvl 4] Leveled up at high HP (100%) - safe progression
+
+
+--- Rogue Class (3 runs) ---
+
+  Average Combats to Level 15: 866
+  Combat Win Rate:             89.1%
+  Dungeon Success Rate:        1.0%
+  Average Gold Earned:         460791
+  Average Gold Spent:          270622
+  Average Potions Used:        3.0
+  Average Times Rested:        1.7
+  Average Near-Death Moments:  3.7
+  Average Abilities Unlocked:  5.3
+
+  Average Combats Per Level:
+    • Level 1: 2.0 combats
+    • Level 2: 3.0 combats
+    • Level 3: 5.7 combats
+    • Level 4: 7.3 combats
+    • Level 5: 9.0 combats
+    • Level 6: 12.0 combats
+    • Level 7: 16.0 combats
+    • Level 8: 30.0 combats
+    • Level 9: 35.0 combats
+    • Level 10: 59.7 combats
+    • Level 11: 84.7 combats
+    • Level 12: 129.0 combats
+    • Level 13: 189.0 combats
+    • Level 14: 284.0 combats
+    • Level 15: 0.0 combats
+
+  Average Dungeon Attempts Per Level:
+    • Level 2: 0.0 attempts
+    • Level 3: 1.0 attempts
+    • Level 4: 1.0 attempts
+    • Level 5: 1.0 attempts
+    • Level 6: 1.0 attempts
+    • Level 7: 1.7 attempts
+    • Level 8: 3.0 attempts
+    • Level 9: 3.7 attempts
+    • Level 10: 6.7 attempts
+    • Level 11: 9.3 attempts
+    • Level 12: 14.3 attempts
+    • Level 13: 21.0 attempts
+    • Level 14: 31.7 attempts
+    • Level 15: 0.0 attempts
+
+  Average Damage Taken Per Combat By Level:
+    • Level 1: 10.3 damage/combat
+    • Level 2: 4.3 damage/combat
+    • Level 3: 62.8 damage/combat
+    • Level 4: 10.4 damage/combat
+    • Level 5: 1.9 damage/combat
+    • Level 6: 0.8 damage/combat
+    • Level 7: 0.3 damage/combat
+    • Level 8: 0.1 damage/combat
+    • Level 9: 0.3 damage/combat
+    • Level 10: 0.2 damage/combat
+    • Level 11: 0.3 damage/combat
+    • Level 12: 0.1 damage/combat
+    • Level 13: 0.1 damage/combat
+    • Level 14: 0.1 damage/combat
+
+  Equipment at Key Levels:
+    • Level 5: Avg gear level 3.2 (Atk+3, Def+3, Mag+1)
+    • Level 10: Avg gear level 9.0 (Atk+18, Def+20, Mag+6)
+
+  Most Used Abilities:
+    • Shadow Step: 34.3 uses per run
+    • Poison Blade: 26.0 uses per run
+    • Arcane Barrier: 24.3 uses per run
+    • Backstab: 22.7 uses per run
+    • Vital Strike: 15.7 uses per run
+
+  Key Insights:
+    • [Lvl 1] Leveled up at high HP (100%) - safe progression
+    • [Lvl 2] Leveled up at high HP (100%) - safe progression
+    • [Lvl 3] Leveled up at high HP (100%) - safe progression
+    • [Lvl 3] Equipped item grants 1 ability(ies): Simple Pendant - equipment feels more impactful
+    • [Lvl 3] Found equipment with 1 granted ability(ies) - loot system creates excitement
+
+
+═══════════════════════════════════════════════════════════════════════════════
+  GAME SYSTEMS ANALYSIS
+═══════════════════════════════════════════════════════════════════════════════
+
+🗡️  COMBAT SYSTEM
+
+  Total Damage Dealt:           2,985,958
+  Total Damage Taken:           5,303
+  Average Damage Dealt/Combat:  435.8
+  Average Damage Taken/Combat:  0.7
+  Total Critical Hits:          3598
+  Total Missed Attacks:         0
+
+  Combat Outcomes:
+    • Win Rate:    89.1%
+    • Flee Rate:   0.1%
+    • Death Rate:  0.1%
+
+📈 PROGRESSION SYSTEM
+
+  Average Combats to Level 5:  25.0
+  Average Combats to Level 10: 180.2
+  Average Combats to Level 15: 853.8
+
+  Average Combats Per Level Range:
+    • Levels 1-5:   5.0 combats/level
+    • Levels 5-10:  31.0 combats/level
+    • Levels 10-15: 134.7 combats/level
+
+💰 ECONOMY SYSTEM
+
+  Total Gold Earned (All Sources):  476709
+
+  Gold Sources Breakdown:
+    • Starting Gold:       100 (0.0%)
+    • From Combat:         46153 (9.7%)
+    • From Dungeons:       0 (0.0%)
+    • From Achievements:   6744 (1.4%)
+    • From Shop Sales:     423711 (88.9%)
+
+  Total Gold Spent:              275974
+
+  Gold Expenditures Breakdown:
+    • Weapons:             27700 (10.0%)
+    • Armor:               123786 (44.8%)
+    • Accessories:         121398 (44.1%)
+    • Potions:             0 (0.0%)
+    • Rest/Inn:            18 (0.0%)
+    • Abilities:           3072 (1.1%)
+
+  Final Gold Remaining:          1283
+  Shop Visits:                   81.1
+  Items Purchased:               608.0
+  Gold Efficiency (Spent/Earned): 57.9%
+
+🏰 DUNGEON SYSTEM
+
+  Total Attempts:              844
+  Completed:                   9
+  Failed:                      835
+  Success Rate:                1.1%
+  Average Attempts Per Run:    93.8
+
+⚡ ABILITY SYSTEM
+
+  Average Abilities Unlocked:  4.1 (out of 3 available)
+  Total Ability Usages:        1853
+  Average Usages Per Run:      205.9
+
+  Ability Store Visits:
+    • Total Visits:             54
+    • Average Visits Per Run:   6.0
+    • Successful Purchases:     37 (68.5%)
+
+  Reasons for Not Purchasing:
+    • Insufficient Gold: 17 times (100.0%)
+
+  Most Used Abilities (All Classes):
+    • Battle Rage: 188 total (20.9 per run)
+    • Mana Surge: 179 total (19.9 per run)
+    • Shadow Step: 162 total (18.0 per run)
+    • Shield Wall: 129 total (14.3 per run)
+    • Arcane Barrier: 125 total (13.9 per run)
+    • Fireball: 121 total (13.4 per run)
+    • Ice Lance: 106 total (11.8 per run)
+    • Backstab: 101 total (11.2 per run)
+    • Power Strike: 92 total (10.2 per run)
+    • Whirlwind: 90 total (10.0 per run)
+
+🎁 LOOT & EQUIPMENT SYSTEM
+
+  Total Loot Drops:            2807
+  Average Drops Per Run:       311.9
+
+  Loot Distribution by Rarity:
+    • Uncommon: 1335 (47.6%)
+    • Common: 886 (31.6%)
+    • Rare: 367 (13.1%)
+    • Epic: 163 (5.8%)
+    • Legendary: 56 (2.0%)
+
+  Equipment-Granted Abilities:
+    • Items with Abilities Received:  696 (77.3 per run)
+    • Items with Abilities Equipped:  254 (28.2 per run)
+    • Equip Rate:                      36.5%
+
+    ⚠️  Low equip rate suggests ability-granting items may not be competitive
+
+💊 RESOURCE MANAGEMENT
+
+  Average Potions Used:        2.9
+  Average Times Rested:        1.8
+  Average Near-Death Moments:  2.9
+  Average Out-of-Mana Moments: 2.9
+
+═══════════════════════════════════════════════════════════════════════════════
+  KEY OBSERVATIONS & INSIGHTS
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ WHAT WORKS WELL:
+
+  • [Lvl 1] Leveled up at high HP (100%) - safe progression
+  • [Lvl 2] Leveled up at high HP (100%) - safe progression
+  • [Lvl 3] Leveled up at high HP (100%) - safe progression
+  • [Lvl 4] Leveled up at high HP (100%) - safe progression
+  • [Lvl 4] Completed Dungeon - dungeon system provides good challenge
+  • [Lvl 5] Equipped item grants 1 ability(ies): Tattered Armor - equipment feels more impactful
+  • [Lvl 6] Leveled up at high HP (100%) - safe progression
+  • [Lvl 6] Found equipment with 1 granted ability(ies) - loot system creates excitement
+  • [Lvl 6] Equipped item grants 1 ability(ies): Crude Wand - equipment feels more impactful
+  • [Lvl 6] Equipped item grants 1 ability(ies): Rusty Scythe - equipment feels more impactful
+
+❌ WHAT DOESN'T WORK:
+
+  • [Lvl 3] Failed Dungeon - may need better preparation guidance
+  • [Lvl 6] Failed Dungeon - may need better preparation guidance
+  • [Lvl 7] Failed Dungeon - may need better preparation guidance
+  • [Lvl 8] Failed Dungeon - may need better preparation guidance
+  • [Lvl 9] Failed Dungeon - may need better preparation guidance
+  • [Lvl 10] Failed Dungeon - may need better preparation guidance
+  • [Lvl 11] Failed Dungeon - may need better preparation guidance
+  • [Lvl 12] Failed Dungeon - may need better preparation guidance
+  • [Lvl 13] Failed Dungeon - may need better preparation guidance
+  • [Lvl 14] Failed Dungeon - may need better preparation guidance
+
+❓ MISSING INFORMATION:
+
+  • [Lvl 3] No way to know if fleeing will succeed - success rate info would be helpful
+  • [Lvl 4] No way to know if fleeing will succeed - success rate info would be helpful
+
+⚖️  BALANCE ISSUES:
+
+  • [Lvl 5] Won 10 consecutive combats - may be too easy
+  • [Lvl 5] Won 11 consecutive combats - may be too easy
+  • [Lvl 5] Won 12 consecutive combats - may be too easy
+  • [Lvl 5] Won 13 consecutive combats - may be too easy
+  • [Lvl 5] Won 14 consecutive combats - may be too easy
+  • [Lvl 6] Won 15 consecutive combats - may be too easy
+  • [Lvl 6] Won 16 consecutive combats - may be too easy
+  • [Lvl 6] Won 17 consecutive combats - may be too easy
+  • [Lvl 6] Won 18 consecutive combats - may be too easy
+  • [Lvl 6] Won 19 consecutive combats - may be too easy
+
+═══════════════════════════════════════════════════════════════════════════════
+  RECOMMENDATIONS FOR IMPROVEMENT
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Low dungeon success rate. Consider adding guidance on dungeon difficulty or adjusting balance.
+

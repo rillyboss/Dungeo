@@ -5,6 +5,7 @@ namespace TestRPGGame.Abilities
 {
     public class Ability
     {
+        public string Id { get; set; }
         public string Name { get; set; }
         public int ManaCost { get; set; }
         public int Cooldown { get; set; }
@@ -27,8 +28,9 @@ namespace TestRPGGame.Abilities
         public bool IsEquipmentGranted { get; set; }
 
         public Ability(string name, int manaCost, int cooldown, string description, AbilityType type,
-                      int unlockLevel = 1, int purchaseCost = 0)
+                      int unlockLevel = 1, int purchaseCost = 0, string id = "")
         {
+            Id = id;
             Name = name;
             ManaCost = manaCost;
             Cooldown = cooldown;
@@ -69,7 +71,9 @@ namespace TestRPGGame.Abilities
 
         public bool CanUnlock(int playerLevel, int playerGold)
         {
-            return !IsUnlocked && playerLevel >= UnlockLevel && playerGold >= PurchaseCost;
+            // Shop purchases only require gold (no level requirement)
+            // Level-based unlocks are granted automatically via class progression
+            return !IsUnlocked && playerGold >= PurchaseCost;
         }
 
         public void Unlock()

@@ -29,6 +29,9 @@ namespace TestRPGGame.DataLoading
         public int StartingPotions { get; set; }
         public List<string> StartingEquipment { get; set; } = new List<string>();
 
+        // Ability progression (level -> ability ID)
+        public Dictionary<string, string> AbilityUnlockSchedule { get; set; } = new Dictionary<string, string>();
+
         // Visual representation
         public List<string> Art { get; set; } = new List<string>();
         public string ArtColor { get; set; } = "White";

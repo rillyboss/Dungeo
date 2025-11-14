@@ -24,7 +24,9 @@
       "Bash(timeout 180 dotnet run:*)",
       "Bash(jq:*)",
       "Bash(find:*)",
-      "Bash(git reset:*)"
+      "Bash(git reset:*)",
+      "Bash(python3:*)",
+      "Bash(git remote add:*)"
     ],
     "deny": [],
     "ask": []

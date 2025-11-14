@@ -23,6 +23,14 @@
       "iron_sword",
       "leather_armor"
     ],
+    "AbilityUnlockSchedule": {
+      "3": "warrior_cleave",
+      "5": "warrior_whirlwind",
+      "7": "warrior_reckless_charge",
+      "9": "warrior_execute",
+      "11": "warrior_fortify",
+      "13": "warrior_blade_storm"
+    },
     "Art": [
       "                    /)",
       "            /\\_/\\  //",
@@ -65,6 +73,14 @@
       "wooden_staff",
       "mage_robes"
     ],
+    "AbilityUnlockSchedule": {
+      "3": "mage_frost_bolt",
+      "5": "mage_meteor_strike",
+      "7": "mage_frost_nova",
+      "9": "mage_mana_shield",
+      "11": "mage_ice_block",
+      "13": "mage_inferno"
+    },
     "Art": [
       "           *    .",
       "       .    ___    *",
@@ -104,6 +120,14 @@
       "steel_dagger",
       "leather_vest"
     ],
+    "AbilityUnlockSchedule": {
+      "2": "rogue_ambush",
+      "4": "rogue_cheap_shot",
+      "6": "rogue_death_mark",
+      "8": "rogue_smoke_bomb",
+      "10": "rogue_assassination",
+      "12": "rogue_plague_strike"
+    },
     "Art": [
       "              /|",
       "             / |",

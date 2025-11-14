@@ -21,7 +21,7 @@
   "DungeonGoldMultiplier": 1.0,
   "EquipmentPurchasePriceMultiplier": 1.0,
   "EquipmentSellPriceMultiplier": 1.0,
-  "AbilityPurchasePriceMultiplier": 5.0,
+  "AbilityPurchasePriceMultiplier": 7.5,
   "EnemyDamageMultiplier": 1.0,
   "CombatAutosave": true,
   "AdditionalAbilityChanceCommon": 0.05,

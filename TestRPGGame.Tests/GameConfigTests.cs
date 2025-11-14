@@ -201,8 +201,8 @@ namespace TestRPGGame.Tests
             // Arrange & Act
             var config = GameConfig.Config;
 
-            // Assert - Should be reduced to 5.0 (half of original 10.0)
-            Assert.Equal(5.0, config.AbilityPurchasePriceMultiplier);
+            // Assert - Adjusted to 7.5x for balanced ability costs based on impact
+            Assert.Equal(7.5, config.AbilityPurchasePriceMultiplier);
         }
 
         [Fact]

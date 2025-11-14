@@ -19,7 +19,9 @@ namespace TestRPGGame.Tests
 
             // Assert
             Assert.NotNull(weapon);
-            Assert.Single(weapon.GrantedAbilityIds); // Should have exactly 1 signature ability
+            // Common weapons always have at least 1 signature ability
+            // They MAY have an additional ability (5% chance)
+            Assert.True(weapon.GrantedAbilityIds.Count >= 1, "Weapon should have at least the signature ability");
             Assert.NotEmpty(weapon.GrantedAbilityIds[0]); // Signature ability ID should not be empty
         }
 

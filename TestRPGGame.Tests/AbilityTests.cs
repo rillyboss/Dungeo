@@ -106,11 +106,13 @@ namespace TestRPGGame.Tests
             var ability = new Ability("Test Strike", 30, 3, "Test", AbilityType.Physical, unlockLevel: 5, purchaseCost: 200);
 
             // Act & Assert
-            Assert.True(ability.CanUnlock(5, 200));   // Meets requirements
-            Assert.True(ability.CanUnlock(6, 300));   // Exceeds requirements
-            Assert.False(ability.CanUnlock(4, 200));  // Level too low
+            // Shop purchases only check gold (no level requirement)
+            // Level-based unlocks are granted automatically via class progression
+            Assert.True(ability.CanUnlock(5, 200));   // Meets gold requirement
+            Assert.True(ability.CanUnlock(6, 300));   // Exceeds gold requirement
+            Assert.True(ability.CanUnlock(4, 200));   // Gold sufficient (level ignored for shop)
             Assert.False(ability.CanUnlock(5, 150));  // Not enough gold
-            Assert.False(ability.CanUnlock(4, 150));  // Both insufficient
+            Assert.False(ability.CanUnlock(4, 150));  // Not enough gold
         }
     }
 }

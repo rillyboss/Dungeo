@@ -179,13 +179,13 @@ namespace TestRPGGame.Tests
         }
 
         [Fact]
-        public void UnlockAbilities_LevelTooLow_ShowsErrorMessage()
+        public void UnlockAbilities_LowLevel_CanStillPurchaseWithGold()
         {
             // Arrange
             var progressionManager = new ProgressionManager(_mockInterface.Object);
             var player = new Player("Hero", PlayerClass.Warrior);
             player.Gold = 10000; // Plenty of gold
-            player.Level = 1; // Too low level
+            player.Level = 1; // Low level
 
             _mockInterface.Setup(x => x.RequestAbilityUnlock(
                 It.IsAny<System.Collections.Generic.List<AbilityInfo>>(),
@@ -200,8 +200,10 @@ namespace TestRPGGame.Tests
             progressionManager.UnlockAbilities(player);
 
             // Assert
-            _mockInterface.Verify(x => x.OnEvent(It.Is<GameEvents.InfoMessageEvent>(
-                e => e.Message.Contains("Cannot unlock") && e.Type == GameEvents.MessageType.Error
+            // Shop purchases only check gold (no level requirement)
+            // Ability should be unlocked successfully
+            _mockInterface.Verify(x => x.OnEvent(It.Is<GameEvents.AbilityUnlockedEvent>(
+                e => true
             )), Times.Once);
         }
 
