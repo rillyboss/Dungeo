@@ -6,10 +6,15 @@
 
 ## 🎯 Core Working Principles
 
-### Testing Rules
+### Testing Rules (🚨 MANDATORY)
+
+**🚨 ALL NEW FEATURES AND BUG FIXES MUST HAVE TESTS. NO EXCEPTIONS. 🚨**
+
+If you add code without tests, **THE TASK IS NOT COMPLETE.**
+
 **ALWAYS run tests before committing:**
 ```bash
-dotnet test                    # Run all 401 tests (must pass 100%)
+dotnet test                    # Run all 418 tests (must pass 100%)
 dotnet test --no-build         # Skip rebuild if just ran dotnet build
 ```
 
@@ -18,14 +23,29 @@ dotnet test --no-build         # Skip rebuild if just ran dotnet build
 - ✅ After changing JSON data files
 - ✅ Before any git commit
 - ✅ After fixing bugs
+- ✅ **IMMEDIATELY after adding new features**
 - ❌ NOT needed for pure documentation changes
 
 **Test expectations:**
-- All tests must pass (currently 401 tests)
-- **ALWAYS write tests for bug fixes** - Prevent regressions
-- **ALWAYS write tests for new features** - Ensure they work correctly
+- All tests must pass (currently 418 tests)
+- **🚨 WRITE TESTS FOR NEW FEATURES** - Not optional, not later, NOW
+- **🚨 WRITE TESTS FOR BUG FIXES** - Prove the bug is fixed
+- **🚨 WRITE TESTS FOR NEW PUBLIC METHODS** - Every method needs at least one test
 - Update test counts in this file when adding/removing tests
-- Update test counts when adding abilities (Warrior/Mage/Rogue each have 6 total abilities now)
+- Update test counts in CLAUDE.md when they change
+- Test edge cases: null values, empty lists, boundary conditions
+
+**What MUST have tests:**
+- ✅ New public methods or properties
+- ✅ New game mechanics or systems
+- ✅ Bug fixes (test proves bug is fixed)
+- ✅ Data model changes (test serialization)
+- ✅ UI data preparation logic
+- ✅ Refactoring (tests ensure behavior unchanged)
+
+**What does NOT need tests:**
+- ❌ Pure display code (Console.WriteLine formatting)
+- ❌ Comment/documentation changes
 
 ### Version Control Rules
 **Commit format:**
@@ -93,8 +113,9 @@ git commit -m "type: description..."     # Commit with proper format
 - **TestRPGGame/Systems/** - Managers (Save, Dungeon, Progression, etc.)
 
 ### Testing & Documentation
-- **TestRPGGame.Tests/** - All 401 unit tests
+- **TestRPGGame.Tests/** - All 418 unit tests
 - Run: `dotnet test` (must pass 100%)
+- **🚨 ALL NEW CODE MUST HAVE TESTS** - No exceptions
 - **CHANGELOG.md** - Project changelog (update with every change)
 
 ---
@@ -119,9 +140,11 @@ git commit -m "type: description..."     # Commit with proper format
 3. **Check existing events** in GameEvents.cs before creating new ones
 
 ### ❌ Don't Modify Without Testing
-1. **Run tests after every code change**
-2. **Rebuild if tests fail mysteriously** - `dotnet build && dotnet test`
-3. **Update test expectations** when changing ability counts or data
+1. **🚨 WRITE TESTS FOR ALL NEW CODE** - Task is not complete without tests
+2. **Run tests after every code change**
+3. **Rebuild if tests fail mysteriously** - `dotnet build && dotnet test`
+4. **Update test expectations** when changing ability counts or data
+5. **Never skip tests because "it's just a small change"** - Small bugs still break production
 
 ### ❌ Don't Leave a Mess
 1. **Cleanup old and unused code during refactors and changes.**
@@ -161,15 +184,17 @@ git commit -m "type: description..."     # Commit with proper format
 ## 💡 Success Checklist
 
 Before considering work "done":
-- [ ] All tests pass: `dotnet test`
-- [ ] **New tests added** for bug fixes or features
+- [ ] **🚨 NEW TESTS WRITTEN** for all new features/bug fixes (MANDATORY)
+- [ ] All tests pass: `dotnet test` (418 tests, 100%)
 - [ ] **CHANGELOG.md updated** with changes
 - [ ] Code follows SOLID principles
 - [ ] No Console calls in game logic (use IGameInterface)
 - [ ] JSON files are valid (project builds)
 - [ ] Changes are focused and atomic
-- [ ] Test count updated in context-enrichment.md (if changed)
+- [ ] Test count updated in context-enrichment.md and CLAUDE.md (if changed)
 - [ ] Commit when request is completed and tests are passing
+
+**🚨 CRITICAL: If you didn't write tests, the work is NOT done. Go back and write them.**
 
 ---
 
@@ -177,7 +202,8 @@ Before considering work "done":
 
 - **3 Classes:** Warrior, Mage, Rogue
 - **6 Abilities per class:** 3 starting + 3 unlockable
-- **Total Tests:** 401 (must all pass)
+- **Total Tests:** 418 (must all pass - 100% required)
+- **Testing Policy:** 🚨 ALL new code MUST have tests - NO EXCEPTIONS
 - **Architecture:** Interface-driven, event-based, data-driven
 - **Tech Stack:** C# .NET 8.0, xUnit, Moq
 - **Documentation:** CHANGELOG.md (update with every change)
