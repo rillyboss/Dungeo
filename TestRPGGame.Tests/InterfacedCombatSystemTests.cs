@@ -246,15 +246,18 @@ namespace TestRPGGame.Tests
             player.Effects.AddEffect(testEffect);
             int initialDuration = testEffect.RemainingTurns;
             Assert.Equal(3, initialDuration);
+            Assert.True(testEffect.JustApplied, "Effect should be marked as just applied");
 
-            // Act - Process turn start once manually to verify it works
+            // Act - First ProcessTurnStart should skip decrement (JustApplied flag)
             player.Effects.ProcessTurnStart();
 
-            // Assert - Duration should decrease by 1
-            if (player.Effects.ActiveEffects.Any())
-            {
-                Assert.Equal(2, player.Effects.ActiveEffects.First().RemainingTurns);
-            }
+            // Assert - Duration should stay at 3, JustApplied should be false
+            Assert.Equal(3, testEffect.RemainingTurns);
+            Assert.False(testEffect.JustApplied, "JustApplied flag should be cleared after first tick");
+
+            // Second ProcessTurnStart should actually decrement
+            player.Effects.ProcessTurnStart();
+            Assert.Equal(2, testEffect.RemainingTurns);
         }
 
         [Fact]
@@ -364,15 +367,16 @@ namespace TestRPGGame.Tests
 
             player.Effects.AddEffect(testEffect);
             Assert.Equal(2, testEffect.RemainingTurns);
+            Assert.True(testEffect.JustApplied);
 
-            // Process one turn manually to verify decrement
+            // First ProcessTurnStart should skip decrement (JustApplied)
             player.Effects.ProcessTurnStart();
+            Assert.Equal(2, testEffect.RemainingTurns);
+            Assert.False(testEffect.JustApplied);
 
-            // Assert - Duration should decrease by 1
-            if (player.Effects.ActiveEffects.Any())
-            {
-                Assert.Equal(1, player.Effects.ActiveEffects.First().RemainingTurns);
-            }
+            // Second ProcessTurnStart should actually decrement
+            player.Effects.ProcessTurnStart();
+            Assert.Equal(1, testEffect.RemainingTurns);
         }
     }
 }

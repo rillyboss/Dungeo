@@ -8,6 +8,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **JustApplied flag** to StatusEffect base class
+  - Ensures buffs/debuffs last their full stated duration
+  - Skips first duration tick when effect is applied
+  - Matches standard RPG behavior (3-turn buff = 3 beneficial turns)
 - Added 4 comprehensive unit tests for status effect system in combat
   - Test for status effects ticking down each turn
   - Test for effects clearing when combat ends
@@ -25,9 +29,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - Added `ClearAll()` calls when combat ends
   - Prevents buffs from Combat #1 carrying into Combat #2
   - Ensures clean state for each new combat encounter
+- **Fixed buff duration issue**: Buffs now last their full stated duration
+  - Previously: 3-turn buff only gave 2 beneficial attacks (cast turn consumed one)
+  - Now: 3-turn buff gives 3 beneficial attacks (JustApplied flag skips first tick)
+  - Matches player expectations and industry standard RPG behavior
 
 ### Changed
 - Updated test count from 397 to 401 tests (all passing)
+- Updated 6 existing tests to account for JustApplied flag behavior:
+  - `DamageOverTimeEffect_DecrementsRemainingTurns`
+  - `DamageOverTimeEffect_ExpiresAfterDuration`
+  - `ShieldEffect_ExpiresAfterDuration`
+  - `ThornsEffect_DecrementsAfterTurns`
+  - `StunEffect_ExpiresAfterDuration`
+  - `StatModifierEffect_ExpiresAfterDuration`
 - Removed 11 outdated markdown documentation files:
   - Removed all HOOKS_*.md files (6 files)
   - Removed SESSION_SUMMARY.md

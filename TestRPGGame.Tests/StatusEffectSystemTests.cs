@@ -218,15 +218,25 @@ namespace TestRPGGame.Tests
 
             var effectBefore = player.Effects.ActiveEffects.First();
             Assert.Equal(3, effectBefore.RemainingTurns);
+            Assert.True(effectBefore.JustApplied);
 
-            player.Effects.ProcessTurnStart();
+            player.Effects.ProcessTurnStart(); // Turn 1: Skip decrement (JustApplied)
 
-            // Effect should be removed after processing, check if new duration would be 2
-            // Actually, the effect stays until duration reaches 0, so let's check the active effects
+            // Effect should still have duration 3 after first tick (JustApplied flag)
             if (player.Effects.ActiveEffects.Any())
             {
                 var effectAfter = player.Effects.ActiveEffects.First();
-                Assert.Equal(2, effectAfter.RemainingTurns);
+                Assert.Equal(3, effectAfter.RemainingTurns);
+                Assert.False(effectAfter.JustApplied);
+            }
+
+            player.Effects.ProcessTurnStart(); // Turn 2: Actually decrement
+
+            // Now it should be 2
+            if (player.Effects.ActiveEffects.Any())
+            {
+                var effectAfter2 = player.Effects.ActiveEffects.First();
+                Assert.Equal(2, effectAfter2.RemainingTurns);
             }
         }
 
@@ -240,10 +250,15 @@ namespace TestRPGGame.Tests
             burningEffect6.Source = enemy;
             player.Effects.AddEffect(burningEffect6);
 
-            player.Effects.ProcessTurnStart(); // Turn 1: 2->1
+            player.Effects.ProcessTurnStart(); // Turn 1: Skip decrement (JustApplied)
             Assert.Single(player.Effects.ActiveEffects);
+            Assert.Equal(2, burningEffect6.RemainingTurns);
 
-            player.Effects.ProcessTurnStart(); // Turn 2: 1->0, expires
+            player.Effects.ProcessTurnStart(); // Turn 2: 2->1
+            Assert.Single(player.Effects.ActiveEffects);
+            Assert.Equal(1, burningEffect6.RemainingTurns);
+
+            player.Effects.ProcessTurnStart(); // Turn 3: 1->0, expires
             Assert.Empty(player.Effects.ActiveEffects);
         }
 
@@ -380,10 +395,13 @@ namespace TestRPGGame.Tests
             var shieldEffect = new ShieldEffect("shield", "Shield", "🛡️", 2, 50);
             player.Effects.AddEffect(shieldEffect);
 
-            player.Effects.ProcessTurnStart(); // Turn 1
+            player.Effects.ProcessTurnStart(); // Turn 1: Skip decrement (JustApplied)
             Assert.NotNull(player.Effects.GetActiveShield());
 
-            player.Effects.ProcessTurnStart(); // Turn 2
+            player.Effects.ProcessTurnStart(); // Turn 2: 2->1
+            Assert.NotNull(player.Effects.GetActiveShield());
+
+            player.Effects.ProcessTurnStart(); // Turn 3: 1->0, expires
             Assert.Null(player.Effects.GetActiveShield());
         }
 
@@ -412,10 +430,13 @@ namespace TestRPGGame.Tests
             var thornsEffect = new ThornsEffect("thorns", "Thorns", "🌵", 2, 10);
             player.Effects.AddEffect(thornsEffect);
 
-            player.Effects.ProcessTurnStart();
+            player.Effects.ProcessTurnStart(); // Turn 1: Skip decrement (JustApplied)
             Assert.NotNull(player.Effects.GetEffect("thorns"));
 
-            player.Effects.ProcessTurnStart();
+            player.Effects.ProcessTurnStart(); // Turn 2: 2->1
+            Assert.NotNull(player.Effects.GetEffect("thorns"));
+
+            player.Effects.ProcessTurnStart(); // Turn 3: 1->0, expires
             Assert.Null(player.Effects.GetEffect("thorns"));
         }
 
@@ -456,7 +477,10 @@ namespace TestRPGGame.Tests
             player.Effects.AddEffect(stunEffect);
             Assert.True(player.Effects.IsStunned());
 
-            player.Effects.ProcessTurnStart();
+            player.Effects.ProcessTurnStart(); // Turn 1: Skip decrement (JustApplied)
+            Assert.True(player.Effects.IsStunned(), "Should still be stunned after first tick");
+
+            player.Effects.ProcessTurnStart(); // Turn 2: 1->0, expires
             Assert.False(player.Effects.IsStunned());
         }
 
@@ -512,7 +536,10 @@ namespace TestRPGGame.Tests
             player.Effects.AddEffect(battleRageEffect);
             Assert.True(player.Effects.HasEffect("battle_rage"));
 
-            player.Effects.ProcessTurnStart();
+            player.Effects.ProcessTurnStart(); // Turn 1: Skip decrement (JustApplied)
+            Assert.True(player.Effects.HasEffect("battle_rage"), "Should still have effect after first tick");
+
+            player.Effects.ProcessTurnStart(); // Turn 2: 1->0, expires
 
             Assert.False(player.Effects.HasEffect("battle_rage"));
         }

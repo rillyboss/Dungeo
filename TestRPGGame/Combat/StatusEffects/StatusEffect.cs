@@ -51,6 +51,12 @@ namespace TestRPGGame.Combat.StatusEffects
         public bool CanStack { get; set; } = false;
 
         /// <summary>
+        /// Whether this effect was just applied this turn (skips first duration tick)
+        /// Ensures buffs last their full stated duration even when cast mid-turn
+        /// </summary>
+        public bool JustApplied { get; set; } = true;
+
+        /// <summary>
         /// The combatant this effect is applied to
         /// </summary>
         public Combatant? Target { get; set; }
@@ -96,10 +102,18 @@ namespace TestRPGGame.Combat.StatusEffects
         public virtual void OnExpire() { }
 
         /// <summary>
-        /// Decrements the duration and returns true if the effect should be removed
+        /// Decrements the duration and returns true if the effect should be removed.
+        /// Skips the first decrement if JustApplied is true (effect was applied this turn).
         /// </summary>
         public bool DecrementDuration()
         {
+            // Skip first tick if effect was just applied
+            if (JustApplied)
+            {
+                JustApplied = false;
+                return false; // Don't remove, just clear the flag
+            }
+
             if (RemainingTurns > 0)
             {
                 RemainingTurns--;
