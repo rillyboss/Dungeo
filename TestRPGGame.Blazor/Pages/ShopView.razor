@@ -1,0 +1,576 @@
+@page "/shop"
+@using TestRPGGame.Equipment
+@using TestRPGGame.Systems
+@inject NavigationManager Navigation
+@inject GameStateService GameState
+@implements IDisposable
+
+<PageTitle>Shop - Dungeo</PageTitle>
+
+<style>
+    .shop-container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    .shop-header {
+        background: linear-gradient(135deg, #8B0000 0%, #DAA520 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .gold-display {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #DAA520;
+    }
+
+    .shop-tabs {
+        margin-bottom: 2rem;
+    }
+
+    .item-card {
+        background: #1a1a1a;
+        border: 2px solid #3a3a3a;
+        border-radius: 8px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .item-card:hover {
+        border-color: #DAA520;
+        box-shadow: 0 8px 24px rgba(218, 165, 32, 0.4);
+        transform: translateY(-4px);
+    }
+
+    .item-card.can-afford {
+        border-color: #4CAF50;
+    }
+
+    .item-card.cannot-afford {
+        border-color: #F44336;
+        opacity: 0.6;
+    }
+
+    .item-icon {
+        font-size: 3rem;
+        text-align: center;
+        margin: 0.5rem 0;
+    }
+
+    .item-name {
+        font-weight: bold;
+        text-align: center;
+        margin: 0.5rem 0;
+        min-height: 2.5rem;
+    }
+
+    .item-stats {
+        flex: 1;
+        margin: 1rem 0;
+    }
+
+    .stat-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.25rem 0;
+        border-bottom: 1px solid #2d2d2d;
+    }
+
+    .item-price {
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #DAA520;
+        margin-top: 1rem;
+    }
+
+    .rarity-common { color: #FFFFFF; }
+    .rarity-uncommon { color: #1EFF00; }
+    .rarity-rare { color: #0070DD; }
+    .rarity-epic { color: #A335EE; }
+    .rarity-legendary { color: #FF8000; }
+
+    .filter-panel {
+        background: #2d2d2d;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .shop-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1.5rem;
+    }
+
+    .empty-shop {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: #2d2d2d;
+        border-radius: 12px;
+    }
+
+    @@media (max-width: 768px) {
+        .shop-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="shop-container">
+    <!-- Header -->
+    <div class="shop-header">
+        <MudGrid>
+            <MudItem xs="12" md="8">
+                <MudText Typo="Typo.h3" Style="font-weight: bold; color: white; margin-bottom: 0.5rem;">
+                    🏪 Merchant's Shop
+                </MudText>
+                <MudText Typo="Typo.body1" Style="color: white; opacity: 0.9;">
+                    Buy and sell equipment to prepare for your adventures
+                </MudText>
+            </MudItem>
+            <MudItem xs="12" md="4" Style="display: flex; align-items: center; justify-content: flex-end;">
+                <div class="gold-display">
+                    <span>💰</span>
+                    <span>@_playerGold Gold</span>
+                </div>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <!-- Shop Tabs -->
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" Class="shop-tabs" @bind-ActivePanelIndex="_activeTab">
+        <MudTabPanel Text="Buy Items" Icon="@Icons.Material.Filled.ShoppingCart">
+            <!-- Filter Panel -->
+            <div class="filter-panel">
+                <MudGrid>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudSelect T="EquipmentSlot?" Label="Filter by Slot" @bind-Value="_filterSlot" Variant="Variant.Outlined">
+                            <MudSelectItem T="EquipmentSlot?" Value="@((EquipmentSlot?)null)">All Slots</MudSelectItem>
+                            <MudSelectItem T="EquipmentSlot?" Value="@EquipmentSlot.Weapon">Weapons</MudSelectItem>
+                            <MudSelectItem T="EquipmentSlot?" Value="@EquipmentSlot.Armor">Armor</MudSelectItem>
+                            <MudSelectItem T="EquipmentSlot?" Value="@EquipmentSlot.Helmet">Helmets</MudSelectItem>
+                            <MudSelectItem T="EquipmentSlot?" Value="@EquipmentSlot.Boots">Boots</MudSelectItem>
+                            <MudSelectItem T="EquipmentSlot?" Value="@EquipmentSlot.Gloves">Gloves</MudSelectItem>
+                            <MudSelectItem T="EquipmentSlot?" Value="@EquipmentSlot.Ring1">Rings</MudSelectItem>
+                            <MudSelectItem T="EquipmentSlot?" Value="@EquipmentSlot.Amulet">Amulets</MudSelectItem>
+                            <MudSelectItem T="EquipmentSlot?" Value="@EquipmentSlot.Relic">Relics</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudSelect T="ItemRarity?" Label="Filter by Rarity" @bind-Value="_filterRarity" Variant="Variant.Outlined">
+                            <MudSelectItem T="ItemRarity?" Value="@((ItemRarity?)null)">All Rarities</MudSelectItem>
+                            <MudSelectItem T="ItemRarity?" Value="@ItemRarity.Common">Common</MudSelectItem>
+                            <MudSelectItem T="ItemRarity?" Value="@ItemRarity.Uncommon">Uncommon</MudSelectItem>
+                            <MudSelectItem T="ItemRarity?" Value="@ItemRarity.Rare">Rare</MudSelectItem>
+                            <MudSelectItem T="ItemRarity?" Value="@ItemRarity.Epic">Epic</MudSelectItem>
+                            <MudSelectItem T="ItemRarity?" Value="@ItemRarity.Legendary">Legendary</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudSelect T="string" Label="Sort By" @bind-Value="_sortBy" Variant="Variant.Outlined">
+                            <MudSelectItem T="string" Value="@("price_asc")">Price (Low to High)</MudSelectItem>
+                            <MudSelectItem T="string" Value="@("price_desc")">Price (High to Low)</MudSelectItem>
+                            <MudSelectItem T="string" Value="@("power")">Power</MudSelectItem>
+                            <MudSelectItem T="string" Value="@("rarity")">Rarity</MudSelectItem>
+                        </MudSelect>
+                    </MudItem>
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudCheckBox T="bool" @bind-Checked="_showAffordableOnly" Label="Show Affordable Only" Color="Color.Primary" />
+                    </MudItem>
+                </MudGrid>
+            </div>
+
+            <!-- Shop Items Grid -->
+            @if (GetFilteredShopItems().Any())
+            {
+                <div class="shop-grid">
+                    @foreach (var item in GetFilteredShopItems())
+                    {
+                        var canAfford = _playerGold >= item.Price;
+                        <MudCard Class="@GetItemCardClass(item)" Elevation="4" @onclick="() => OnBuyItemClick(item)">
+                            <MudCardContent>
+                                <div class="item-icon">@GetItemIcon(item.Slot)</div>
+                                <MudText Typo="Typo.h6" Class="@($"{GetRarityClass(item.Rarity)} item-name")">
+                                    @item.Name
+                                </MudText>
+                                <MudText Typo="Typo.caption" Style="text-align: center; color: #888; margin-bottom: 0.5rem;">
+                                    @item.Slot.ToString()
+                                </MudText>
+
+                                <div class="item-stats">
+                                    @if (item.AttackBonus > 0)
+                                    {
+                                        <div class="stat-line">
+                                            <span>⚔️ Attack:</span>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Error">+@item.AttackBonus</MudChip>
+                                        </div>
+                                    }
+                                    @if (item.DefenseBonus > 0)
+                                    {
+                                        <div class="stat-line">
+                                            <span>🛡️ Defense:</span>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Success">+@item.DefenseBonus</MudChip>
+                                        </div>
+                                    }
+                                    @if (item.MagicBonus > 0)
+                                    {
+                                        <div class="stat-line">
+                                            <span>🔮 Magic Power:</span>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Secondary">+@item.MagicBonus</MudChip>
+                                        </div>
+                                    }
+                                    @if (item.SpeedBonus > 0)
+                                    {
+                                        <div class="stat-line">
+                                            <span>💨 Speed:</span>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Primary">+@item.SpeedBonus</MudChip>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="item-price">
+                                    💰 @item.Price Gold
+                                </div>
+
+                                @if (!canAfford)
+                                {
+                                    <MudAlert Severity="Severity.Warning" Dense="true" Style="margin-top: 1rem;">
+                                        Insufficient Gold
+                                    </MudAlert>
+                                }
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Success"
+                                           FullWidth="true"
+                                           Disabled="@(!canAfford)"
+                                           OnClick="() => BuyItem(item)">
+                                    Buy Now
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-shop">
+                    <MudText Typo="Typo.h5" Color="Color.Secondary">
+                        No items match your filters
+                    </MudText>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="ClearFilters" Style="margin-top: 1rem;">
+                        Clear Filters
+                    </MudButton>
+                </div>
+            }
+        </MudTabPanel>
+
+        <MudTabPanel Text="Sell Items" Icon="@Icons.Material.Filled.Sell">
+            <MudText Typo="Typo.h6" Style="margin-bottom: 1.5rem;">
+                Select items from your inventory to sell (50% of purchase price)
+            </MudText>
+
+            @if (_playerInventory.Any())
+            {
+                <div class="shop-grid">
+                    @foreach (var item in _playerInventory)
+                    {
+                        var sellPrice = item.Price / 2;
+                        <MudCard Class="item-card" Elevation="4">
+                            <MudCardContent>
+                                <div class="item-icon">@GetItemIcon(item.Slot)</div>
+                                <MudText Typo="Typo.h6" Class="@($"{GetRarityClass(item.Rarity)} item-name")">
+                                    @item.Name
+                                </MudText>
+                                <MudText Typo="Typo.caption" Style="text-align: center; color: #888;">
+                                    @item.Slot.ToString()
+                                </MudText>
+
+                                <div class="item-stats">
+                                    @if (item.AttackBonus > 0)
+                                    {
+                                        <div class="stat-line">
+                                            <span>⚔️ Attack:</span>
+                                            <span>+@item.AttackBonus</span>
+                                        </div>
+                                    }
+                                    @if (item.DefenseBonus > 0)
+                                    {
+                                        <div class="stat-line">
+                                            <span>🛡️ Defense:</span>
+                                            <span>+@item.DefenseBonus</span>
+                                        </div>
+                                    }
+                                    @if (item.MagicBonus > 0)
+                                    {
+                                        <div class="stat-line">
+                                            <span>🔮 Magic:</span>
+                                            <span>+@item.MagicBonus</span>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="item-price">
+                                    💰 @sellPrice Gold
+                                </div>
+                            </MudCardContent>
+                            <MudCardActions>
+                                <MudButton Variant="Variant.Filled"
+                                           Color="Color.Warning"
+                                           FullWidth="true"
+                                           OnClick="() => SellItem(item)">
+                                    Sell
+                                </MudButton>
+                            </MudCardActions>
+                        </MudCard>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="empty-shop">
+                    <MudText Typo="Typo.h5" Color="Color.Secondary">
+                        Your inventory is empty
+                    </MudText>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" OnClick="GoToInventory" Style="margin-top: 1rem;">
+                        Go to Inventory
+                    </MudButton>
+                </div>
+            }
+        </MudTabPanel>
+    </MudTabs>
+
+    <!-- Back Button -->
+    <div style="text-align: center; margin-top: 2rem;">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   OnClick="BackToGame">
+            Back to Game
+        </MudButton>
+    </div>
+</div>
+
+@code {
+    private int _activeTab = 0;
+    private int _playerGold = 500;
+
+    // Filters
+    private EquipmentSlot? _filterSlot = null;
+    private ItemRarity? _filterRarity = null;
+    private string _sortBy = "price_asc";
+    private bool _showAffordableOnly = false;
+
+    // Shop inventory
+    private List<EquipmentItem> _shopItems = new();
+    private List<EquipmentItem> _playerInventory = new();
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to state changes
+        GameState.OnStateChanged += StateHasChanged;
+
+        // TODO: Load actual player gold and inventory from GameCore
+        // For now, generate sample shop inventory
+        GenerateSampleShop();
+
+        base.OnInitialized();
+    }
+
+    private void GenerateSampleShop()
+    {
+        // Sample shop items
+        _shopItems = new List<EquipmentItem>
+        {
+            new EquipmentItem { Name = "Iron Sword", Slot = EquipmentSlot.Weapon, Rarity = ItemRarity.Common, AttackBonus = 15, Price = 100 },
+            new EquipmentItem { Name = "Steel Longsword", Slot = EquipmentSlot.Weapon, Rarity = ItemRarity.Uncommon, AttackBonus = 25, DefenseBonus = 5, Price = 250 },
+            new EquipmentItem { Name = "Flaming Blade", Slot = EquipmentSlot.Weapon, Rarity = ItemRarity.Rare, AttackBonus = 40, MagicBonus = 10, Price = 600 },
+            new EquipmentItem { Name = "Dragon Slayer", Slot = EquipmentSlot.Weapon, Rarity = ItemRarity.Epic, AttackBonus = 60, DefenseBonus = 10, Price = 1200 },
+            new EquipmentItem { Name = "Excalibur", Slot = EquipmentSlot.Weapon, Rarity = ItemRarity.Legendary, AttackBonus = 85, MagicBonus = 20, DefenseBonus = 15, Price = 2500 },
+
+            new EquipmentItem { Name = "Leather Armor", Slot = EquipmentSlot.Armor, Rarity = ItemRarity.Common, DefenseBonus = 12, Price = 80 },
+            new EquipmentItem { Name = "Chainmail", Slot = EquipmentSlot.Armor, Rarity = ItemRarity.Uncommon, DefenseBonus = 25, Price = 200 },
+            new EquipmentItem { Name = "Platemail", Slot = EquipmentSlot.Armor, Rarity = ItemRarity.Rare, DefenseBonus = 45, Price = 500 },
+            new EquipmentItem { Name = "Dragon Scale Armor", Slot = EquipmentSlot.Armor, Rarity = ItemRarity.Epic, DefenseBonus = 70, MagicBonus = 15, Price = 1500 },
+
+            new EquipmentItem { Name = "Leather Cap", Slot = EquipmentSlot.Helmet, Rarity = ItemRarity.Common, DefenseBonus = 8, Price = 50 },
+            new EquipmentItem { Name = "Iron Helmet", Slot = EquipmentSlot.Helmet, Rarity = ItemRarity.Uncommon, DefenseBonus = 18, Price = 150 },
+            new EquipmentItem { Name = "Crown of Wisdom", Slot = EquipmentSlot.Helmet, Rarity = ItemRarity.Rare, DefenseBonus = 25, MagicBonus = 20, Price = 450 },
+
+            new EquipmentItem { Name = "Worn Boots", Slot = EquipmentSlot.Boots, Rarity = ItemRarity.Common, DefenseBonus = 5, SpeedBonus = 2, Price = 40 },
+            new EquipmentItem { Name = "Swift Boots", Slot = EquipmentSlot.Boots, Rarity = ItemRarity.Uncommon, DefenseBonus = 10, SpeedBonus = 5, Price = 120 },
+            new EquipmentItem { Name = "Boots of Haste", Slot = EquipmentSlot.Boots, Rarity = ItemRarity.Epic, DefenseBonus = 15, SpeedBonus = 12, Price = 800 },
+
+            new EquipmentItem { Name = "Cloth Gloves", Slot = EquipmentSlot.Gloves, Rarity = ItemRarity.Common, DefenseBonus = 6, Price = 35 },
+            new EquipmentItem { Name = "Battle Gauntlets", Slot = EquipmentSlot.Gloves, Rarity = ItemRarity.Rare, DefenseBonus = 20, AttackBonus = 10, Price = 350 },
+
+            new EquipmentItem { Name = "Copper Ring", Slot = EquipmentSlot.Ring1, Rarity = ItemRarity.Common, MagicBonus = 5, Price = 60 },
+            new EquipmentItem { Name = "Ring of Power", Slot = EquipmentSlot.Ring1, Rarity = ItemRarity.Rare, AttackBonus = 15, MagicBonus = 15, Price = 400 },
+            new EquipmentItem { Name = "Ring of Defense", Slot = EquipmentSlot.Ring2, Rarity = ItemRarity.Uncommon, DefenseBonus = 12, Price = 180 },
+
+            new EquipmentItem { Name = "Simple Amulet", Slot = EquipmentSlot.Amulet, Rarity = ItemRarity.Common, MagicBonus = 8, Price = 70 },
+            new EquipmentItem { Name = "Amulet of Life", Slot = EquipmentSlot.Amulet, Rarity = ItemRarity.Epic, HPBonus = 50, DefenseBonus = 20, Price = 900 },
+
+            new EquipmentItem { Name = "Ancient Relic", Slot = EquipmentSlot.Relic, Rarity = ItemRarity.Legendary, AttackBonus = 30, MagicBonus = 30, DefenseBonus = 30, Price = 3000 }
+        };
+
+        // Sample player inventory for selling
+        _playerInventory = new List<EquipmentItem>
+        {
+            new EquipmentItem { Name = "Old Sword", Slot = EquipmentSlot.Weapon, Rarity = ItemRarity.Common, AttackBonus = 10, Price = 50 },
+            new EquipmentItem { Name = "Rusty Shield", Slot = EquipmentSlot.Armor, Rarity = ItemRarity.Common, DefenseBonus = 8, Price = 40 }
+        };
+    }
+
+    private IEnumerable<EquipmentItem> GetFilteredShopItems()
+    {
+        var filtered = _shopItems.AsEnumerable();
+
+        // Apply slot filter
+        if (_filterSlot.HasValue)
+        {
+            // For rings, filter both Ring1 and Ring2
+            if (_filterSlot == EquipmentSlot.Ring1)
+            {
+                filtered = filtered.Where(i => i.Slot == EquipmentSlot.Ring1 || i.Slot == EquipmentSlot.Ring2);
+            }
+            else
+            {
+                filtered = filtered.Where(i => i.Slot == _filterSlot.Value);
+            }
+        }
+
+        // Apply rarity filter
+        if (_filterRarity.HasValue)
+        {
+            filtered = filtered.Where(i => i.Rarity == _filterRarity.Value);
+        }
+
+        // Apply affordable filter
+        if (_showAffordableOnly)
+        {
+            filtered = filtered.Where(i => i.Price <= _playerGold);
+        }
+
+        // Apply sorting
+        filtered = _sortBy switch
+        {
+            "price_asc" => filtered.OrderBy(i => i.Price),
+            "price_desc" => filtered.OrderByDescending(i => i.Price),
+            "power" => filtered.OrderByDescending(i => i.AttackBonus + i.DefenseBonus + i.MagicBonus),
+            "rarity" => filtered.OrderByDescending(i => i.Rarity),
+            _ => filtered
+        };
+
+        return filtered;
+    }
+
+    private string GetItemCardClass(EquipmentItem item)
+    {
+        var baseClass = "item-card";
+        if (_playerGold >= item.Price)
+        {
+            return $"{baseClass} can-afford";
+        }
+        return $"{baseClass} cannot-afford";
+    }
+
+    private string GetItemIcon(EquipmentSlot slot)
+    {
+        return slot switch
+        {
+            EquipmentSlot.Weapon => "⚔️",
+            EquipmentSlot.Armor => "🛡️",
+            EquipmentSlot.Helmet => "🪖",
+            EquipmentSlot.Boots => "👢",
+            EquipmentSlot.Gloves => "🧤",
+            EquipmentSlot.Ring1 => "💍",
+            EquipmentSlot.Ring2 => "💍",
+            EquipmentSlot.Amulet => "📿",
+            EquipmentSlot.Relic => "✨",
+            _ => "❓"
+        };
+    }
+
+    private string GetRarityClass(ItemRarity rarity)
+    {
+        return rarity switch
+        {
+            ItemRarity.Common => "rarity-common",
+            ItemRarity.Uncommon => "rarity-uncommon",
+            ItemRarity.Rare => "rarity-rare",
+            ItemRarity.Epic => "rarity-epic",
+            ItemRarity.Legendary => "rarity-legendary",
+            _ => "rarity-common"
+        };
+    }
+
+    private void OnBuyItemClick(EquipmentItem item)
+    {
+        // Just highlight item for now - actual purchase happens on button click
+        GameState.AddEventLog($"Selected {item.Name} for purchase");
+    }
+
+    private void BuyItem(EquipmentItem item)
+    {
+        if (_playerGold >= item.Price)
+        {
+            _playerGold -= item.Price;
+            _playerInventory.Add(item);
+            GameState.AddEventLog($"💰 Purchased {item.Name} for {item.Price} gold!");
+
+            // TODO: Integrate with GameCore Shop system
+            // Shop.BuyItem(player, item);
+        }
+        else
+        {
+            GameState.AddEventLog($"⚠️ Not enough gold to buy {item.Name}");
+        }
+    }
+
+    private void SellItem(EquipmentItem item)
+    {
+        var sellPrice = item.Price / 2;
+        _playerGold += sellPrice;
+        _playerInventory.Remove(item);
+        GameState.AddEventLog($"💰 Sold {item.Name} for {sellPrice} gold!");
+
+        // TODO: Integrate with GameCore Shop system
+        // Shop.SellItem(player, item);
+    }
+
+    private void ClearFilters()
+    {
+        _filterSlot = null;
+        _filterRarity = null;
+        _showAffordableOnly = false;
+        _sortBy = "price_asc";
+    }
+
+    private void GoToInventory()
+    {
+        Navigation.NavigateTo("/inventory");
+    }
+
+    private void BackToGame()
+    {
+        Navigation.NavigateTo("/game");
+    }
+
+    public void Dispose()
+    {
+        GameState.OnStateChanged -= StateHasChanged;
+    }
+}

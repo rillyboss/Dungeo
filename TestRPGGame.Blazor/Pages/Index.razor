@@ -1,0 +1,215 @@
+﻿@page "/"
+@inject NavigationManager Navigation
+@inject GameStateService GameState
+
+<PageTitle>Dungeo - Epic Dungeon Adventure</PageTitle>
+
+<style>
+    .hero-section {
+        text-align: center;
+        padding: 3rem 0;
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero-title {
+        font-size: 4rem;
+        font-weight: bold;
+        background: linear-gradient(45deg, #8B0000, #DAA520);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        margin-bottom: 1rem;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5rem;
+        color: #DAA520;
+        margin-bottom: 2rem;
+    }
+
+    .menu-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+    }
+
+    .menu-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 12px 24px rgba(139, 0, 0, 0.4);
+    }
+
+    .card-icon {
+        font-size: 4rem;
+        margin-bottom: 1rem;
+    }
+
+    .feature-list {
+        background: #2d2d2d;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="hero-section">
+    <div class="hero-title">
+        🏰 Dungeo 🏰
+    </div>
+    <div class="hero-subtitle">
+        Epic Dungeon Adventures Await
+    </div>
+    <MudText Typo="Typo.body1" Color="Color.Default">
+        Choose your class, master powerful abilities, and conquer legendary dungeons
+    </MudText>
+</div>
+
+<MudGrid Spacing="4" Justify="Justify.Center">
+    <MudItem xs="12" md="4">
+        <MudCard Class="menu-card" Elevation="4" @onclick="StartNewGame">
+            <MudCardContent>
+                <div style="text-align: center;">
+                    <div class="card-icon">🗡️</div>
+                    <MudText Typo="Typo.h4" Color="Color.Primary" Style="margin-bottom: 1rem;">
+                        New Game
+                    </MudText>
+                    <MudText Typo="Typo.body2">
+                        Begin your epic journey. Choose from 3 unique classes and embark on a quest for glory!
+                    </MudText>
+                </div>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true" Size="Size.Large">
+                    Start Adventure
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Class="menu-card" Elevation="4" @onclick="LoadGame">
+            <MudCardContent>
+                <div style="text-align: center;">
+                    <div class="card-icon">📂</div>
+                    <MudText Typo="Typo.h4" Color="Color.Secondary" Style="margin-bottom: 1rem;">
+                        Load Game
+                    </MudText>
+                    <MudText Typo="Typo.body2">
+                        Continue your adventure from one of 3 save slots. Resume where you left off!
+                    </MudText>
+                </div>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Secondary" FullWidth="true" Size="Size.Large">
+                    Load Save
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+
+    <MudItem xs="12" md="4">
+        <MudCard Class="menu-card" Elevation="4" @onclick="ShowAbout">
+            <MudCardContent>
+                <div style="text-align: center;">
+                    <div class="card-icon">ℹ️</div>
+                    <MudText Typo="Typo.h4" Color="Color.Info" Style="margin-bottom: 1rem;">
+                        About
+                    </MudText>
+                    <MudText Typo="Typo.body2">
+                        Learn about the game mechanics, features, and the technology behind this adventure.
+                    </MudText>
+                </div>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Filled" Color="Color.Info" FullWidth="true" Size="Size.Large">
+                    Learn More
+                </MudButton>
+            </MudCardActions>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<div class="feature-list">
+    <MudText Typo="Typo.h5" Color="Color.Primary" Style="margin-bottom: 1.5rem; text-align: center;">
+        🎮 Core Features
+    </MudText>
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Elevation="2" Style="padding: 1rem; text-align: center; background: #1a1a1a;">
+                <MudText Typo="Typo.h6" Color="Color.Secondary">⚔️ Unique Classes</MudText>
+                <MudText Typo="Typo.body2">Distinct playstyles & abilities</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Elevation="2" Style="padding: 1rem; text-align: center; background: #1a1a1a;">
+                <MudText Typo="Typo.h6" Color="Color.Secondary">✨ Dynamic Combat</MudText>
+                <MudText Typo="Typo.body2">Turn-based tactical battles</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Elevation="2" Style="padding: 1rem; text-align: center; background: #1a1a1a;">
+                <MudText Typo="Typo.h6" Color="Color.Secondary">🏰 Epic Dungeons</MudText>
+                <MudText Typo="Typo.body2">Challenging boss encounters</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Elevation="2" Style="padding: 1rem; text-align: center; background: #1a1a1a;">
+                <MudText Typo="Typo.h6" Color="Color.Secondary">🎁 Rich Loot</MudText>
+                <MudText Typo="Typo.body2">Procedural gear & rarities</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Elevation="2" Style="padding: 1rem; text-align: center; background: #1a1a1a;">
+                <MudText Typo="Typo.h6" Color="Color.Secondary">🏆 Achievements</MudText>
+                <MudText Typo="Typo.body2">Track your accomplishments</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Elevation="2" Style="padding: 1rem; text-align: center; background: #1a1a1a;">
+                <MudText Typo="Typo.h6" Color="Color.Secondary">💾 Progression</MudText>
+                <MudText Typo="Typo.body2">Persistent saves & growth</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Elevation="2" Style="padding: 1rem; text-align: center; background: #1a1a1a;">
+                <MudText Typo="Typo.h6" Color="Color.Secondary">⚡ Status Effects</MudText>
+                <MudText Typo="Typo.body2">Deep combat mechanics</MudText>
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="6" md="3">
+            <MudPaper Elevation="2" Style="padding: 1rem; text-align: center; background: #1a1a1a;">
+                <MudText Typo="Typo.h6" Color="Color.Secondary">🎯 Smart Enemies</MudText>
+                <MudText Typo="Typo.body2">Intelligent AI opponents</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</div>
+
+<MudPaper Elevation="3" Style="padding: 2rem; margin-top: 2rem; background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); text-align: center;">
+    <MudText Typo="Typo.body2" Color="Color.Default">
+        Built with ❤️ using Blazor Server, MudBlazor, and C# .NET 8.0
+    </MudText>
+    <MudText Typo="Typo.caption" Style="margin-top: 0.5rem;">
+        © 2025 Dungeo | Epic dungeon adventures in your browser
+    </MudText>
+</MudPaper>
+
+@code {
+    private void StartNewGame()
+    {
+        Navigation.NavigateTo("/character-creation");
+    }
+
+    private void LoadGame()
+    {
+        Navigation.NavigateTo("/load-game");
+    }
+
+    private void ShowAbout()
+    {
+        Navigation.NavigateTo("/about");
+    }
+}

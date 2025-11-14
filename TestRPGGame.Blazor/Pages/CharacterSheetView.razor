@@ -1,0 +1,505 @@
+@page "/character-sheet"
+@using TestRPGGame.Entities.Player
+@using TestRPGGame.DataLoading
+@inject NavigationManager Navigation
+@inject GameStateService GameState
+@inject IDataRepository DataRepo
+@implements IDisposable
+
+<PageTitle>Character Sheet - Dungeo</PageTitle>
+
+<style>
+    .character-container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    .character-header {
+        background: linear-gradient(135deg, #8B0000 0%, #DAA520 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+        text-align: center;
+    }
+
+    .class-icon {
+        font-size: 5rem;
+        margin-bottom: 1rem;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-card {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        border-radius: 8px;
+        padding: 1.5rem;
+        border: 2px solid #3a3a3a;
+        transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+        border-color: #DAA520;
+        transform: translateY(-2px);
+    }
+
+    .stat-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+        font-weight: bold;
+        color: #DAA520;
+    }
+
+    .abilities-section {
+        background: #2d2d2d;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .ability-card {
+        background: #1a1a1a;
+        border: 2px solid #3a3a3a;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .ability-card:hover {
+        border-color: #8B0000;
+        transform: translateX(4px);
+    }
+
+    .ability-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .ability-icon {
+        font-size: 2.5rem;
+    }
+
+    .ability-locked {
+        opacity: 0.4;
+        border-style: dashed;
+    }
+
+    .equipment-summary {
+        background: #2d2d2d;
+        border-radius: 12px;
+        padding: 2rem;
+    }
+
+    .equipment-slot-mini {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem;
+        background: #1a1a1a;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        border: 1px solid #3a3a3a;
+    }
+
+    .progress-section {
+        background: #2d2d2d;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+</style>
+
+<div class="character-container">
+    <!-- Character Header -->
+    <div class="character-header">
+        <div class="class-icon">@GetClassIcon(_playerClass)</div>
+        <MudText Typo="Typo.h3" Style="font-weight: bold; color: white; margin-bottom: 0.5rem;">
+            @_playerName
+        </MudText>
+        <MudText Typo="Typo.h5" Style="color: white; opacity: 0.9;">
+            Level @_level @_playerClass.ToString()
+        </MudText>
+    </div>
+
+    <MudGrid>
+        <!-- Left Column: Stats & Progress -->
+        <MudItem xs="12" lg="8">
+            <!-- XP Progress -->
+            <div class="progress-section">
+                <MudText Typo="Typo.h6" Color="Color.Primary" Style="margin-bottom: 1rem;">
+                    ⬆️ Experience Progress
+                </MudText>
+                <MudProgressLinear Color="Color.Success" Value="@_xpPercent" Size="Size.Large" />
+                <MudText Typo="Typo.body2" Style="margin-top: 0.5rem; text-align: center;">
+                    @_currentXP / @_xpToNextLevel XP to Level @(_level + 1)
+                </MudText>
+            </div>
+
+            <!-- Core Stats -->
+            <MudText Typo="Typo.h5" Color="Color.Primary" Style="margin-bottom: 1rem;">
+                📊 Character Statistics
+            </MudText>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">❤️</div>
+                    <MudText Typo="Typo.h6">Health</MudText>
+                    <div class="stat-value">@_currentHP / @_maxHP</div>
+                    <MudProgressLinear Color="Color.Error" Value="@_hpPercent" Style="margin-top: 0.5rem;" />
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">✨</div>
+                    <MudText Typo="Typo.h6">Mana</MudText>
+                    <div class="stat-value">@_currentMana / @_maxMana</div>
+                    <MudProgressLinear Color="Color.Info" Value="@_manaPercent" Style="margin-top: 0.5rem;" />
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">⚔️</div>
+                    <MudText Typo="Typo.h6">Attack</MudText>
+                    <div class="stat-value">@_attack</div>
+                    <MudText Typo="Typo.caption">(@_baseAttack base + @(_attack - _baseAttack) equipment)</MudText>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🛡️</div>
+                    <MudText Typo="Typo.h6">Defense</MudText>
+                    <div class="stat-value">@_defense</div>
+                    <MudText Typo="Typo.caption">(@_baseDefense base + @(_defense - _baseDefense) equipment)</MudText>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">🔮</div>
+                    <MudText Typo="Typo.h6">Magic Power</MudText>
+                    <div class="stat-value">@_magicPower</div>
+                    <MudText Typo="Typo.caption">(@_baseMagicPower base + @(_magicPower - _baseMagicPower) equipment)</MudText>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">💨</div>
+                    <MudText Typo="Typo.h6">Speed</MudText>
+                    <div class="stat-value">@_speed</div>
+                    <MudText Typo="Typo.caption">Determines turn order</MudText>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">💥</div>
+                    <MudText Typo="Typo.h6">Critical Chance</MudText>
+                    <div class="stat-value">@_critChance%</div>
+                    <MudText Typo="Typo.caption">2x damage on crit</MudText>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-icon">💰</div>
+                    <MudText Typo="Typo.h6">Gold</MudText>
+                    <div class="stat-value">@_gold</div>
+                    <MudText Typo="Typo.caption">Current wealth</MudText>
+                </div>
+            </div>
+
+            <!-- Abilities -->
+            <div class="abilities-section">
+                <MudText Typo="Typo.h5" Color="Color.Secondary" Style="margin-bottom: 1.5rem;">
+                    ⚡ Abilities (@_unlockedAbilities.Count/6)
+                </MudText>
+
+                @foreach (var ability in _abilities)
+                {
+                    var isLocked = !_unlockedAbilities.Contains(ability.Id);
+                    <div class="@(isLocked ? "ability-card ability-locked" : "ability-card")">
+                        <div class="ability-header">
+                            <div class="ability-icon">@GetAbilityIcon(ability)</div>
+                            <div style="flex: 1;">
+                                <MudText Typo="Typo.h6" Color="Color.Primary">
+                                    @ability.Name
+                                    @if (isLocked)
+                                    {
+                                        <MudChip T="string" Size="Size.Small" Color="Color.Default">🔒 Locked</MudChip>
+                                    }
+                                </MudText>
+                                <MudText Typo="Typo.body2" Style="color: #888;">
+                                    @ability.Description
+                                </MudText>
+                            </div>
+                        </div>
+
+                        @if (!isLocked)
+                        {
+                            <MudGrid>
+                                <MudItem xs="6" sm="4">
+                                    <MudText Typo="Typo.caption" Style="color: #888;">Mana Cost</MudText>
+                                    <MudText Typo="Typo.body1">✨ @ability.ManaCost</MudText>
+                                </MudItem>
+                                <MudItem xs="6" sm="4">
+                                    <MudText Typo="Typo.caption" Style="color: #888;">Cooldown</MudText>
+                                    <MudText Typo="Typo.body1">⏱️ @ability.Cooldown turns</MudText>
+                                </MudItem>
+                                <MudItem xs="12" sm="4">
+                                    <MudText Typo="Typo.caption" Style="color: #888;">Unlock Level</MudText>
+                                    <MudText Typo="Typo.body1">⬆️ Level @ability.UnlockLevel</MudText>
+                                </MudItem>
+                            </MudGrid>
+
+                            @if (ability.Effects != null && ability.Effects.Any())
+                            {
+                                <MudDivider Style="margin: 1rem 0;" />
+                                <MudText Typo="Typo.caption" Style="color: #888; margin-bottom: 0.5rem;">Effects:</MudText>
+                                @foreach (var effect in ability.Effects)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Info" Style="margin-right: 0.5rem;">
+                                        @effect.Type
+                                    </MudChip>
+                                }
+                            }
+                        }
+                        else
+                        {
+                            <MudAlert Severity="Severity.Info" Dense="true" Style="margin-top: 1rem;">
+                                Unlocks at level @ability.UnlockLevel
+                            </MudAlert>
+                        }
+                    </div>
+                }
+            </div>
+        </MudItem>
+
+        <!-- Right Column: Equipment & Class Info -->
+        <MudItem xs="12" lg="4">
+            <!-- Class Information -->
+            <MudPaper Elevation="3" Style="padding: 1.5rem; background: #2d2d2d; margin-bottom: 2rem;">
+                <MudText Typo="Typo.h6" Color="Color.Warning" Style="margin-bottom: 1rem;">
+                    🎯 Class Information
+                </MudText>
+                <MudText Typo="Typo.body1" Style="margin-bottom: 1rem;">
+                    <strong>@_playerClass.ToString()</strong>
+                </MudText>
+                <MudText Typo="Typo.body2" Style="margin-bottom: 0.5rem;">
+                    @GetClassDescription(_playerClass)
+                </MudText>
+                <MudDivider Style="margin: 1rem 0;" />
+                <MudText Typo="Typo.caption" Style="color: #888;">Specialization</MudText>
+                <MudText Typo="Typo.body2">@GetClassSpecialization(_playerClass)</MudText>
+            </MudPaper>
+
+            <!-- Equipment Summary -->
+            <div class="equipment-summary">
+                <MudText Typo="Typo.h6" Color="Color.Success" Style="margin-bottom: 1.5rem;">
+                    🎒 Equipment Summary
+                </MudText>
+
+                @foreach (var slot in _equipmentSlots)
+                {
+                    var equipped = _equippedItems.ContainsKey(slot);
+                    <div class="equipment-slot-mini">
+                        <div>
+                            <span style="margin-right: 0.5rem;">@GetSlotIcon(slot)</span>
+                            <strong>@slot.ToString()</strong>
+                        </div>
+                        @if (equipped)
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Success">✓</MudChip>
+                        }
+                        else
+                        {
+                            <MudChip T="string" Size="Size.Small" Color="Color.Default">Empty</MudChip>
+                        }
+                    </div>
+                }
+
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.Inventory"
+                           OnClick="@(() => Navigation.NavigateTo("/inventory"))"
+                           Style="margin-top: 1.5rem;">
+                    Manage Equipment
+                </MudButton>
+            </div>
+
+            <!-- Quick Stats -->
+            <MudPaper Elevation="3" Style="padding: 1.5rem; background: #2d2d2d; margin-top: 2rem;">
+                <MudText Typo="Typo.h6" Color="Color.Info" Style="margin-bottom: 1rem;">
+                    📈 Quick Stats
+                </MudText>
+                <MudText Typo="Typo.body2" Style="margin-bottom: 0.5rem;">
+                    <strong>Equipped Slots:</strong> @_equippedItems.Count / 9
+                </MudText>
+                <MudText Typo="Typo.body2" Style="margin-bottom: 0.5rem;">
+                    <strong>Total Item Value:</strong> @_totalEquipmentValue Gold
+                </MudText>
+                <MudText Typo="Typo.body2">
+                    <strong>Unlocked Abilities:</strong> @_unlockedAbilities.Count / 6
+                </MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Back Button -->
+    <div style="text-align: center; margin-top: 2rem;">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   OnClick="@(() => Navigation.NavigateTo("/game"))">
+            Back to Game
+        </MudButton>
+    </div>
+</div>
+
+@code {
+    // Player info
+    private string _playerName = "Hero";
+    private PlayerClass _playerClass = PlayerClass.Warrior;
+    private int _level = 5;
+    private int _currentXP = 750;
+    private int _xpToNextLevel = 1000;
+    private double _xpPercent => ((double)_currentXP / _xpToNextLevel) * 100;
+
+    // Current stats
+    private int _currentHP = 85;
+    private int _maxHP = 120;
+    private int _currentMana = 45;
+    private int _maxMana = 60;
+    private int _gold = 450;
+
+    // Combat stats
+    private int _attack = 45;
+    private int _baseAttack = 30;
+    private int _defense = 35;
+    private int _baseDefense = 20;
+    private int _magicPower = 25;
+    private int _baseMagicPower = 15;
+    private int _speed = 12;
+    private double _critChance = 15.0;
+
+    private double _hpPercent => ((double)_currentHP / _maxHP) * 100;
+    private double _manaPercent => ((double)_currentMana / _maxMana) * 100;
+
+    // Abilities
+    private List<AbilityData> _abilities = new();
+    private List<string> _unlockedAbilities = new();
+
+    // Equipment
+    private List<EquipmentSlot> _equipmentSlots = new()
+    {
+        EquipmentSlot.Weapon, EquipmentSlot.Armor, EquipmentSlot.Helmet,
+        EquipmentSlot.Boots, EquipmentSlot.Gloves, EquipmentSlot.Ring1,
+        EquipmentSlot.Ring2, EquipmentSlot.Amulet, EquipmentSlot.Relic
+    };
+    private Dictionary<EquipmentSlot, bool> _equippedItems = new();
+    private int _totalEquipmentValue = 2150;
+
+    protected override void OnInitialized()
+    {
+        GameState.OnStateChanged += StateHasChanged;
+
+        // TODO: Load actual player data from GameCore
+        // For now, load abilities from data repository
+        LoadAbilities();
+        GenerateSampleEquipmentStatus();
+
+        base.OnInitialized();
+    }
+
+    private void LoadAbilities()
+    {
+        var allAbilities = DataRepo.GetAbilitiesForClass(_playerClass.ToString());
+        _abilities = allAbilities.ToList();
+
+        // Sample: unlock first 4 abilities (3 starting + 1 earned)
+        _unlockedAbilities = _abilities
+            .Where(a => a.UnlockLevel <= _level)
+            .Select(a => a.Id)
+            .ToList();
+    }
+
+    private void GenerateSampleEquipmentStatus()
+    {
+        // Sample: 5 slots equipped
+        _equippedItems[EquipmentSlot.Weapon] = true;
+        _equippedItems[EquipmentSlot.Armor] = true;
+        _equippedItems[EquipmentSlot.Helmet] = true;
+        _equippedItems[EquipmentSlot.Boots] = true;
+        _equippedItems[EquipmentSlot.Ring1] = true;
+    }
+
+    private string GetClassIcon(PlayerClass playerClass)
+    {
+        return playerClass switch
+        {
+            PlayerClass.Warrior => "🗡️",
+            PlayerClass.Mage => "🔮",
+            PlayerClass.Rogue => "🗡️",
+            _ => "❓"
+        };
+    }
+
+    private string GetAbilityIcon(AbilityData ability)
+    {
+        // Return icon based on ability name or type
+        if (ability.Name.Contains("Strike") || ability.Name.Contains("Slash")) return "⚔️";
+        if (ability.Name.Contains("Fire") || ability.Name.Contains("Flame")) return "🔥";
+        if (ability.Name.Contains("Ice") || ability.Name.Contains("Frost")) return "❄️";
+        if (ability.Name.Contains("Lightning") || ability.Name.Contains("Thunder")) return "⚡";
+        if (ability.Name.Contains("Heal") || ability.Name.Contains("Restore")) return "💚";
+        if (ability.Name.Contains("Shield") || ability.Name.Contains("Barrier")) return "🛡️";
+        if (ability.Name.Contains("Shadow") || ability.Name.Contains("Smoke")) return "🌑";
+        if (ability.Name.Contains("Poison") || ability.Name.Contains("Venom")) return "☠️";
+        return "✨";
+    }
+
+    private string GetClassDescription(PlayerClass playerClass)
+    {
+        return playerClass switch
+        {
+            PlayerClass.Warrior => "Masters of melee combat, warriors excel at dealing physical damage and absorbing hits with high defense.",
+            PlayerClass.Mage => "Wielders of arcane magic, mages unleash devastating spells and control the battlefield with magical prowess.",
+            PlayerClass.Rogue => "Swift and cunning, rogues strike from the shadows with precision attacks and evasive maneuvers.",
+            _ => "Unknown class"
+        };
+    }
+
+    private string GetClassSpecialization(PlayerClass playerClass)
+    {
+        return playerClass switch
+        {
+            PlayerClass.Warrior => "Melee Combat & Tanking",
+            PlayerClass.Mage => "Elemental Magic & Crowd Control",
+            PlayerClass.Rogue => "Stealth & Critical Strikes",
+            _ => "Unknown"
+        };
+    }
+
+    private string GetSlotIcon(EquipmentSlot slot)
+    {
+        return slot switch
+        {
+            EquipmentSlot.Weapon => "⚔️",
+            EquipmentSlot.Armor => "🛡️",
+            EquipmentSlot.Helmet => "🪖",
+            EquipmentSlot.Boots => "👢",
+            EquipmentSlot.Gloves => "🧤",
+            EquipmentSlot.Ring1 => "💍",
+            EquipmentSlot.Ring2 => "💍",
+            EquipmentSlot.Amulet => "📿",
+            EquipmentSlot.Relic => "✨",
+            _ => "❓"
+        };
+    }
+
+    public void Dispose()
+    {
+        GameState.OnStateChanged -= StateHasChanged;
+    }
+}

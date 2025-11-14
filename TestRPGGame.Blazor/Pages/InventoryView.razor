@@ -1,0 +1,598 @@
+@page "/inventory"
+@using TestRPGGame.DataLoading
+@using TestRPGGame.Equipment
+@inject NavigationManager Navigation
+@inject GameStateService GameState
+@inject IDataRepository DataRepo
+
+<PageTitle>Inventory - Dungeo</PageTitle>
+
+<style>
+    .inventory-container {
+        max-width: 1600px;
+        margin: 0 auto;
+    }
+
+    .equipment-panel {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .equipment-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 1.5rem;
+    }
+
+    .equipment-slot {
+        background: #1a1a1a;
+        border: 2px solid #3a3a3a;
+        border-radius: 8px;
+        padding: 1rem;
+        min-height: 180px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+    }
+
+    .equipment-slot:hover {
+        border-color: #DAA520;
+        box-shadow: 0 4px 16px rgba(218, 165, 32, 0.3);
+        transform: translateY(-4px);
+    }
+
+    .equipment-slot.empty {
+        border-style: dashed;
+        opacity: 0.6;
+    }
+
+    .equipment-slot.empty:hover {
+        opacity: 1;
+    }
+
+    .slot-label {
+        position: absolute;
+        top: 0.5rem;
+        left: 0.5rem;
+        font-size: 0.75rem;
+        color: #888;
+        text-transform: uppercase;
+    }
+
+    .item-icon {
+        font-size: 3rem;
+        margin: 0.5rem 0;
+    }
+
+    .item-name {
+        font-weight: bold;
+        text-align: center;
+        margin-top: 0.5rem;
+    }
+
+    .item-stats {
+        font-size: 0.85rem;
+        color: #aaa;
+        text-align: center;
+        margin-top: 0.25rem;
+    }
+
+    .rarity-common { color: #FFFFFF; }
+    .rarity-uncommon { color: #1EFF00; }
+    .rarity-rare { color: #0070DD; }
+    .rarity-epic { color: #A335EE; }
+    .rarity-legendary { color: #FF8000; }
+
+    .backpack-panel {
+        background: #2d2d2d;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    }
+
+    .backpack-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+
+    .backpack-item {
+        background: #1a1a1a;
+        border: 2px solid #3a3a3a;
+        border-radius: 8px;
+        padding: 1rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .backpack-item:hover {
+        border-color: #8B0000;
+        box-shadow: 0 4px 16px rgba(139, 0, 0, 0.3);
+        transform: translateY(-2px);
+    }
+
+    .stats-panel {
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .stat-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #2d2d2d;
+    }
+
+    .action-buttons {
+        margin-top: 2rem;
+        text-align: center;
+    }
+
+    @@media (max-width: 768px) {
+        .equipment-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+
+        .backpack-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="inventory-container">
+    <!-- Header -->
+    <MudPaper Elevation="3" Style="padding: 1.5rem; background: linear-gradient(135deg, #8B0000 0%, #DAA520 100%); margin-bottom: 2rem;">
+        <MudText Typo="Typo.h4" Style="font-weight: bold; text-align: center; color: white;">
+            🎒 Character Inventory
+        </MudText>
+        <MudText Typo="Typo.body1" Style="text-align: center; color: white; opacity: 0.9;">
+            Manage your equipment and items
+        </MudText>
+    </MudPaper>
+
+    <MudGrid>
+        <!-- Equipment Panel -->
+        <MudItem xs="12" lg="8">
+            <div class="equipment-panel">
+                <MudText Typo="Typo.h5" Color="Color.Primary" Style="margin-bottom: 0.5rem;">
+                    ⚔️ Equipped Gear
+                </MudText>
+                <MudText Typo="Typo.body2" Color="Color.Default" Style="opacity: 0.7;">
+                    Click an item to unequip or an empty slot to equip from backpack
+                </MudText>
+
+                <div class="equipment-grid">
+                    @foreach (var slot in _equipmentSlots)
+                    {
+                        <div class="@GetEquipmentSlotClass(slot)" @onclick="() => OnSlotClick(slot)">
+                            <span class="slot-label">@slot.ToString()</span>
+                            @if (_equippedItems.ContainsKey(slot))
+                            {
+                                var item = _equippedItems[slot];
+                                <div class="item-icon">@GetItemIcon(slot)</div>
+                                <MudText Typo="Typo.body1" Class="@GetRarityClass(item.Rarity)" Style="font-weight: bold;">
+                                    @item.Name
+                                </MudText>
+                                <div class="item-stats">
+                                    <div>⚔️ +@item.AttackBonus | 🛡️ +@item.DefenseBonus</div>
+                                    @if (item.MagicBonus > 0)
+                                    {
+                                        <div>🔮 +@item.MagicBonus Magic</div>
+                                    }
+                                    @if (item.SpeedBonus > 0)
+                                    {
+                                        <div>💨 +@item.SpeedBonus Speed</div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <div class="item-icon" style="opacity: 0.3;">@GetItemIcon(slot)</div>
+                                <MudText Typo="Typo.body2" Style="color: #666;">
+                                    Empty
+                                </MudText>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Backpack -->
+            <div class="backpack-panel">
+                <MudText Typo="Typo.h5" Color="Color.Secondary" Style="margin-bottom: 0.5rem;">
+                    👜 Backpack (@_backpackItems.Count/@_maxBackpackSize)
+                </MudText>
+                <MudText Typo="Typo.body2" Color="Color.Default" Style="opacity: 0.7;">
+                    Click an item to equip it or view details
+                </MudText>
+
+                @if (_backpackItems.Any())
+                {
+                    <div class="backpack-grid">
+                        @foreach (var item in _backpackItems)
+                        {
+                            <MudCard Class="backpack-item" Elevation="2" @onclick="() => OnBackpackItemClick(item)">
+                                <MudCardContent>
+                                    <div style="text-align: center;">
+                                        <div class="item-icon" style="font-size: 2rem;">@GetItemIcon(item.Slot)</div>
+                                        <MudText Typo="Typo.body1" Class="@GetRarityClass(item.Rarity)" Style="font-weight: bold;">
+                                            @item.Name
+                                        </MudText>
+                                        <MudText Typo="Typo.caption" Style="color: #888;">
+                                            @item.Slot.ToString()
+                                        </MudText>
+                                        <div style="margin-top: 0.5rem; font-size: 0.85rem;">
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Error">⚔️ @item.AttackBonus</MudChip>
+                                            <MudChip T="string" Size="Size.Small" Color="Color.Success">🛡️ @item.DefenseBonus</MudChip>
+                                        </div>
+                                    </div>
+                                </MudCardContent>
+                            </MudCard>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <MudAlert Severity="Severity.Info" Dense="true" Style="margin-top: 1rem;">
+                        Your backpack is empty. Defeat enemies and explore dungeons to find loot!
+                    </MudAlert>
+                }
+            </div>
+        </MudItem>
+
+        <!-- Stats Panel -->
+        <MudItem xs="12" lg="4">
+            <div class="stats-panel">
+                <MudText Typo="Typo.h5" Color="Color.Info" Style="margin-bottom: 1rem;">
+                    📊 Total Stats
+                </MudText>
+
+                <div class="stat-row">
+                    <span>⚔️ Total Attack:</span>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Error">@_totalAttack</MudChip>
+                </div>
+                <div class="stat-row">
+                    <span>🛡️ Total Defense:</span>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Success">@_totalDefense</MudChip>
+                </div>
+                <div class="stat-row">
+                    <span>🔮 Total Magic Power:</span>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Secondary">@_totalMagicPower</MudChip>
+                </div>
+                <div class="stat-row">
+                    <span>💨 Total Speed:</span>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Primary">@_totalSpeed</MudChip>
+                </div>
+                <div class="stat-row">
+                    <span>💥 Crit Chance:</span>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Warning">@_critChance%</MudChip>
+                </div>
+
+                <MudDivider Style="margin: 1.5rem 0;" />
+
+                <MudText Typo="Typo.h6" Color="Color.Warning" Style="margin-bottom: 0.5rem;">
+                    💰 Value
+                </MudText>
+                <div class="stat-row">
+                    <span>Equipment Worth:</span>
+                    <MudChip T="string" Size="Size.Small" Color="Color.Warning">@_totalValue Gold</MudChip>
+                </div>
+
+                <MudDivider Style="margin: 1.5rem 0;" />
+
+                <MudText Typo="Typo.body2" Style="color: #888; margin-top: 1rem;">
+                    Equipped Items: @_equippedItems.Count/9
+                </MudText>
+                <MudText Typo="Typo.body2" Style="color: #888;">
+                    Backpack Items: @_backpackItems.Count/@_maxBackpackSize
+                </MudText>
+            </div>
+
+            <!-- Quick Actions -->
+            <MudPaper Elevation="2" Style="padding: 1rem; margin-top: 1rem; background: #2d2d2d;">
+                <MudText Typo="Typo.h6" Color="Color.Primary" Style="margin-bottom: 1rem;">
+                    ⚡ Quick Actions
+                </MudText>
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Warning"
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.Store"
+                           OnClick="GoToShop"
+                           Style="margin-bottom: 0.5rem;">
+                    Visit Shop
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Error"
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.Delete"
+                           OnClick="UnequipAll"
+                           Style="margin-bottom: 0.5rem;">
+                    Unequip All
+                </MudButton>
+                <MudButton Variant="Variant.Outlined"
+                           Color="Color.Info"
+                           FullWidth="true"
+                           StartIcon="@Icons.Material.Filled.AutoFixHigh"
+                           OnClick="AutoEquipBest">
+                    Auto-Equip Best
+                </MudButton>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Back Button -->
+    <div class="action-buttons">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   OnClick="BackToGame">
+            Back to Game
+        </MudButton>
+    </div>
+</div>
+
+@code {
+    private List<EquipmentSlot> _equipmentSlots = new()
+    {
+        EquipmentSlot.Weapon,
+        EquipmentSlot.Armor,
+        EquipmentSlot.Helmet,
+        EquipmentSlot.Boots,
+        EquipmentSlot.Gloves,
+        EquipmentSlot.Ring1,
+        EquipmentSlot.Ring2,
+        EquipmentSlot.Amulet,
+        EquipmentSlot.Relic
+    };
+
+    private Dictionary<EquipmentSlot, EquipmentItem> _equippedItems = new();
+    private List<EquipmentItem> _backpackItems = new();
+    private int _maxBackpackSize = 20;
+
+    private int _totalAttack = 0;
+    private int _totalDefense = 0;
+    private int _totalMagicPower = 0;
+    private int _totalSpeed = 0;
+    private int _critChance = 5;
+    private int _totalValue = 0;
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to state changes
+        GameState.OnStateChanged += StateHasChanged;
+
+        // TODO: Load actual player inventory from GameCore
+        // For now, generate sample items for demonstration
+        GenerateSampleInventory();
+
+        CalculateTotalStats();
+
+        base.OnInitialized();
+    }
+
+    private void GenerateSampleInventory()
+    {
+        // Sample equipped items
+        _equippedItems[EquipmentSlot.Weapon] = new EquipmentItem
+        {
+            Name = "Flaming Sword of Power",
+            Slot = EquipmentSlot.Weapon,
+            Rarity = ItemRarity.Epic,
+            AttackBonus = 45,
+            DefenseBonus = 5,
+            MagicBonus = 12,
+            Price = 850
+        };
+
+        _equippedItems[EquipmentSlot.Armor] = new EquipmentItem
+        {
+            Name = "Enchanted Platemail",
+            Slot = EquipmentSlot.Armor,
+            Rarity = ItemRarity.Rare,
+            AttackBonus = 0,
+            DefenseBonus = 35,
+            MagicBonus = 8,
+            Price = 600
+        };
+
+        _equippedItems[EquipmentSlot.Helmet] = new EquipmentItem
+        {
+            Name = "Sturdy Helmet",
+            Slot = EquipmentSlot.Helmet,
+            Rarity = ItemRarity.Uncommon,
+            AttackBonus = 0,
+            DefenseBonus = 15,
+            Price = 200
+        };
+
+        // Sample backpack items
+        _backpackItems.Add(new EquipmentItem
+        {
+            Name = "Iron Sword",
+            Slot = EquipmentSlot.Weapon,
+            Rarity = ItemRarity.Common,
+            AttackBonus = 20,
+            DefenseBonus = 0,
+            Price = 100
+        });
+
+        _backpackItems.Add(new EquipmentItem
+        {
+            Name = "Mystic Staff of Wisdom",
+            Slot = EquipmentSlot.Weapon,
+            Rarity = ItemRarity.Legendary,
+            AttackBonus = 25,
+            DefenseBonus = 0,
+            MagicBonus = 55,
+            SpeedBonus = 8,
+            Price = 2000
+        });
+
+        _backpackItems.Add(new EquipmentItem
+        {
+            Name = "Leather Boots",
+            Slot = EquipmentSlot.Boots,
+            Rarity = ItemRarity.Common,
+            AttackBonus = 0,
+            DefenseBonus = 8,
+            SpeedBonus = 3,
+            Price = 50
+        });
+
+        _backpackItems.Add(new EquipmentItem
+        {
+            Name = "Ring of Protection",
+            Slot = EquipmentSlot.Ring1,
+            Rarity = ItemRarity.Rare,
+            AttackBonus = 0,
+            DefenseBonus = 20,
+            MagicBonus = 10,
+            Price = 500
+        });
+    }
+
+    private void CalculateTotalStats()
+    {
+        _totalAttack = _equippedItems.Values.Sum(item => item.AttackBonus);
+        _totalDefense = _equippedItems.Values.Sum(item => item.DefenseBonus);
+        _totalMagicPower = _equippedItems.Values.Sum(item => item.MagicBonus);
+        _totalSpeed = _equippedItems.Values.Sum(item => item.SpeedBonus);
+        _totalValue = _equippedItems.Values.Sum(item => item.Price);
+        // TODO: Calculate actual crit chance from items
+    }
+
+    private string GetEquipmentSlotClass(EquipmentSlot slot)
+    {
+        return _equippedItems.ContainsKey(slot) ? "equipment-slot" : "equipment-slot empty";
+    }
+
+    private string GetItemIcon(EquipmentSlot slot)
+    {
+        return slot switch
+        {
+            EquipmentSlot.Weapon => "⚔️",
+            EquipmentSlot.Armor => "🛡️",
+            EquipmentSlot.Helmet => "🪖",
+            EquipmentSlot.Boots => "👢",
+            EquipmentSlot.Gloves => "🧤",
+            EquipmentSlot.Ring1 => "💍",
+            EquipmentSlot.Ring2 => "💍",
+            EquipmentSlot.Amulet => "📿",
+            EquipmentSlot.Relic => "✨",
+            _ => "❓"
+        };
+    }
+
+    private string GetRarityClass(ItemRarity rarity)
+    {
+        return rarity switch
+        {
+            ItemRarity.Common => "rarity-common",
+            ItemRarity.Uncommon => "rarity-uncommon",
+            ItemRarity.Rare => "rarity-rare",
+            ItemRarity.Epic => "rarity-epic",
+            ItemRarity.Legendary => "rarity-legendary",
+            _ => "rarity-common"
+        };
+    }
+
+    private void OnSlotClick(EquipmentSlot slot)
+    {
+        if (_equippedItems.ContainsKey(slot))
+        {
+            // Unequip item
+            var item = _equippedItems[slot];
+            _equippedItems.Remove(slot);
+            _backpackItems.Add(item);
+            GameState.AddEventLog($"Unequipped {item.Name}");
+        }
+        else
+        {
+            // Show available items for this slot
+            GameState.AddEventLog($"Select an item to equip in {slot}");
+        }
+
+        CalculateTotalStats();
+    }
+
+    private void OnBackpackItemClick(EquipmentItem item)
+    {
+        // Unequip current item in this slot if exists
+        if (_equippedItems.ContainsKey(item.Slot))
+        {
+            var oldItem = _equippedItems[item.Slot];
+            _backpackItems.Add(oldItem);
+            GameState.AddEventLog($"Unequipped {oldItem.Name}");
+        }
+
+        // Equip new item
+        _equippedItems[item.Slot] = item;
+        _backpackItems.Remove(item);
+        GameState.AddEventLog($"Equipped {item.Name}");
+
+        CalculateTotalStats();
+    }
+
+    private void UnequipAll()
+    {
+        foreach (var item in _equippedItems.Values.ToList())
+        {
+            _backpackItems.Add(item);
+        }
+        _equippedItems.Clear();
+        GameState.AddEventLog("Unequipped all items");
+        CalculateTotalStats();
+    }
+
+    private void AutoEquipBest()
+    {
+        // Group all items (equipped + backpack) by slot
+        var allItems = _equippedItems.Values.Concat(_backpackItems).ToList();
+
+        foreach (var slot in _equipmentSlots)
+        {
+            var bestItem = allItems
+                .Where(item => item.Slot == slot)
+                .OrderByDescending(item => item.AttackBonus + item.DefenseBonus + item.MagicBonus)
+                .FirstOrDefault();
+
+            if (bestItem != null)
+            {
+                _equippedItems[slot] = bestItem;
+            }
+        }
+
+        // Update backpack to contain only non-equipped items
+        _backpackItems = allItems.Where(item => !_equippedItems.ContainsValue(item)).ToList();
+
+        GameState.AddEventLog("Auto-equipped best items!");
+        CalculateTotalStats();
+    }
+
+    private void GoToShop()
+    {
+        Navigation.NavigateTo("/shop");
+    }
+
+    private void BackToGame()
+    {
+        Navigation.NavigateTo("/game");
+    }
+
+    public void Dispose()
+    {
+        GameState.OnStateChanged -= StateHasChanged;
+    }
+}

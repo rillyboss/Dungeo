@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+
+<PageTitle>Dungeo - Epic Dungeon Adventure</PageTitle>
+
+<MudThemeProvider Theme="_theme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<MudLayout>
+    <MudAppBar Elevation="1" Dense="true">
+        <MudIconButton Icon="@Icons.Material.Filled.Castle" Color="Color.Inherit" Edge="Edge.Start" />
+        <MudText Typo="Typo.h5" Class="ml-3">Dungeo</MudText>
+        <MudSpacer />
+        <MudText Typo="Typo.body2">Epic Dungeon Adventure</MudText>
+    </MudAppBar>
+    <MudMainContent>
+        <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+            @Body
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+
+@code {
+    private MudTheme _theme = new()
+    {
+        PaletteLight = new PaletteLight()
+        {
+            Primary = "#8B0000",       // Dark red for RPG theme
+            Secondary = "#DAA520",     // Goldenrod
+            AppbarBackground = "#2E2E2E",
+            AppbarText = "#FFFFFF",
+            Background = "#1A1A1A",
+            Surface = "#2D2D2D",
+            DrawerBackground = "#2D2D2D",
+            DrawerText = "#FFFFFF",
+            TextPrimary = "#FFFFFF",
+            TextSecondary = "#B0B0B0"
+        }
+    };
+}

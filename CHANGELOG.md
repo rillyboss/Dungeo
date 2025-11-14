@@ -8,6 +8,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- **Blazor Web UI Project** (Phase 1: Foundation - 53% Complete):
+  - Created TestRPGGame.Blazor project (Blazor Server .NET 8.0)
+  - Integrated MudBlazor 8.0 UI framework for Material Design components
+  - Implemented dark RPG theme (#8B0000 dark red, #DAA520 gold)
+  - **8 Core Components Built**:
+    - Homepage (Index.razor): Hero section, menu cards, feature showcase
+    - CharacterCreation.razor: Class selection (Warrior/Mage/Rogue), data-driven from JSON
+    - GameView.razor: Main hub with 9 action cards, player stats, event log
+    - CombatView.razor: Animated turn-based combat UI with abilities
+    - InventoryView.razor: Equipment grid (9 slots) + backpack management
+    - ShopView.razor: Buy/sell interface with filtering, sorting, affordable-only toggle
+    - CharacterSheetView.razor: Stats, abilities (6 per class), equipment summary
+    - DungeonSelectionView.razor: 5 dungeons with difficulty, rewards, boss info
+  - **Core Services**:
+    - BlazorInterface.cs: Stub implementation of IGameInterface (ready for GameCore integration)
+    - GameStateService.cs: Reactive state management for components
+  - **Routing & Navigation**: Full SPA navigation between all views
+  - **Documentation**:
+    - BLAZOR_PROGRESS.md: Session-by-session development tracking
+    - blazor-roadmap.md: Comprehensive roadmap with 22 tasks across 4 phases
+  - **Solution Integration**: Added TestRPGGame.Blazor to TestRPGGame.sln
+  - **Next Steps**: BlazorInterface → GameCore integration, remaining 3 views (Load Game, Achievements, Statistics), comprehensive testing
 - **Critical Git Workflow Documentation**:
   - Updated CLAUDE.md and context-enrichment.md with explicit git staging rules
   - Added warning against `git add -A` and `git add .` to prevent accidental commits

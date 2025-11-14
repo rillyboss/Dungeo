@@ -1,0 +1,507 @@
+@page "/combat"
+@inject NavigationManager Navigation
+@inject GameStateService GameState
+@implements IDisposable
+
+<PageTitle>Combat - Dungeo</PageTitle>
+
+<style>
+    .combat-arena {
+        min-height: calc(100vh - 150px);
+        background: linear-gradient(135deg, #1a0000 0%, #2d1a1a 50%, #1a0000 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(139, 0, 0, 0.7);
+    }
+
+    .combatant-card {
+        background: #2d2d2d;
+        border-radius: 12px;
+        padding: 1.5rem;
+        position: relative;
+        min-height: 350px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+        transition: all 0.3s ease;
+    }
+
+    .combatant-card.attacking {
+        animation: attack-pulse 0.5s ease;
+        box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+    }
+
+    .combatant-card.damaged {
+        animation: damage-shake 0.5s ease;
+    }
+
+    @@keyframes attack-pulse {
+        0%, 100% { transform: scale(1); }
+        50% { transform: scale(1.05); }
+    }
+
+    @@keyframes damage-shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-10px); }
+        75% { transform: translateX(10px); }
+    }
+
+    .combatant-image {
+        font-size: 8rem;
+        text-align: center;
+        margin: 2rem 0;
+        text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7);
+        filter: drop-shadow(0 0 20px currentColor);
+    }
+
+    .health-bar-container {
+        margin: 1rem 0;
+    }
+
+    .status-effects {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 1rem;
+    }
+
+    .ability-grid {
+        margin-top: 2rem;
+    }
+
+    .ability-button {
+        transition: all 0.3s ease;
+    }
+
+    .ability-button:hover:not(:disabled) {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 20px rgba(139, 0, 0, 0.6);
+    }
+
+    .combat-log {
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 1rem;
+        max-height: 200px;
+        overflow-y: auto;
+        margin-top: 2rem;
+        font-family: 'Courier New', monospace;
+    }
+
+    .log-entry {
+        padding: 0.3rem 0;
+        border-bottom: 1px solid #2d2d2d;
+        font-size: 0.9rem;
+    }
+
+    .turn-indicator {
+        text-align: center;
+        margin: 2rem 0;
+        font-size: 1.5rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.7);
+    }
+
+    .vs-badge {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-size: 3rem;
+        font-weight: bold;
+        background: radial-gradient(circle, #8B0000 0%, #2d2d2d 100%);
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 16px rgba(139, 0, 0, 0.8);
+        z-index: 10;
+    }
+</style>
+
+<div class="combat-arena">
+    <!-- Turn Indicator -->
+    <div class="turn-indicator">
+        <MudChip T="string" Color="Color.Primary" Size="Size.Large">
+            Turn @_turnNumber
+        </MudChip>
+        @if (_isPlayerTurn)
+        {
+            <MudText Color="Color.Success">⚔️ Your Turn!</MudText>
+        }
+        else
+        {
+            <MudText Color="Color.Error">🎯 Enemy's Turn...</MudText>
+        }
+    </div>
+
+    <!-- Combatants -->
+    <MudGrid Justify="Justify.Center" Style="position: relative;">
+        <!-- Player -->
+        <MudItem xs="12" md="5">
+            <MudCard Class="@GetCombatantClass(true)" Elevation="6">
+                <MudCardContent>
+                    <MudText Typo="Typo.h4" Color="Color.Success" Style="text-align: center; margin-bottom: 1rem;">
+                        @_playerName
+                    </MudText>
+
+                    <div class="combatant-image">
+                        🛡️
+                    </div>
+
+                    <div class="health-bar-container">
+                        <MudText Typo="Typo.caption" Color="Color.Default">Health</MudText>
+                        <MudProgressLinear Color="Color.Error" Value="@_playerHPPercent" Size="Size.Large" />
+                        <MudText Typo="Typo.body2" Style="text-align: center;">
+                            @_playerHP / @_playerMaxHP
+                        </MudText>
+                    </div>
+
+                    <div class="health-bar-container">
+                        <MudText Typo="Typo.caption" Color="Color.Default">Mana</MudText>
+                        <MudProgressLinear Color="Color.Info" Value="@_playerManaPercent" Size="Size.Large" />
+                        <MudText Typo="Typo.body2" Style="text-align: center;">
+                            @_playerMana / @_playerMaxMana
+                        </MudText>
+                    </div>
+
+                    @if (_playerEffects.Any())
+                    {
+                        <div class="status-effects">
+                            <MudText Typo="Typo.caption">Active Effects:</MudText>
+                            @foreach (var effect in _playerEffects)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Info">@effect</MudChip>
+                            }
+                        </div>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+
+        <!-- VS Badge -->
+        <div class="vs-badge">
+            <span style="color: #DAA520;">VS</span>
+        </div>
+
+        <!-- Enemy -->
+        <MudItem xs="12" md="5">
+            <MudCard Class="@GetCombatantClass(false)" Elevation="6">
+                <MudCardContent>
+                    <MudText Typo="Typo.h4" Color="Color.Error" Style="text-align: center; margin-bottom: 1rem;">
+                        @_enemyName
+                    </MudText>
+
+                    <div class="combatant-image">
+                        👹
+                    </div>
+
+                    <div class="health-bar-container">
+                        <MudText Typo="Typo.caption" Color="Color.Default">Health</MudText>
+                        <MudProgressLinear Color="Color.Error" Value="@_enemyHPPercent" Size="Size.Large" />
+                        <MudText Typo="Typo.body2" Style="text-align: center;">
+                            @_enemyHP / @_enemyMaxHP
+                        </MudText>
+                    </div>
+
+                    @if (_enemyEffects.Any())
+                    {
+                        <div class="status-effects">
+                            <MudText Typo="Typo.caption">Active Effects:</MudText>
+                            @foreach (var effect in _enemyEffects)
+                            {
+                                <MudChip T="string" Size="Size.Small" Color="Color.Warning">@effect</MudChip>
+                            }
+                        </div>
+                    }
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+    </MudGrid>
+
+    <!-- Combat Actions -->
+    @if (_isPlayerTurn && !_combatEnded)
+    {
+        <MudPaper Elevation="4" Style="padding: 2rem; margin-top: 2rem; background: #2d2d2d;">
+            <MudText Typo="Typo.h5" Color="Color.Primary" Style="margin-bottom: 1rem; text-align: center;">
+                Choose Your Action
+            </MudText>
+
+            <MudGrid Spacing="2" class="ability-grid">
+                <MudItem xs="12" sm="6" md="3">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Error"
+                               FullWidth="true"
+                               Size="Size.Large"
+                               StartIcon="@Icons.Material.Filled.LocalFireDepartment"
+                               Class="ability-button"
+                               OnClick="() => ExecuteAction(CombatActionType.Attack)">
+                        Basic Attack
+                    </MudButton>
+                </MudItem>
+
+                @foreach (var ability in _availableAbilities.Take(3))
+                {
+                    <MudItem xs="12" sm="6" md="3">
+                        <MudButton Variant="Variant.Filled"
+                                   Color="Color.Secondary"
+                                   FullWidth="true"
+                                   Size="Size.Large"
+                                   StartIcon="@Icons.Material.Filled.AutoAwesome"
+                                   Class="ability-button"
+                                   Disabled="@(!ability.CanUse)"
+                                   OnClick="() => ExecuteAction(CombatActionType.UseAbility, ability.Index)">
+                            @ability.Name
+                            <br />
+                            <small>@ability.ManaCost mana</small>
+                        </MudButton>
+                    </MudItem>
+                }
+
+                <MudItem xs="12" sm="6" md="3">
+                    <MudButton Variant="Variant.Filled"
+                               Color="Color.Success"
+                               FullWidth="true"
+                               Size="Size.Large"
+                               StartIcon="@Icons.Material.Filled.LocalDrink"
+                               Class="ability-button"
+                               Disabled="@(_playerPotions <= 0)"
+                               OnClick="() => ExecuteAction(CombatActionType.UsePotion)">
+                        Use Potion (@_playerPotions)
+                    </MudButton>
+                </MudItem>
+
+                <MudItem xs="12" sm="6" md="3">
+                    <MudButton Variant="Variant.Outlined"
+                               Color="Color.Default"
+                               FullWidth="true"
+                               Size="Size.Large"
+                               StartIcon="@Icons.Material.Filled.DirectionsRun"
+                               Class="ability-button"
+                               Disabled="@(!_canFlee)"
+                               OnClick="() => ExecuteAction(CombatActionType.Flee)">
+                        Flee
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    }
+
+    @if (_combatEnded)
+    {
+        <MudPaper Elevation="4" Style="padding: 2rem; margin-top: 2rem; background: #2d2d2d; text-align: center;">
+            @if (_playerVictory)
+            {
+                <MudText Typo="Typo.h3" Color="Color.Success" Style="margin-bottom: 1rem;">
+                    ✅ VICTORY!
+                </MudText>
+                <MudText Typo="Typo.h6">
+                    You defeated @_enemyName!
+                </MudText>
+                <MudText Typo="Typo.body1" Style="margin-top: 1rem;">
+                    Gained @_expGained XP and @_goldGained Gold
+                </MudText>
+            }
+            else
+            {
+                <MudText Typo="Typo.h3" Color="Color.Error" Style="margin-bottom: 1rem;">
+                    💀 DEFEAT
+                </MudText>
+                <MudText Typo="Typo.h6">
+                    You were slain by @_enemyName...
+                </MudText>
+            }
+
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
+                       Size="Size.Large"
+                       Style="margin-top: 2rem;"
+                       OnClick="ReturnToGame">
+                Continue
+            </MudButton>
+        </MudPaper>
+    }
+
+    <!-- Combat Log -->
+    <div class="combat-log">
+        <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Style="margin-bottom: 0.5rem;">
+            ⚔️ Combat Log
+        </MudText>
+        @foreach (var log in _combatLog.TakeLast(8).Reverse())
+        {
+            <div class="log-entry">@log</div>
+        }
+    </div>
+</div>
+
+@code {
+    private bool _isPlayerTurn = true;
+    private bool _combatEnded = false;
+    private bool _playerVictory = false;
+    private int _turnNumber = 1;
+
+    // Player stats
+    private string _playerName = "Hero";
+    private int _playerHP = 100;
+    private int _playerMaxHP = 100;
+    private int _playerMana = 50;
+    private int _playerMaxMana = 50;
+    private int _playerPotions = 3;
+    private List<string> _playerEffects = new();
+    private List<AbilityInfo> _availableAbilities = new();
+
+    // Enemy stats
+    private string _enemyName = "Goblin";
+    private int _enemyHP = 80;
+    private int _enemyMaxHP = 80;
+    private List<string> _enemyEffects = new();
+
+    private bool _canFlee = true;
+    private int _expGained = 0;
+    private int _goldGained = 0;
+
+    private double _playerHPPercent => _playerMaxHP > 0 ? ((double)_playerHP / _playerMaxHP) * 100 : 0;
+    private double _playerManaPercent => _playerMaxMana > 0 ? ((double)_playerMana / _playerMaxMana) * 100 : 0;
+    private double _enemyHPPercent => _enemyMaxHP > 0 ? ((double)_enemyHP / _enemyMaxHP) * 100 : 0;
+
+    private List<string> _combatLog = new();
+    private string _playerAnimationClass = "";
+    private string _enemyAnimationClass = "";
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to state changes
+        GameState.OnStateChanged += StateHasChanged;
+
+        // Initialize combat (placeholder data for now)
+        InitializeCombat();
+
+        _combatLog.Add("⚔️ Combat begins!");
+        _combatLog.Add($"You face {_enemyName}!");
+
+        base.OnInitialized();
+    }
+
+    private void InitializeCombat()
+    {
+        // TODO: Get actual combat state from GameCore
+        // For now, use placeholder data
+        _availableAbilities = new List<AbilityInfo>
+        {
+            new() { Index = 0, Name = "Power Strike", ManaCost = 10, CanUse = true },
+            new() { Index = 1, Name = "Shield Bash", ManaCost = 15, CanUse = true },
+            new() { Index = 2, Name = "Battle Cry", ManaCost = 20, CanUse = true }
+        };
+    }
+
+    private string GetCombatantClass(bool isPlayer)
+    {
+        var baseClass = "combatant-card";
+        if (isPlayer && _playerAnimationClass != "")
+            return $"{baseClass} {_playerAnimationClass}";
+        if (!isPlayer && _enemyAnimationClass != "")
+            return $"{baseClass} {_enemyAnimationClass}";
+        return baseClass;
+    }
+
+    private async Task ExecuteAction(CombatActionType actionType, int? abilityIndex = null)
+    {
+        _playerAnimationClass = "attacking";
+        StateHasChanged();
+
+        await Task.Delay(500); // Animation delay
+
+        switch (actionType)
+        {
+            case CombatActionType.Attack:
+                var damage = Random.Shared.Next(10, 25);
+                _enemyHP -= damage;
+                _enemyAnimationClass = "damaged";
+                _combatLog.Add($"⚔️ You attack for {damage} damage!");
+                break;
+
+            case CombatActionType.UseAbility:
+                if (abilityIndex.HasValue && abilityIndex.Value < _availableAbilities.Count)
+                {
+                    var ability = _availableAbilities[abilityIndex.Value];
+                    _playerMana -= ability.ManaCost;
+                    var abilityDamage = Random.Shared.Next(20, 40);
+                    _enemyHP -= abilityDamage;
+                    _enemyAnimationClass = "damaged";
+                    _combatLog.Add($"✨ You used {ability.Name} for {abilityDamage} damage!");
+                }
+                break;
+
+            case CombatActionType.UsePotion:
+                _playerPotions--;
+                var healing = 50;
+                _playerHP = Math.Min(_playerMaxHP, _playerHP + healing);
+                _combatLog.Add($"💚 You used a potion and recovered {healing} HP!");
+                break;
+
+            case CombatActionType.Flee:
+                _combatLog.Add("🏃 You fled from combat!");
+                await Task.Delay(1000);
+                ReturnToGame();
+                return;
+        }
+
+        _playerAnimationClass = "";
+        await Task.Delay(500);
+        _enemyAnimationClass = "";
+
+        // Check if enemy is defeated
+        if (_enemyHP <= 0)
+        {
+            _combatEnded = true;
+            _playerVictory = true;
+            _expGained = Random.Shared.Next(50, 100);
+            _goldGained = Random.Shared.Next(20, 50);
+            _combatLog.Add($"✅ {_enemyName} defeated!");
+            StateHasChanged();
+            return;
+        }
+
+        // Enemy turn
+        _isPlayerTurn = false;
+        StateHasChanged();
+        await Task.Delay(1500); // Enemy thinking
+
+        _enemyAnimationClass = "attacking";
+        StateHasChanged();
+        await Task.Delay(500);
+
+        var enemyDamage = Random.Shared.Next(8, 20);
+        _playerHP -= enemyDamage;
+        _playerAnimationClass = "damaged";
+        _combatLog.Add($"💥 {_enemyName} attacks for {enemyDamage} damage!");
+
+        await Task.Delay(500);
+        _enemyAnimationClass = "";
+        _playerAnimationClass = "";
+
+        // Check if player is defeated
+        if (_playerHP <= 0)
+        {
+            _combatEnded = true;
+            _playerVictory = false;
+            _combatLog.Add("💀 You have been defeated!");
+            StateHasChanged();
+            return;
+        }
+
+        _turnNumber++;
+        _isPlayerTurn = true;
+        StateHasChanged();
+    }
+
+    private void ReturnToGame()
+    {
+        Navigation.NavigateTo("/game");
+    }
+
+    public void Dispose()
+    {
+        GameState.OnStateChanged -= StateHasChanged;
+    }
+}

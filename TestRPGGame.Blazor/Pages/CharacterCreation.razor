@@ -1,0 +1,271 @@
+@page "/character-creation"
+@using TestRPGGame.Entities.Player
+@using TestRPGGame.DataLoading
+@inject NavigationManager Navigation
+@inject GameStateService GameState
+@inject IDataRepository DataRepo
+
+<PageTitle>Character Creation - Dungeo</PageTitle>
+
+<style>
+    .creation-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .class-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+        border: 3px solid transparent;
+    }
+
+    .class-card:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 16px 32px rgba(139, 0, 0, 0.6);
+    }
+
+    .class-card.selected {
+        border: 3px solid #DAA520;
+        box-shadow: 0 0 30px rgba(218, 165, 32, 0.5);
+    }
+
+    .class-icon {
+        font-size: 5rem;
+        margin: 1rem 0;
+        text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.7);
+    }
+
+    .stat-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.3rem 0;
+        border-bottom: 1px solid #3a3a3a;
+    }
+
+    .hero-banner {
+        background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        margin-bottom: 2rem;
+        text-align: center;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .name-input-section {
+        background: #2d2d2d;
+        border-radius: 8px;
+        padding: 2rem;
+        margin-top: 2rem;
+    }
+</style>
+
+<div class="creation-container">
+    <div class="hero-banner">
+        <MudText Typo="Typo.h3" Color="Color.Primary" Style="font-weight: bold; margin-bottom: 1rem;">
+            ⚔️ Create Your Hero ⚔️
+        </MudText>
+        <MudText Typo="Typo.body1">
+            Choose your class and forge your legend
+        </MudText>
+    </div>
+
+    <MudGrid Spacing="4">
+        @foreach (var classData in _availableClasses)
+        {
+            <MudItem xs="12" md="4">
+                <MudCard Class="@GetClassCardClass(classData.Key)"
+                         Elevation="4"
+                         @onclick="() => SelectClass(classData.Key)">
+                    <MudCardContent Style="text-align: center;">
+                        <div class="class-icon">
+                            @GetClassIcon(classData.Key)
+                        </div>
+
+                        <MudText Typo="Typo.h4" Color="@GetClassColor(classData.Key)" Style="margin-bottom: 1rem; font-weight: bold;">
+                            @classData.Value.Name
+                        </MudText>
+
+                        <MudText Typo="Typo.body2" Style="margin-bottom: 1.5rem; min-height: 60px;">
+                            @classData.Value.Description
+                        </MudText>
+
+                        <MudDivider Style="margin: 1rem 0;" />
+
+                        <div style="text-align: left; padding: 0 1rem;">
+                            <MudText Typo="Typo.subtitle2" Color="Color.Secondary" Style="margin-bottom: 0.5rem;">
+                                Base Stats
+                            </MudText>
+
+                            <div class="stat-row">
+                                <span>❤️ HP:</span>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Error">@classData.Value.BaseMaxHP</MudChip>
+                            </div>
+                            <div class="stat-row">
+                                <span>✨ Mana:</span>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Info">@classData.Value.BaseMaxMana</MudChip>
+                            </div>
+                            <div class="stat-row">
+                                <span>⚔️ Attack:</span>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Warning">@classData.Value.BaseAttack</MudChip>
+                            </div>
+                            <div class="stat-row">
+                                <span>🛡️ Defense:</span>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Success">@classData.Value.BaseDefense</MudChip>
+                            </div>
+                            <div class="stat-row">
+                                <span>🔮 Magic Power:</span>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Secondary">@classData.Value.BaseMagicPower</MudChip>
+                            </div>
+                            <div class="stat-row">
+                                <span>💨 Speed:</span>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Primary">@classData.Value.BaseSpeed</MudChip>
+                            </div>
+                            <div class="stat-row">
+                                <span>💥 Crit Chance:</span>
+                                <MudChip T="string" Size="Size.Small" Color="Color.Warning">@((classData.Value.BaseCritChance * 100).ToString("F0"))%</MudChip>
+                            </div>
+                        </div>
+
+                        @if (_selectedClass == classData.Key)
+                        {
+                            <MudAlert Severity="Severity.Success" Dense="true" Style="margin-top: 1rem;">
+                                Selected! ✓
+                            </MudAlert>
+                        }
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        }
+    </MudGrid>
+
+    @if (_selectedClass.HasValue)
+    {
+        <div class="name-input-section">
+            <MudText Typo="Typo.h5" Color="Color.Primary" Style="margin-bottom: 1rem; text-align: center;">
+                Name Your Hero
+            </MudText>
+
+            <MudGrid Justify="Justify.Center">
+                <MudItem xs="12" md="6">
+                    <MudTextField @bind-Value="_characterName"
+                                  Label="Character Name"
+                                  Variant="Variant.Outlined"
+                                  HelperText="Choose a name for your legendary hero"
+                                  MaxLength="20"
+                                  Counter="20"
+                                  Immediate="true"
+                                  />
+                </MudItem>
+            </MudGrid>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <MudButton Variant="Variant.Filled"
+                           Color="Color.Primary"
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.PlayArrow"
+                           Disabled="@string.IsNullOrWhiteSpace(_characterName)"
+                           OnClick="StartAdventure"
+                           Style="min-width: 250px;">
+                    Begin Your Quest
+                </MudButton>
+
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Default"
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.ArrowBack"
+                           OnClick="GoBack"
+                           Style="margin-left: 1rem;">
+                    Back
+                </MudButton>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div style="text-align: center; margin-top: 2rem;">
+            <MudButton Variant="Variant.Text"
+                       Color="Color.Default"
+                       Size="Size.Large"
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       OnClick="GoBack">
+                Back to Menu
+            </MudButton>
+        </div>
+    }
+</div>
+
+@code {
+    private Dictionary<PlayerClass, ClassData> _availableClasses = new();
+    private PlayerClass? _selectedClass = null; // Default to none selected
+    private string _characterName = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load class data from repository
+        var allClasses = DataRepo.GetAllClasses();
+
+        foreach (var classData in allClasses)
+        {
+            if (classData.Name == "Warrior")
+                _availableClasses[PlayerClass.Warrior] = classData;
+            else if (classData.Name == "Mage")
+                _availableClasses[PlayerClass.Mage] = classData;
+            else if (classData.Name == "Rogue")
+                _availableClasses[PlayerClass.Rogue] = classData;
+        }
+
+        await base.OnInitializedAsync();
+    }
+
+    private void SelectClass(PlayerClass playerClass)
+    {
+        _selectedClass = playerClass;
+    }
+
+    private string GetClassCardClass(PlayerClass playerClass)
+    {
+        return playerClass == _selectedClass ? "class-card selected" : "class-card";
+    }
+
+    private string GetClassIcon(PlayerClass playerClass)
+    {
+        return playerClass switch
+        {
+            PlayerClass.Warrior => "🗡️",
+            PlayerClass.Mage => "🔮",
+            PlayerClass.Rogue => "🗡️",
+            _ => "❓"
+        };
+    }
+
+    private Color GetClassColor(PlayerClass playerClass)
+    {
+        return playerClass switch
+        {
+            PlayerClass.Warrior => Color.Error,
+            PlayerClass.Mage => Color.Secondary,
+            PlayerClass.Rogue => Color.Success,
+            _ => Color.Default
+        };
+    }
+
+    private async Task StartAdventure()
+    {
+        if (string.IsNullOrWhiteSpace(_characterName))
+        {
+            return;
+        }
+
+        // TODO: Initialize game with selected class and name
+        GameState.AddEventLog($"Creating {_selectedClass} named '{_characterName}'...");
+
+        // Navigate to main game view
+        Navigation.NavigateTo("/game");
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/");
+    }
+}

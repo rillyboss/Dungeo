@@ -1,0 +1,298 @@
+@page "/game"
+@inject NavigationManager Navigation
+@inject GameStateService GameState
+@inject GameCore GameCore
+@implements IDisposable
+
+<PageTitle>Adventure - Dungeo</PageTitle>
+
+<style>
+    .game-container {
+        height: calc(100vh - 120px);
+        display: flex;
+        flex-direction: column;
+    }
+
+    .player-stats-bar {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .stat-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-right: 1.5rem;
+    }
+
+    .action-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+        height: 100%;
+    }
+
+    .action-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 24px rgba(139, 0, 0, 0.4);
+    }
+
+    .event-log-container {
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 1rem;
+        height: 300px;
+        overflow-y: auto;
+        margin-top: 1rem;
+        box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.5);
+    }
+
+    .event-log-item {
+        padding: 0.5rem;
+        border-bottom: 1px solid #2d2d2d;
+        font-family: 'Courier New', monospace;
+        font-size: 0.9rem;
+    }
+
+    .main-content {
+        flex: 1;
+        overflow-y: auto;
+    }
+</style>
+
+<div class="game-container">
+    <!-- Player Stats Bar -->
+    <div class="player-stats-bar">
+        <MudGrid>
+            <MudItem xs="12" md="8">
+                <div style="display: flex; align-items: center; flex-wrap: wrap;">
+                    <MudText Typo="Typo.h5" Color="Color.Primary" Style="margin-right: 2rem;">
+                        @_playerName
+                    </MudText>
+
+                    <div class="stat-badge">
+                        <MudChip T="string" Color="Color.Info" Size="Size.Small">Lvl @_level</MudChip>
+                    </div>
+
+                    <div class="stat-badge">
+                        <span>❤️</span>
+                        <MudProgressLinear Color="Color.Error" Value="@_hpPercent" Style="width: 120px;" />
+                        <MudText Typo="Typo.caption">@_currentHP/@_maxHP</MudText>
+                    </div>
+
+                    <div class="stat-badge">
+                        <span>✨</span>
+                        <MudProgressLinear Color="Color.Info" Value="@_manaPercent" Style="width: 120px;" />
+                        <MudText Typo="Typo.caption">@_currentMana/@_maxMana</MudText>
+                    </div>
+
+                    <div class="stat-badge">
+                        <span>💰</span>
+                        <MudChip T="string" Color="Color.Warning" Size="Size.Small">@_gold Gold</MudChip>
+                    </div>
+                </div>
+            </MudItem>
+            <MudItem xs="12" md="4" Style="text-align: right;">
+                <MudButton Variant="Variant.Text"
+                           Color="Color.Default"
+                           StartIcon="@Icons.Material.Filled.Menu"
+                           OnClick="ToggleDrawer">
+                    Menu
+                </MudButton>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <MudText Typo="Typo.h4" Color="Color.Primary" Style="margin-bottom: 1.5rem; text-align: center;">
+            What will you do next?
+        </MudText>
+
+        <MudGrid Spacing="3">
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="action-card" Elevation="4" @onclick="() => NavigateTo(MainMenuChoice.Combat)">
+                    <MudCardContent Style="text-align: center;">
+                        <div style="font-size: 3rem;">⚔️</div>
+                        <MudText Typo="Typo.h5" Color="Color.Error">Combat</MudText>
+                        <MudText Typo="Typo.body2">Fight random enemies</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="action-card" Elevation="4" @onclick="() => NavigateTo(MainMenuChoice.Dungeon)">
+                    <MudCardContent Style="text-align: center;">
+                        <div style="font-size: 3rem;">🏰</div>
+                        <MudText Typo="Typo.h5" Color="Color.Primary">Dungeons</MudText>
+                        <MudText Typo="Typo.body2">Explore challenging dungeons</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="action-card" Elevation="4" @onclick="() => NavigateTo(MainMenuChoice.Shop)">
+                    <MudCardContent Style="text-align: center;">
+                        <div style="font-size: 3rem;">🛒</div>
+                        <MudText Typo="Typo.h5" Color="Color.Warning">Shop</MudText>
+                        <MudText Typo="Typo.body2">Buy and sell equipment</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="action-card" Elevation="4" @onclick="() => NavigateTo(MainMenuChoice.Inventory)">
+                    <MudCardContent Style="text-align: center;">
+                        <div style="font-size: 3rem;">🎒</div>
+                        <MudText Typo="Typo.h5" Color="Color.Success">Inventory</MudText>
+                        <MudText Typo="Typo.body2">Manage your equipment</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="action-card" Elevation="4" @onclick="() => NavigateTo(MainMenuChoice.CharacterSheet)">
+                    <MudCardContent Style="text-align: center;">
+                        <div style="font-size: 3rem;">📊</div>
+                        <MudText Typo="Typo.h5" Color="Color.Info">Character</MudText>
+                        <MudText Typo="Typo.body2">View your stats & abilities</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="action-card" Elevation="4" @onclick="() => NavigateTo(MainMenuChoice.Rest)">
+                    <MudCardContent Style="text-align: center;">
+                        <div style="font-size: 3rem;">😴</div>
+                        <MudText Typo="Typo.h5" Color="Color.Secondary">Rest</MudText>
+                        <MudText Typo="Typo.body2">Recover HP and Mana</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="action-card" Elevation="4" @onclick="() => NavigateTo(MainMenuChoice.Achievements)">
+                    <MudCardContent Style="text-align: center;">
+                        <div style="font-size: 3rem;">🏆</div>
+                        <MudText Typo="Typo.h5" Color="Color.Warning">Achievements</MudText>
+                        <MudText Typo="Typo.body2">View your accomplishments</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="action-card" Elevation="4" @onclick="() => NavigateTo(MainMenuChoice.Statistics)">
+                    <MudCardContent Style="text-align: center;">
+                        <div style="font-size: 3rem;">📈</div>
+                        <MudText Typo="Typo.h5" Color="Color.Info">Statistics</MudText>
+                        <MudText Typo="Typo.body2">View your game stats</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+
+            <MudItem xs="12" sm="6" md="4">
+                <MudCard Class="action-card" Elevation="4" @onclick="() => NavigateTo(MainMenuChoice.Save)">
+                    <MudCardContent Style="text-align: center;">
+                        <div style="font-size: 3rem;">💾</div>
+                        <MudText Typo="Typo.h5" Color="Color.Success">Save Game</MudText>
+                        <MudText Typo="Typo.body2">Save your progress</MudText>
+                    </MudCardContent>
+                </MudCard>
+            </MudItem>
+        </MudGrid>
+    </div>
+
+    <!-- Event Log -->
+    <div class="event-log-container">
+        <MudText Typo="Typo.h6" Color="Color.Secondary" Style="margin-bottom: 0.5rem;">
+            📜 Adventure Log
+        </MudText>
+        @foreach (var log in GameState.EventLog.TakeLast(10).Reverse())
+        {
+            <div class="event-log-item">
+                @log
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Side Drawer for Menu -->
+<MudDrawer @bind-Open="_drawerOpen" Anchor="Anchor.Right" Elevation="2" Variant="DrawerVariant.Temporary">
+    <MudDrawerHeader>
+        <MudText Typo="Typo.h6">Game Menu</MudText>
+    </MudDrawerHeader>
+    <MudNavMenu>
+        <MudNavLink Icon="@Icons.Material.Filled.Help">Help</MudNavLink>
+        <MudNavLink Icon="@Icons.Material.Filled.Settings">Settings</MudNavLink>
+        <MudDivider />
+        <MudNavLink Icon="@Icons.Material.Filled.ExitToApp" OnClick="ExitToMainMenu">Exit to Main Menu</MudNavLink>
+    </MudNavMenu>
+</MudDrawer>
+
+@code {
+    private bool _drawerOpen = false;
+    private string _playerName = "Hero";
+    private int _level = 1;
+    private int _currentHP = 100;
+    private int _maxHP = 100;
+    private int _currentMana = 50;
+    private int _maxMana = 50;
+    private int _gold = 100;
+
+    private double _hpPercent => _maxHP > 0 ? ((double)_currentHP / _maxHP) * 100 : 0;
+    private double _manaPercent => _maxMana > 0 ? ((double)_currentMana / _maxMana) * 100 : 0;
+
+    protected override void OnInitialized()
+    {
+        // Subscribe to state changes
+        GameState.OnStateChanged += StateHasChanged;
+
+        // TODO: Initialize game if not already started
+        // For now, just show placeholder stats
+
+        base.OnInitialized();
+    }
+
+    private void NavigateTo(MainMenuChoice choice)
+    {
+        GameState.AddEventLog($"Selected: {choice}");
+
+        // TODO: Implement navigation to specific screens
+        switch (choice)
+        {
+            case MainMenuChoice.Combat:
+                Navigation.NavigateTo("/combat");
+                break;
+            case MainMenuChoice.Shop:
+                Navigation.NavigateTo("/shop");
+                break;
+            case MainMenuChoice.Inventory:
+                Navigation.NavigateTo("/inventory");
+                break;
+            case MainMenuChoice.Rest:
+                GameState.AddEventLog("💤 You rest and recover your strength...");
+                // TODO: Trigger rest logic
+                break;
+            default:
+                GameState.AddEventLog($"⚠️ {choice} not yet implemented");
+                break;
+        }
+    }
+
+    private void ToggleDrawer()
+    {
+        _drawerOpen = !_drawerOpen;
+    }
+
+    private void ExitToMainMenu()
+    {
+        Navigation.NavigateTo("/");
+    }
+
+    public void Dispose()
+    {
+        GameState.OnStateChanged -= StateHasChanged;
+    }
+}

@@ -1,0 +1,341 @@
+@page "/dungeons"
+@using TestRPGGame.DataLoading
+@inject NavigationManager Navigation
+@inject GameStateService GameState
+@inject IDataRepository DataRepo
+@implements IDisposable
+
+<PageTitle>Dungeon Selection - Dungeo</PageTitle>
+
+<style>
+    .dungeon-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dungeon-header {
+        text-align: center;
+        margin-bottom: 2rem;
+        background: linear-gradient(135deg, #8B0000 0%, #DAA520 100%);
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .dungeon-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(450px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .dungeon-card {
+        background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        border: 2px solid #3a3a3a;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .dungeon-card:hover {
+        border-color: #8B0000;
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(139, 0, 0, 0.4);
+    }
+
+    .dungeon-card-locked {
+        opacity: 0.6;
+        border-style: dashed;
+    }
+
+    .dungeon-card-locked:hover {
+        transform: none;
+        border-color: #666;
+    }
+
+    .dungeon-icon {
+        font-size: 3rem;
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+
+    .dungeon-difficulty {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .difficulty-beginner { background: #4CAF50; color: white; }
+    .difficulty-easy { background: #8BC34A; color: white; }
+    .difficulty-medium { background: #FF9800; color: white; }
+    .difficulty-hard { background: #F44336; color: white; }
+    .difficulty-extreme { background: #9C27B0; color: white; }
+
+    .completion-badge {
+        position: absolute;
+        top: 1rem;
+        left: 1rem;
+        background: #DAA520;
+        color: #1a1a1a;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: bold;
+        font-size: 0.9rem;
+    }
+
+    .boss-section {
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #8B0000;
+    }
+
+    .rewards-section {
+        background: #1a1a1a;
+        border-radius: 8px;
+        padding: 1rem;
+        margin: 1rem 0;
+        border-left: 4px solid #DAA520;
+    }
+</style>
+
+<div class="dungeon-container">
+    <!-- Header -->
+    <div class="dungeon-header">
+        <MudText Typo="Typo.h3" Style="font-weight: bold; color: white; margin-bottom: 0.5rem;">
+            🏰 Dungeon Selection
+        </MudText>
+        <MudText Typo="Typo.h6" Style="color: white; opacity: 0.9;">
+            Choose your adventure - Each dungeon offers unique challenges and rewards
+        </MudText>
+        <MudText Typo="Typo.body2" Style="color: white; opacity: 0.8; margin-top: 0.5rem;">
+            Player Level: @_playerLevel | Dungeons Completed: @_dungeonsCompleted/@_totalDungeons
+        </MudText>
+    </div>
+
+    <!-- Dungeon Grid -->
+    <div class="dungeon-grid">
+        @foreach (var dungeon in _dungeons)
+        {
+            var isLocked = IsDungeonLocked(dungeon);
+            var isCompleted = IsDungeonCompleted(dungeon.Id);
+            var difficultyClass = GetDifficultyClass(dungeon.RecommendedLevel);
+
+            <div class="@(isLocked ? "dungeon-card dungeon-card-locked" : "dungeon-card")">
+                <!-- Completion Badge -->
+                @if (isCompleted)
+                {
+                    <div class="completion-badge">
+                        ✓ Completed
+                    </div>
+                }
+
+                <!-- Difficulty Badge -->
+                <div class="dungeon-difficulty @difficultyClass">
+                    Level @dungeon.RecommendedLevel
+                </div>
+
+                <!-- Dungeon Icon -->
+                <div class="dungeon-icon">
+                    @GetDungeonIcon(dungeon.Id)
+                </div>
+
+                <!-- Dungeon Name -->
+                <MudText Typo="Typo.h5" Color="Color.Primary" Align="Align.Center" Style="margin-bottom: 0.5rem;">
+                    @dungeon.DisplayName
+                </MudText>
+
+                <!-- Description -->
+                <MudText Typo="Typo.body2" Align="Align.Center" Style="margin-bottom: 1rem; color: #b0b0b0; white-space: pre-line;">
+                    @dungeon.Description
+                </MudText>
+
+                <!-- Boss Information -->
+                <div class="boss-section">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Error" Style="margin-bottom: 0.5rem;">
+                        👹 Bosses
+                    </MudText>
+                    <MudText Typo="Typo.body2">
+                        <strong>Miniboss:</strong> @FormatBossName(dungeon.MinibossId)
+                    </MudText>
+                    <MudText Typo="Typo.body2">
+                        <strong>Final Boss:</strong> @FormatBossName(dungeon.BossId)
+                    </MudText>
+                </div>
+
+                <!-- Rewards -->
+                <div class="rewards-section">
+                    <MudText Typo="Typo.subtitle2" Color="Color.Warning" Style="margin-bottom: 0.5rem;">
+                        💰 Rewards
+                    </MudText>
+                    <MudGrid>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.caption">Miniboss</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Success">
+                                @dungeon.Rewards.MinibossGold Gold
+                            </MudText>
+                        </MudItem>
+                        <MudItem xs="6">
+                            <MudText Typo="Typo.caption">Final Boss</MudText>
+                            <MudText Typo="Typo.body2" Color="Color.Success">
+                                @dungeon.Rewards.BossGold Gold
+                            </MudText>
+                        </MudItem>
+                    </MudGrid>
+                    <MudText Typo="Typo.caption" Style="margin-top: 0.5rem;">
+                        + Equipment Drops & Random Encounters
+                    </MudText>
+                </div>
+
+                <!-- Requirements (if locked) -->
+                @if (isLocked)
+                {
+                    <MudAlert Severity="Severity.Warning" Dense="true" Style="margin-top: 1rem;">
+                        @if (dungeon.RequiredDungeonsCompleted > 0)
+                        {
+                            <text>Requires @dungeon.RequiredDungeonsCompleted dungeons completed</text>
+                        }
+                        else if (_playerLevel < dungeon.RecommendedLevel)
+                        {
+                            <text>Recommended Level: @dungeon.RecommendedLevel (You are level @_playerLevel)</text>
+                        }
+                    </MudAlert>
+                }
+
+                <!-- Enter Button -->
+                <MudButton Variant="Variant.Filled"
+                           Color="@(isLocked ? Color.Default : Color.Error)"
+                           FullWidth="true"
+                           Size="Size.Large"
+                           StartIcon="@Icons.Material.Filled.DirectionsRun"
+                           OnClick="@(() => EnterDungeon(dungeon))"
+                           Disabled="@isLocked"
+                           Style="margin-top: 1rem;">
+                    @(isLocked ? "🔒 Locked" : isCompleted ? "Re-Enter Dungeon" : "Enter Dungeon")
+                </MudButton>
+            </div>
+        }
+    </div>
+
+    <!-- Back Button -->
+    <div style="text-align: center;">
+        <MudButton Variant="Variant.Filled"
+                   Color="Color.Primary"
+                   Size="Size.Large"
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   OnClick="@(() => Navigation.NavigateTo("/game"))">
+            Back to Game
+        </MudButton>
+    </div>
+</div>
+
+@code {
+    // Player info (sample data - TODO: load from GameCore)
+    private int _playerLevel = 5;
+    private int _dungeonsCompleted = 2;
+
+    // Dungeon data
+    private List<DungeonData> _dungeons = new();
+    private int _totalDungeons => _dungeons.Count;
+    private HashSet<string> _completedDungeonIds = new();
+
+    protected override void OnInitialized()
+    {
+        GameState.OnStateChanged += StateHasChanged;
+
+        // Load dungeons from repository
+        LoadDungeons();
+
+        // Sample: Mark first 2 dungeons as completed
+        _completedDungeonIds.Add("goblin_caves");
+        _completedDungeonIds.Add("ancient_ruins");
+
+        base.OnInitialized();
+    }
+
+    private void LoadDungeons()
+    {
+        // Load all dungeons and sort by recommended level
+        _dungeons = DataRepo.GetAllDungeons()
+            .OrderBy(d => d.RecommendedLevel)
+            .ToList();
+    }
+
+    private bool IsDungeonLocked(DungeonData dungeon)
+    {
+        // Check dungeon completion requirements
+        if (dungeon.RequiredDungeonsCompleted > _dungeonsCompleted)
+        {
+            return true;
+        }
+
+        // Check required specific dungeons
+        if (dungeon.RequiredDungeonIds.Any() &&
+            !dungeon.RequiredDungeonIds.All(id => _completedDungeonIds.Contains(id)))
+        {
+            return true;
+        }
+
+        // Allow entering dungeons below recommended level (player choice)
+        return false;
+    }
+
+    private bool IsDungeonCompleted(string dungeonId)
+    {
+        return _completedDungeonIds.Contains(dungeonId);
+    }
+
+    private string GetDifficultyClass(int recommendedLevel)
+    {
+        return recommendedLevel switch
+        {
+            1 => "difficulty-beginner",
+            2 or 3 => "difficulty-easy",
+            4 or 5 => "difficulty-medium",
+            6 or 7 => "difficulty-hard",
+            _ => "difficulty-extreme"
+        };
+    }
+
+    private string GetDungeonIcon(string dungeonId)
+    {
+        return dungeonId switch
+        {
+            "goblin_caves" => "🪨",
+            "ancient_ruins" => "🏛️",
+            "haunted_crypt" => "⚰️",
+            "dragons_lair" => "🐉",
+            "void_temple" => "🌌",
+            _ => "🏰"
+        };
+    }
+
+    private string FormatBossName(string bossId)
+    {
+        // Convert snake_case to Title Case
+        return string.Join(" ", bossId.Split('_')
+            .Select(word => char.ToUpper(word[0]) + word.Substring(1)));
+    }
+
+    private void EnterDungeon(DungeonData dungeon)
+    {
+        // TODO: Wire up to GameCore dungeon system
+        GameState.AddEventLog($"🏰 Entering {dungeon.DisplayName}...");
+
+        // For now, navigate to combat view
+        // In the future, this should start the dungeon run via GameCore
+        Navigation.NavigateTo("/combat");
+    }
+
+    public void Dispose()
+    {
+        GameState.OnStateChanged -= StateHasChanged;
+    }
+}
