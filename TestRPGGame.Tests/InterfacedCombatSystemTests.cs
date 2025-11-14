@@ -641,5 +641,196 @@ namespace TestRPGGame.Tests
 
             return initialHP - player.CurrentHP;
         }
+
+        [Fact]
+        public void ManyBuffs_AllStackCorrectly()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+            var enemy = EnemyFactory.CreateEnemy(1);
+
+            player.CurrentHP = player.MaxHP;
+            player.Attack = 100;
+            enemy.Defense = 0;
+            enemy.CurrentHP = 100000;
+
+            // Calculate baseline
+            int baselineDamage = CalculateRealAttackDamage(player, enemy);
+
+            // Act: Apply MANY different buffs (10 total)
+            // 5 attack buffs
+            for (int i = 1; i <= 5; i++)
+            {
+                var attackBuff = new Combat.StatusEffects.StatModifierEffect(
+                    $"attack_buff_{i}", $"Attack Buff {i}", "⚔️",
+                    Combat.StatusEffects.StatusEffectType.Buff,
+                    duration: 5,
+                    stat: Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                    value: 1.1, // +10% each
+                    isMultiplier: true);
+                player.Effects.AddEffect(attackBuff);
+            }
+
+            // 3 damage buffs
+            for (int i = 1; i <= 3; i++)
+            {
+                var damageBuff = new Combat.StatusEffects.StatModifierEffect(
+                    $"damage_buff_{i}", $"Damage Buff {i}", "💢",
+                    Combat.StatusEffects.StatusEffectType.Buff,
+                    duration: 5,
+                    stat: Combat.StatusEffects.StatModifierEffect.StatType.Damage,
+                    value: 1.05, // +5% each
+                    isMultiplier: true);
+                player.Effects.AddEffect(damageBuff);
+            }
+
+            // 2 flat attack bonuses
+            for (int i = 1; i <= 2; i++)
+            {
+                var flatBonus = new Combat.StatusEffects.StatModifierEffect(
+                    $"flat_attack_{i}", $"Flat Attack {i}", "➕",
+                    Combat.StatusEffects.StatusEffectType.Buff,
+                    duration: 5,
+                    stat: Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                    value: 10, // +10 flat
+                    isMultiplier: false);
+                player.Effects.AddEffect(flatBonus);
+            }
+
+            // Verify all 10 buffs are active
+            Assert.Equal(10, player.Effects.ActiveEffects.Count);
+
+            // Calculate damage with all buffs
+            int buffedDamage = CalculateRealAttackDamage(player, enemy);
+
+            // Assert: All buffs should stack
+            // Expected calculation:
+            // Base attack: 100
+            // + Flat bonuses: +20 = 120
+            // * Attack multipliers: 120 * (1.1^5) = 120 * 1.61051 = 193.26
+            // * Damage multipliers: 193.26 * (1.05^3) = 193.26 * 1.157625 = 223.73
+            // Expected damage increase: ~2.24x (224%)
+
+            double actualIncrease = (double)buffedDamage / baselineDamage;
+            Assert.True(actualIncrease >= 2.0 && actualIncrease <= 2.5,
+                $"10 buffs should stack to ~2.24x damage! Baseline: {baselineDamage}, Buffed: {buffedDamage}, Increase: {actualIncrease:P0}");
+        }
+
+        [Fact]
+        public void BuffsAndDebuffs_BothApply()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+            var enemy = EnemyFactory.CreateEnemy(1);
+
+            player.CurrentHP = player.MaxHP;
+            player.Attack = 50;
+            player.Defense = 20;
+            enemy.Attack = 40;
+            enemy.Defense = 0;
+            enemy.CurrentHP = 10000;
+
+            // Act: Apply buffs to player
+            var playerAttackBuff = new Combat.StatusEffects.StatModifierEffect(
+                "player_attack", "Player Attack", "⚔️",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                duration: 3,
+                stat: Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                value: 1.5,
+                isMultiplier: true);
+            player.Effects.AddEffect(playerAttackBuff);
+
+            // Apply debuffs to player
+            var playerDefenseDebuff = new Combat.StatusEffects.StatModifierEffect(
+                "player_defense_debuff", "Weakened", "⬇️",
+                Combat.StatusEffects.StatusEffectType.Debuff,
+                duration: 3,
+                stat: Combat.StatusEffects.StatModifierEffect.StatType.Defense,
+                value: 0.5, // Half defense
+                isMultiplier: true);
+            player.Effects.AddEffect(playerDefenseDebuff);
+
+            // Apply buffs to enemy
+            var enemyAttackBuff = new Combat.StatusEffects.StatModifierEffect(
+                "enemy_attack", "Enemy Attack", "⚔️",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                duration: 3,
+                stat: Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                value: 1.3,
+                isMultiplier: true);
+            enemy.Effects.AddEffect(enemyAttackBuff);
+
+            // Test player damage (buffed attack)
+            int playerDamage = CalculateRealAttackDamage(player, enemy);
+            Assert.True(playerDamage > 50, $"Player attack buff should increase damage (got {playerDamage})");
+
+            // Test enemy damage (buffed attack vs debuffed defense)
+            int initialPlayerHP = player.CurrentHP;
+            int enemyDamage = CalculateEnemyAttackDamage(enemy, player);
+            int expectedBaseDamage = 40 - (20 / 2); // 40 - 10 = 30
+
+            // With enemy buff (+30%) and player defense debuff (half defense = 10):
+            // Enemy attack: 40 * 1.3 = 52
+            // Player defense: 20 * 0.5 = 10
+            // Damage: 52 - (10/2) = 52 - 5 = 47
+            Assert.True(enemyDamage > expectedBaseDamage,
+                $"Enemy buff and player debuff should increase damage taken (expected >{expectedBaseDamage}, got {enemyDamage})");
+        }
+
+        [Fact]
+        public void SameStatMultipleBuffs_StackMultiplicatively()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+            var enemy = EnemyFactory.CreateEnemy(1);
+
+            player.CurrentHP = player.MaxHP;
+            player.Attack = 100;
+            enemy.Defense = 0;
+            enemy.CurrentHP = 10000;
+
+            int baselineDamage = CalculateRealAttackDamage(player, enemy);
+
+            // Act: Apply 3 DIFFERENT attack buffs (same stat, different effects)
+            var buff1 = new Combat.StatusEffects.StatModifierEffect(
+                "rage", "Rage", "😤",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                duration: 3,
+                stat: Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                value: 1.5, // +50%
+                isMultiplier: true);
+            player.Effects.AddEffect(buff1);
+
+            var buff2 = new Combat.StatusEffects.StatModifierEffect(
+                "berserk", "Berserk", "💪",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                duration: 3,
+                stat: Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                value: 1.3, // +30%
+                isMultiplier: true);
+            player.Effects.AddEffect(buff2);
+
+            var buff3 = new Combat.StatusEffects.StatModifierEffect(
+                "bloodlust", "Bloodlust", "🩸",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                duration: 3,
+                stat: Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                value: 1.2, // +20%
+                isMultiplier: true);
+            player.Effects.AddEffect(buff3);
+
+            Assert.Equal(3, player.Effects.ActiveEffects.Count);
+
+            // Calculate damage with all 3 attack buffs
+            int buffedDamage = CalculateRealAttackDamage(player, enemy);
+
+            // Expected: 1.5 * 1.3 * 1.2 = 2.34x damage
+            double actualIncrease = (double)buffedDamage / baselineDamage;
+            Assert.True(actualIncrease >= 2.2 && actualIncrease <= 2.5,
+                $"3 attack buffs should stack multiplicatively to ~2.34x! Baseline: {baselineDamage}, Buffed: {buffedDamage}, Increase: {actualIncrease:P0}");
+        }
     }
 }
