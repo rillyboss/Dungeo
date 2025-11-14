@@ -112,6 +112,17 @@ namespace TestRPGGame.Entities.Player
             // Equip the starting gear directly
             Inventory.Weapon = weapon;
             Inventory.Armor = armor;
+
+            // BUGFIX: Grant abilities from starting equipment
+            // Manually grant abilities since we're bypassing ProcessEquip()
+            if (weapon.GrantedAbilityIds.Count > 0)
+            {
+                AddEquipmentAbilities(weapon.GrantedAbilityIds);
+            }
+            if (armor.GrantedAbilityIds.Count > 0)
+            {
+                AddEquipmentAbilities(armor.GrantedAbilityIds);
+            }
         }
 
         private EquipmentItem EnsureClassAppropriateWeapon(EquipmentItem weapon)

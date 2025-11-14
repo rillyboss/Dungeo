@@ -1,6 +1,7 @@
 using TestRPGGame.Abilities.Effects;
 using TestRPGGame.Combat.StatusEffects;
 using TestRPGGame.Constants;
+using TestRPGGame.Interfaces;
 using System;
 
 namespace TestRPGGame.Abilities.Applicators
@@ -261,8 +262,33 @@ namespace TestRPGGame.Abilities.Applicators
                                 actualMultiplier = MinMultiplier + (Utils.RandomProvider.NextDouble() * (MaxMultiplier - MinMultiplier));
                             }
 
-                            int baseDamage = (int)(context.Source.Attack * actualMultiplier);
-                            context.Target.ApplyDamage(baseDamage, applyShieldAbsorption: true, attacker: context.Source);
+                            // Calculate effective attack with buffs
+                            double effectiveAttack = context.Source.Attack + context.Source.Effects.GetAttackBonus();
+                            effectiveAttack *= context.Source.Effects.GetAttackMultiplier();
+
+                            // Apply ability multiplier
+                            int baseDamage = (int)(effectiveAttack * actualMultiplier);
+
+                            // Apply general damage multipliers from source's buffs
+                            baseDamage = (int)(baseDamage * context.Source.Effects.GetTotalDamageMultiplier());
+
+                            int actualDamage = context.Target.ApplyDamage(baseDamage, applyShieldAbsorption: true, attacker: context.Source);
+
+                            // Publish damage event for UI feedback
+                            if (context.CombatInterface != null)
+                            {
+                                string attackerName = context.Source is Entities.Player.Player ? "Player" : (context.Source as Entities.Enemy.Enemy)?.Name ?? "Unknown";
+                                string targetName = context.Target is Entities.Player.Player ? "Player" : (context.Target as Entities.Enemy.Enemy)?.Name ?? "Unknown";
+
+                                context.CombatInterface.OnEvent(new GameEvents.DamageDealtEvent
+                                {
+                                    Attacker = attackerName,
+                                    Target = targetName,
+                                    Damage = actualDamage,
+                                    IsCritical = false,
+                                    AttackType = "Ability"
+                                });
+                            }
                         }
                         break;
                     }
@@ -295,9 +321,33 @@ namespace TestRPGGame.Abilities.Applicators
                     {
                         if (context.Target != null)
                         {
-                            // Deal damage to target
-                            int baseDamage = (int)(context.Source.Attack * multiplier);
+                            // Calculate effective attack with buffs
+                            double effectiveAttack = context.Source.Attack + context.Source.Effects.GetAttackBonus();
+                            effectiveAttack *= context.Source.Effects.GetAttackMultiplier();
+
+                            // Apply ability multiplier
+                            int baseDamage = (int)(effectiveAttack * multiplier);
+
+                            // Apply general damage multipliers from source's buffs
+                            baseDamage = (int)(baseDamage * context.Source.Effects.GetTotalDamageMultiplier());
+
                             int actualDamage = context.Target.ApplyDamage(baseDamage, applyShieldAbsorption: true, attacker: context.Source);
+
+                            // Publish damage event for UI feedback
+                            if (context.CombatInterface != null)
+                            {
+                                string attackerName = context.Source is Entities.Player.Player ? "Player" : (context.Source as Entities.Enemy.Enemy)?.Name ?? "Unknown";
+                                string targetName = context.Target is Entities.Player.Player ? "Player" : (context.Target as Entities.Enemy.Enemy)?.Name ?? "Unknown";
+
+                                context.CombatInterface.OnEvent(new GameEvents.DamageDealtEvent
+                                {
+                                    Attacker = attackerName,
+                                    Target = targetName,
+                                    Damage = actualDamage,
+                                    IsCritical = false,
+                                    AttackType = "Ability"
+                                });
+                            }
 
                             // Heal source (caster)
                             int actualHeal = Math.Min(flatValue, context.Source.MaxHP - context.Source.CurrentHP);

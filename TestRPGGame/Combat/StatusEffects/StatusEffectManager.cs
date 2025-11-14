@@ -180,17 +180,20 @@ namespace TestRPGGame.Combat.StatusEffects
         }
 
         /// <summary>
-        /// Calculates total damage multiplier from all active effects
+        /// Calculates total damage multiplier from DAMAGE-SPECIFIC buffs only.
+        /// Does NOT include Attack stat modifiers (those are handled by GetAttackMultiplier).
+        /// This allows Attack buffs and Damage buffs to stack multiplicatively.
         /// </summary>
         public double GetTotalDamageMultiplier()
         {
             double multiplier = 1.0;
             foreach (var effect in activeEffects.OfType<StatModifierEffect>())
             {
-                if (effect.Stat == StatModifierEffect.StatType.Damage ||
-                    effect.Stat == StatModifierEffect.StatType.Attack)
+                // Only count Damage-type modifiers, NOT Attack modifiers
+                // Attack modifiers are applied separately via GetAttackMultiplier()
+                if (effect.Stat == StatModifierEffect.StatType.Damage && effect.IsMultiplier)
                 {
-                    multiplier *= effect.GetDamageMultiplier();
+                    multiplier *= effect.Multiplier;
                 }
             }
             return multiplier;
@@ -227,6 +230,62 @@ namespace TestRPGGame.Combat.StatusEffects
         {
             return activeEffects.OfType<StatModifierEffect>()
                 .Where(e => e.Stat == StatModifierEffect.StatType.Speed && !e.IsMultiplier)
+                .Sum(e => e.Value);
+        }
+
+        /// <summary>
+        /// Gets total defense multiplier from active effects.
+        /// Includes both defense-specific and general defensive buffs.
+        /// Example: Shield Wall might add 1.5x defense multiplier
+        /// </summary>
+        public double GetDefenseMultiplier()
+        {
+            double multiplier = 1.0;
+            foreach (var effect in activeEffects.OfType<StatModifierEffect>())
+            {
+                if (effect.Stat == StatModifierEffect.StatType.Defense && effect.IsMultiplier)
+                {
+                    multiplier *= effect.Multiplier;
+                }
+            }
+            return multiplier;
+        }
+
+        /// <summary>
+        /// Gets total attack stat multiplier from active effects.
+        /// This is for modifying the Attack stat before damage calculations.
+        /// Example: Battle Rage adds 1.5x attack multiplier
+        /// </summary>
+        public double GetAttackMultiplier()
+        {
+            double multiplier = 1.0;
+            foreach (var effect in activeEffects.OfType<StatModifierEffect>())
+            {
+                if (effect.Stat == StatModifierEffect.StatType.Attack && effect.IsMultiplier)
+                {
+                    multiplier *= effect.Multiplier;
+                }
+            }
+            return multiplier;
+        }
+
+        /// <summary>
+        /// Gets flat attack bonus from active effects
+        /// </summary>
+        public int GetAttackBonus()
+        {
+            return activeEffects.OfType<StatModifierEffect>()
+                .Where(e => e.Stat == StatModifierEffect.StatType.Attack && !e.IsMultiplier)
+                .Sum(e => e.Value);
+        }
+
+        /// <summary>
+        /// Gets flat defense bonus from active effects
+        /// </summary>
+        public int GetDefenseBonus()
+        {
+            return activeEffects.OfType<StatModifierEffect>()
+                .Where(e => e.Stat == StatModifierEffect.StatType.Defense && !e.IsMultiplier)
                 .Sum(e => e.Value);
         }
 

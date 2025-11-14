@@ -5,6 +5,7 @@ using TestRPGGame.Entities.Player;
 using TestRPGGame.Entities.Enemy;
 using TestRPGGame.Factories;
 using TestRPGGame.Systems;
+using System;
 using System.Linq;
 
 namespace TestRPGGame.Tests
@@ -377,6 +378,268 @@ namespace TestRPGGame.Tests
             // Second ProcessTurnStart should actually decrement
             player.Effects.ProcessTurnStart();
             Assert.Equal(1, testEffect.RemainingTurns);
+        }
+
+        [Fact]
+        public void BattleRage_IncreasesPlayerDamage()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+            var enemy = EnemyFactory.CreateEnemy(1);
+
+            // Set player to known state
+            player.CurrentHP = player.MaxHP;
+            player.CurrentMana = player.MaxMana;
+            player.Attack = 50; // Known base attack value
+
+            // Enemy with zero defense for predictable damage
+            enemy.Defense = 0;
+            enemy.CurrentHP = 10000; // High HP so it doesn't die
+
+            // Get Battle Rage ability
+            var battleRage = player.Abilities.FirstOrDefault(a => a.Name == "Battle Rage");
+            Assert.NotNull(battleRage);
+
+            // Create combat context for ability execution
+            var context = new TestRPGGame.Abilities.Effects.AbilityContext(player, enemy, autoInterface);
+
+            // Calculate baseline damage WITHOUT Battle Rage using actual combat system calculation
+            int baselineDamage1 = CalculateRealAttackDamage(player, enemy);
+            int baselineDamage2 = CalculateRealAttackDamage(player, enemy);
+            int averageBaseline = (baselineDamage1 + baselineDamage2) / 2;
+
+            // Act: Use Battle Rage
+            battleRage.Execute(context);
+
+            // Check that Battle Rage effect is active
+            var activeEffects = player.Effects.ActiveEffects;
+            Assert.Contains(activeEffects, e => e.Name == "Battle Rage");
+
+            // Calculate damage WITH Battle Rage active using actual combat system calculation
+            int buffedDamage1 = CalculateRealAttackDamage(player, enemy);
+            int buffedDamage2 = CalculateRealAttackDamage(player, enemy);
+            int averageBuffed = (buffedDamage1 + buffedDamage2) / 2;
+
+            // Assert: Battle Rage should increase damage by ~50%
+            // Expected: baseline * 1.5 = buffed
+            // Allow some tolerance for rounding
+            double expectedBuffedDamage = averageBaseline * 1.5;
+            double actualIncrease = (double)averageBuffed / averageBaseline;
+
+            Assert.True(actualIncrease >= 1.4 && actualIncrease <= 1.6,
+                $"BUG: Battle Rage should increase damage by ~50%! " +
+                $"Baseline damage: {averageBaseline}, " +
+                $"Buffed damage: {averageBuffed}, " +
+                $"Actual increase: {actualIncrease:P0} (expected ~150%)");
+        }
+
+        /// <summary>
+        /// Helper to calculate attack damage using the REAL combat system logic with buffs
+        /// This mirrors the ExecutePlayerAttack method in InterfacedCombatSystem
+        /// </summary>
+        private int CalculateRealAttackDamage(Player player, Enemy enemy)
+        {
+            int initialHP = enemy.CurrentHP;
+
+            // Use the REAL combat calculation with buffs
+            double effectiveAttack = player.Attack + player.Effects.GetAttackBonus();
+            effectiveAttack *= player.Effects.GetAttackMultiplier();
+
+            int baseDamage = (int)effectiveAttack;
+
+            // Skip crit for consistency in testing
+            // if (isCrit) baseDamage = (int)(baseDamage * 2.0);
+
+            // Apply general damage multipliers
+            baseDamage = (int)(baseDamage * player.Effects.GetTotalDamageMultiplier());
+
+            // Calculate enemy's effective defense
+            double effectiveDefense = enemy.Defense + enemy.Effects.GetDefenseBonus();
+            effectiveDefense *= enemy.Effects.GetDefenseMultiplier();
+
+            // Calculate final damage
+            int finalDamage = Math.Max(1, baseDamage - (int)(effectiveDefense / 2));
+            enemy.CurrentHP -= finalDamage;
+
+            int damageDealt = initialHP - enemy.CurrentHP;
+            return damageDealt;
+        }
+
+        [Fact]
+        public void DefenseBuff_ReducesDamageTaken()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+            var enemy = EnemyFactory.CreateEnemy(5); // Stronger enemy
+
+            player.CurrentHP = player.MaxHP;
+            player.Defense = 20; // Known defense value
+            enemy.Attack = 60; // Known attack value
+
+            // Calculate baseline damage WITHOUT defense buff
+            int initialPlayerHP = player.CurrentHP;
+            CalculateEnemyAttackDamage(enemy, player);
+            int baselineDamage = initialPlayerHP - player.CurrentHP;
+            player.CurrentHP = initialPlayerHP; // Reset
+
+            // Act: Apply a defense buff (simulating Shield Wall or similar)
+            var defenseEffect = new Combat.StatusEffects.StatModifierEffect(
+                "test_defense_buff", "Defense Buff", "🛡️",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                duration: 3,
+                stat: Combat.StatusEffects.StatModifierEffect.StatType.Defense,
+                value: 1.5, // 50% more defense
+                isMultiplier: true);
+            player.Effects.AddEffect(defenseEffect);
+
+            // Calculate damage WITH defense buff
+            initialPlayerHP = player.CurrentHP;
+            CalculateEnemyAttackDamage(enemy, player);
+            int buffedDamage = initialPlayerHP - player.CurrentHP;
+
+            // Assert: Defense buff should reduce damage taken
+            Assert.True(buffedDamage < baselineDamage,
+                $"Defense buff should reduce damage! Baseline: {baselineDamage}, Buffed: {buffedDamage}");
+        }
+
+        [Fact]
+        public void AbilityDamage_AppliesAttackBuffs()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+            var enemy = EnemyFactory.CreateEnemy(1);
+
+            player.CurrentHP = player.MaxHP;
+            player.CurrentMana = player.MaxMana;
+
+            // Clear all effects to ensure clean state
+            player.Effects.ClearAll();
+
+            // Strip equipment to get clean baseline
+            player.Inventory.Weapon = null;
+            player.Inventory.Armor = null;
+            player.UpdateStatsFromEquipment();
+            player.Attack = 50; // Set known attack after equipment removal
+
+            enemy.Defense = 0;
+            enemy.CurrentHP = 10000;
+            enemy.Effects.ClearAll();
+
+            // Get Power Strike ability (deals damage)
+            var powerStrike = player.Abilities.FirstOrDefault(a => a.Name == "Power Strike");
+            Assert.NotNull(powerStrike);
+
+            var context = new TestRPGGame.Abilities.Effects.AbilityContext(player, enemy, autoInterface);
+
+            // Calculate baseline ability damage WITHOUT buffs
+            player.Effects.ClearAll(); // Ensure no buffs
+            int initialHP = enemy.CurrentHP;
+            powerStrike.Execute(context);
+            int baselineDamage = initialHP - enemy.CurrentHP;
+            powerStrike.CurrentCooldown = 0; // Reset cooldown
+
+            // Act: Apply Battle Rage
+            player.Effects.ClearAll(); // Clear any effects from ability execution
+            var battleRage = player.Abilities.FirstOrDefault(a => a.Name == "Battle Rage");
+            Assert.NotNull(battleRage);
+            battleRage.Execute(context);
+            battleRage.CurrentCooldown = 0;
+
+            // Verify ONLY Battle Rage is active
+            var activeEffects = player.Effects.ActiveEffects;
+            Assert.Single(activeEffects);
+            Assert.Contains(activeEffects, e => e.Name == "Battle Rage");
+
+            // Calculate ability damage WITH Battle Rage
+            initialHP = enemy.CurrentHP;
+            powerStrike.Execute(context);
+            int buffedDamage = initialHP - enemy.CurrentHP;
+
+            // Assert: Battle Rage should increase ability damage
+            // Note: Power Strike has variance (2.2x-2.8x), so exact percentage varies
+            // Important: buffed damage should be noticeably higher than baseline
+            double actualIncrease = (double)buffedDamage / baselineDamage;
+            Assert.True(actualIncrease >= 1.2 && actualIncrease <= 1.8,
+                $"Battle Rage should significantly increase ability damage! Baseline: {baselineDamage}, Buffed: {buffedDamage}, Increase: {actualIncrease:P0}");
+
+            // More importantly: buffed damage should be higher
+            Assert.True(buffedDamage > baselineDamage,
+                $"Buffed damage ({buffedDamage}) should exceed baseline damage ({baselineDamage})");
+        }
+
+        [Fact]
+        public void MultipleBuffs_StackMultiplicatively()
+        {
+            // Arrange
+            var autoInterface = new AutomatedInterface();
+            var player = new Player("TestWarrior", PlayerClass.Warrior);
+            var enemy = EnemyFactory.CreateEnemy(1);
+
+            player.CurrentHP = player.MaxHP;
+            player.Attack = 50;
+            enemy.Defense = 0;
+            enemy.CurrentHP = 10000;
+
+            // Calculate baseline
+            int baselineDamage = CalculateRealAttackDamage(player, enemy);
+
+            // Act: Apply TWO different buff types - Attack buff AND Damage buff
+            // Attack buff: +50% attack
+            var attackBuff = new Combat.StatusEffects.StatModifierEffect(
+                "test_attack_buff", "Attack Buff", "⚔️",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                duration: 3,
+                stat: Combat.StatusEffects.StatModifierEffect.StatType.Attack,
+                value: 1.5,
+                isMultiplier: true);
+            player.Effects.AddEffect(attackBuff);
+
+            // Damage buff: +30% damage
+            var damageBuff = new Combat.StatusEffects.StatModifierEffect(
+                "test_damage_buff", "Damage Buff", "💢",
+                Combat.StatusEffects.StatusEffectType.Buff,
+                duration: 3,
+                stat: Combat.StatusEffects.StatModifierEffect.StatType.Damage,
+                value: 1.3,
+                isMultiplier: true);
+            player.Effects.AddEffect(damageBuff);
+
+            // Calculate damage with BOTH buffs
+            int buffedDamage = CalculateRealAttackDamage(player, enemy);
+
+            // Assert: Buffs should stack multiplicatively (1.5 * 1.3 = 1.95x total)
+            double expectedIncrease = 1.5 * 1.3; // 1.95
+            double actualIncrease = (double)buffedDamage / baselineDamage;
+            Assert.True(actualIncrease >= 1.85 && actualIncrease <= 2.05,
+                $"Attack and Damage buffs should stack multiplicatively (~95% increase)! " +
+                $"Baseline: {baselineDamage}, Buffed: {buffedDamage}, Increase: {actualIncrease:P0}");
+        }
+
+        /// <summary>
+        /// Helper to calculate enemy attack damage using REAL combat system logic
+        /// </summary>
+        private int CalculateEnemyAttackDamage(Enemy enemy, Player player)
+        {
+            int initialHP = player.CurrentHP;
+
+            // Use REAL enemy attack calculation with buffs
+            double effectiveAttack = enemy.Attack + enemy.Effects.GetAttackBonus();
+            effectiveAttack *= enemy.Effects.GetAttackMultiplier();
+
+            int baseDamage = (int)effectiveAttack;
+            baseDamage = (int)(baseDamage * enemy.Effects.GetTotalDamageMultiplier());
+
+            // Player's effective defense
+            double effectiveDefense = player.Defense + player.Effects.GetDefenseBonus();
+            effectiveDefense *= player.Effects.GetDefenseMultiplier();
+
+            int finalDamage = Math.Max(1, baseDamage - (int)(effectiveDefense / 2));
+            player.CurrentHP -= finalDamage;
+
+            return initialHP - player.CurrentHP;
         }
     }
 }

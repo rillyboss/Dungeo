@@ -105,14 +105,12 @@ namespace TestRPGGame.Interfaces
 
                 case GameEvents.AbilityUsedEvent e:
                     UIHelper.PrintColoredLine($"✨ {e.User} used {e.AbilityName}!", ConsoleColor.Cyan);
-                    UIHelper.PrintColoredLine($"   {e.Description}", ConsoleColor.Gray);
-                    Thread.Sleep(800);
+                    Thread.Sleep(500);
                     break;
 
                 case GameEvents.EffectAppliedEvent e:
                     UIHelper.PrintColoredLine($"🎯 {e.EffectName} applied to {e.Target} ({e.Duration} turns)", ConsoleColor.Magenta);
-                    UIHelper.PrintColoredLine($"   {e.Description}", ConsoleColor.Gray);
-                    Thread.Sleep(500);
+                    Thread.Sleep(300);
                     break;
 
                 case GameEvents.PotionUsedEvent e:

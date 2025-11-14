@@ -141,11 +141,25 @@ namespace TestRPGGame.Combat
 
         private void ExecutePlayerAttack(Player player, Enemy enemy)
         {
-            int baseDamage = player.Attack;
+            // Calculate base damage with attack stat modifiers
+            double effectiveAttack = player.Attack + player.Effects.GetAttackBonus();
+            effectiveAttack *= player.Effects.GetAttackMultiplier();
+
+            int baseDamage = (int)effectiveAttack;
+
+            // Apply crit
             bool isCrit = RandomProvider.NextDouble() < player.CritChance;
             if (isCrit) baseDamage = (int)(baseDamage * 2.0);
 
-            int finalDamage = Math.Max(1, baseDamage - enemy.Defense / 2);
+            // Apply general damage multipliers (e.g., from damage-specific buffs)
+            baseDamage = (int)(baseDamage * player.Effects.GetTotalDamageMultiplier());
+
+            // Calculate enemy's effective defense
+            double effectiveDefense = enemy.Defense + enemy.Effects.GetDefenseBonus();
+            effectiveDefense *= enemy.Effects.GetDefenseMultiplier();
+
+            // Calculate final damage
+            int finalDamage = Math.Max(1, baseDamage - (int)(effectiveDefense / 2));
             enemy.CurrentHP = Math.Max(0, enemy.CurrentHP - finalDamage);
 
             gameInterface.OnEvent(new GameEvents.DamageDealtEvent
@@ -178,8 +192,21 @@ namespace TestRPGGame.Combat
 
         private void ExecuteEnemyTurn(Player player, Enemy enemy)
         {
-            // Simple enemy AI - just attack
-            int damage = Math.Max(1, enemy.Attack - player.Defense / 2);
+            // Calculate enemy's effective attack with stat modifiers
+            double effectiveAttack = enemy.Attack + enemy.Effects.GetAttackBonus();
+            effectiveAttack *= enemy.Effects.GetAttackMultiplier();
+
+            int baseDamage = (int)effectiveAttack;
+
+            // Apply general damage multipliers from enemy buffs
+            baseDamage = (int)(baseDamage * enemy.Effects.GetTotalDamageMultiplier());
+
+            // Calculate player's effective defense
+            double effectiveDefense = player.Defense + player.Effects.GetDefenseBonus();
+            effectiveDefense *= player.Effects.GetDefenseMultiplier();
+
+            // Calculate final damage
+            int damage = Math.Max(1, baseDamage - (int)(effectiveDefense / 2));
             player.CurrentHP = Math.Max(0, player.CurrentHP - damage);
 
             gameInterface.OnEvent(new GameEvents.DamageDealtEvent

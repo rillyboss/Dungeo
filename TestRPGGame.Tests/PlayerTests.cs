@@ -3,6 +3,7 @@ using TestRPGGame;
 using TestRPGGame.Entities.Player;
 using TestRPGGame.Abilities;
 using TestRPGGame.DataLoading;
+using System.Linq;
 
 namespace TestRPGGame.Tests
 {
@@ -21,7 +22,10 @@ namespace TestRPGGame.Tests
             Assert.True(player.MaxHP >= 140); // Base 140 + equipment bonuses
             Assert.True(player.MaxMana >= 80); // Base 80 + possible equipment bonuses
             Assert.Equal(100, player.Gold);
-            Assert.Equal(30, player.Abilities.Count); // 3 starting + 27 unlockable (Phase 5C: 5x expansion)
+
+            // 30 class abilities + 1 from starting weapon signature ability
+            Assert.True(player.Abilities.Count >= 30,
+                $"Expected at least 30 abilities, got {player.Abilities.Count}");
 
             // Verify starting equipment was given
             Assert.NotNull(player.Inventory.Weapon);
@@ -102,6 +106,47 @@ namespace TestRPGGame.Tests
 
             // Assert
             Assert.Equal(player.MaxMana, player.CurrentMana);
+        }
+
+        [Fact]
+        public void Player_StartingEquipment_GrantsSignatureAbilities()
+        {
+            // Arrange & Act - Create warriors multiple times to ensure we get a weapon
+            Player? player = null;
+            for (int i = 0; i < 5; i++)
+            {
+                player = new Player("Test Warrior", PlayerClass.Warrior);
+
+                // All warriors should get a weapon
+                if (player.Inventory.Weapon != null)
+                    break;
+            }
+
+            // Assert - Verify we got a weapon
+            Assert.NotNull(player);
+            Assert.NotNull(player.Inventory.Weapon);
+
+            // Check if weapon has granted abilities defined
+            var weapon = player.Inventory.Weapon;
+            if (weapon.GrantedAbilityIds.Count > 0)
+            {
+                // BUG TEST: Weapon has abilities defined, but are they granted to the player?
+                var equipmentAbilities = player.Abilities.Where(a => a.IsEquipmentGranted).ToList();
+
+                Assert.True(equipmentAbilities.Count > 0,
+                    $"BUG FOUND: Weapon '{weapon.Name}' has {weapon.GrantedAbilityIds.Count} granted abilities " +
+                    $"({string.Join(", ", weapon.GrantedAbilityIds)}), but player has 0 equipment-granted abilities!");
+
+                // Verify at least one of the weapon's abilities is in the player's ability list
+                bool hasWeaponAbility = weapon.GrantedAbilityIds.Any(id =>
+                    equipmentAbilities.Any(a =>
+                        a.Name.Equals(id, System.StringComparison.OrdinalIgnoreCase) ||
+                        id.Contains(a.Name.Replace(" ", "_").ToLower())));
+
+                Assert.True(hasWeaponAbility,
+                    $"Weapon grants abilities {string.Join(", ", weapon.GrantedAbilityIds)} " +
+                    $"but none found in player's equipment abilities: {string.Join(", ", equipmentAbilities.Select(a => a.Name))}");
+            }
         }
     }
 }
